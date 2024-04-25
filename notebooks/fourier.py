@@ -45,9 +45,9 @@ def fourier_series_coeff(f, T, N, return_complex=False):
     f_sample = 2 * N
     # we also need to use an integer sampling frequency, or the
     # points will not be equispaced between 0 and 1. We then add +2 to f_sample
-    t, dt = np.linspace(0, T, f_sample + 2, endpoint=False, retstep=True)
+    tt, dt = np.linspace(0, T, f_sample + 2, endpoint=False, retstep=True)
 
-    y = np.fft.rfft(f(t)) / t.size
+    y = np.fft.rfft(np.array([f(t) for t in tt])) / tt.size
 
     if return_complex:
         return y
