@@ -6,33 +6,33 @@ L = 10.0
 
 # Damkohler numbers
 Dam_tr = 1.0
-Dam_ci = 1.4
+Dam_ci = 2.0
 
 # Peclet numbers
 Pen_tr = 10.0
-Pen_ci = 15.0
+Pen_ci = 10.0
 
 Pen_tr_s = 10.0
-Pen_ci_s = 15.0
+Pen_ci_s = 10.0
 
 # Biot numbers
 Bit_tr = 1.0e3
 Bit_ci = 3.33
 
 # Marangoni numbers
-Man = 1.03
+Man = 2.0
 
 # Switching rate
-k_tr = 1.0
-k_ci = 30 * k_tr
+k_ci = 1.0
+k_tr = 30 * k_ci
 
-chi_tr = 30.0
-chi_ci = 1.0
+chi_tr = 1.0
+chi_ci = 30.0
 
 assert k_tr * chi_tr == k_ci * chi_ci
 
 # Beam width
-delta = 1.0
+delta = 0.5
 
 # DO NOT MODIFY
 # Setup required parameters
