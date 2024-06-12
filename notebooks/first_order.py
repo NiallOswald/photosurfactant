@@ -414,7 +414,7 @@ def surf_excess(omega):
 
     eq_2 = omega**2 * gamma_vec
 
-    eq_3 = -J_vec
+    eq_3 = -np.einsum("ij,j...->i...", P_s, J_vec)
     
     eq_4 = gamma_vec + np.einsum("i...,i->i...", f_vec, gamma_0)
     eq_5 = np.einsum("ij,j...->i...", A_s, eq_4)
