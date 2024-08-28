@@ -75,7 +75,7 @@ def d_c_tr_0(y):
     return -eta * d_c_ci_0(y)
 
 def d_c_0(y):
-    return np.array([d_c_ci_0(y), d_c_tr_0(y)])
+    return np.array([d_c_tr_0(y), d_c_ci_0(y)])
 
 def d2_c_ci_0(y):
     return B_0 * zeta * np.sinh(y * np.sqrt(zeta))
@@ -84,4 +84,4 @@ def d2_c_tr_0(y):
     return -eta * d2_c_ci_0(y)
 
 def d2_c_0(y):
-    return np.array([d2_c_ci_0(y), d2_c_tr_0(y)])
+    return np.array([d2_c_tr_0(y), d2_c_ci_0(y)])

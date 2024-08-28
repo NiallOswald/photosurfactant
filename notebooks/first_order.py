@@ -436,7 +436,7 @@ def mass_balance(omega):
     J_vec = np.array([to_arr({"J_tr_h": 1}, omega), to_arr({"J_ci_h": 1}, omega)])
     S_vec = np.tile(to_arr({"S_h": 1}, omega), (2, 1, 1))
 
-    eq_1 = d_p_h(omega, 1) + np.einsum("i...,i->i...", S_vec, d2_c_0(1))
+    eq_1 = d_c_h(omega, 1) + np.einsum("i...,i->i...", S_vec, d2_c_0(1))
     lhs = k_tr * chi_tr * eq_1
 
     rhs = -np.einsum("ij,j...->i...", P, J_vec)
