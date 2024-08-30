@@ -16,15 +16,15 @@ Pen_tr_s = 10.0
 Pen_ci_s = 10.0
 
 # Biot numbers
-Bit_tr = 1.0e3
-Bit_ci = 3.33
+Bit_tr = 3.33
+Bit_ci = 1.0e3
 
 # Marangoni numbers
 Man = 2.0
 
 # Switching rate
+k_tr = 30.0
 k_ci = 1.0
-k_tr = 30 * k_ci
 
 chi_tr = 1.0
 chi_ci = 30.0

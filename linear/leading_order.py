@@ -1,7 +1,7 @@
 """Module containing the system for the leading order model."""
 
 import numpy as np
-from parameters import *
+from linear.parameters import *
 
 # Determinant coefficients
 a_0 = k_tr * ((Dam_tr + Dam_ci) / Bit_ci + 1)
@@ -41,7 +41,7 @@ poly = np.poly1d([
 ])
 roots = poly.roots
 
-B_0 = roots[3]  # Select the solution branch as needed
+B_0 = roots[2]  # Select the solution branch as needed
 
 # Solve for A_0
 A_0 = -(p * B_0 + r) / (q * B_0 + s) * B_0

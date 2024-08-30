@@ -1,8 +1,8 @@
 """Module containing the system for the first order model."""
 
 import numpy as np
-from parameters import *
-from leading_order import (c_tr_0, c_ci_0, c_0, d_c_0, d2_c_0, gamma_0, A_0, B_0, Delta)
+from linear.parameters import *
+from linear.leading_order import (c_tr_0, c_ci_0, c_0, d_c_0, d2_c_0, gamma_0, A_0, B_0, Delta)
 
 # Define matrices
 D = np.array([

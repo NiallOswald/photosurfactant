@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "photosurfactant"
+version = "2024.0"
+description="""Numerical solvers and figures produced for the photo-actuated control of two-dimensional viscous liquid layers."""
+authors = [
+    { name = "Niall Oswald", email = "niall.oswald20@imperial.ac.uk" },
+]
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "ipykernel",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["linear"]
