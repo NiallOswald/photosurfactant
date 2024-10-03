@@ -1,7 +1,7 @@
 """Module containing the system for the first order model."""
 
 import numpy as np
-from linear.parameters import *
+from linear.parameters import (L, Dam_tr, Dam_ci, Pen_tr, Pen_ci, Pen_tr_s, Pen_ci_s, Bit_tr, Bit_ci, Man, k_tr, k_ci, chi_tr, chi_ci, alpha, eta, zeta)
 from linear.leading_order import (c_tr_0, c_ci_0, c_0, d_c_0, d2_c_0, gamma_0, A_0, B_0, Delta)
 
 # Define matrices
@@ -71,8 +71,9 @@ def to_arr(vals, omega):
             arr[i, :] = vals[key]
         except KeyError:
             pass
-    
+
     return arr
+
 
 ## Inverse of Lambda matrix
 def Lambda_inv_h(omega):
@@ -278,7 +279,7 @@ def p_h_3(omega, y):
     vec = np.linalg.inv(V) @ P @ np.array([-eta, 1])
 
     return -(1.j * omega * B_0 * np.sqrt(zeta)) / 2 * np.einsum("ij...,j->i...", matr, vec)
-    
+
 
 def p_h(omega, y):
     return p_h_0(omega, y) + p_h_1(omega, y) + p_h_2(omega, y) + p_h_3(omega, y)
@@ -352,7 +353,7 @@ def d_p_h_3(omega, y):
     vec = np.linalg.inv(V) @ P @ np.array([-eta, 1])
 
     return -(1.j * omega * B_0 * np.sqrt(zeta)) / 2 * np.einsum("ij...,j->i...", matr, vec)
-    
+
 
 def d_p_h(omega, y):
     return d_p_h_0(omega, y) + d_p_h_2(omega, y) + d_p_h_3(omega, y)
@@ -415,7 +416,7 @@ def surf_excess(omega):
     eq_2 = omega**2 * gamma_vec
 
     eq_3 = -np.einsum("ij,j...->i...", P_s, J_vec)
-    
+
     eq_4 = gamma_vec + np.einsum("i...,i->i...", f_vec, gamma_0)
     eq_5 = np.einsum("ij,j...->i...", A_s, eq_4)
 
@@ -488,7 +489,7 @@ def form_inverse_equations(omega, S_h):
 
 # Constant mode
 ## Define embeddings
-unknowns_o = ["A_h", "B_h", "C_h", "A_1", "B_1", "gamma_tr_h", "gamma_ci_h", "f_h", "const"]
+unknowns_o = ["A_h", "B_h", "C_h", "A_1", "B_1", "gamma_tr_h", "gamma_ci_h", "f_h", "J_tr_h", "J_ci_h", "const"]
 
 def to_arr_o(vals):
     """Converts a dictionary of values to an array."""
@@ -502,7 +503,7 @@ def to_arr_o(vals):
             arr[i, :] = vals[key]
         except KeyError:
             pass
-    
+
     return arr
 
 ## Streamfunction
@@ -568,20 +569,36 @@ def i_c_o():
 def no_slip_o():
     return np.array([d_psi_o(0), psi_o(0)])
 
+### Kinentic fluxes
+def kin_fluxes_o():
+    J_vec = np.array([
+        to_arr_o({"J_tr_h": 1}), to_arr_o({"J_ci_h": 1})
+    ])
+    gamma_vec = np.array([
+        to_arr_o({"gamma_tr_h": 1}), to_arr_o({"gamma_ci_h": 1})
+    ])
+
+    eq_1 = 1 / Delta * np.einsum("ij,j...->i...", B @ K, c_o(1))
+    eq_2 = -np.einsum("ij,j...->i...", M - D, gamma_vec)
+    rhs = eq_1 + eq_2
+
+    return J_vec - rhs
+
 ### Surface excess concentration equations
 def surf_excess_o():
+    J_vec = np.array([
+        to_arr_o({"J_tr_h": 1}), to_arr_o({"J_ci_h": 1})
+    ])
     gamma_vec = np.array([
         to_arr_o({"gamma_tr_h": 1}), to_arr_o({"gamma_ci_h": 1})
     ])
     f_vec = np.tile(to_arr_o({"f_h": 1}), (2, 1, 1))
 
-    eq_1 = np.einsum("ij,j...->i...", M, gamma_vec)
+    eq_1 = np.einsum("ij,j...->i...", D, gamma_vec)
+    eq_2 = np.einsum("i...,i->i...", f_vec, D @ gamma_0)
+    rhs = eq_1 + eq_2
 
-    eq_2 = 1 / Delta * np.einsum("ij,j...->i...", B @ K, c_o(1))
-
-    eq_3 = -np.einsum("i...,i->i...", f_vec, D @ gamma_0)
-
-    return eq_1 - eq_2 - eq_3
+    return J_vec - rhs
 
 ### Tangential stress balance
 def tangential_stress_o():
@@ -589,12 +606,11 @@ def tangential_stress_o():
 
 ### Mass balance
 def mass_balance_o():
-    gamma_tr_vec = to_arr_o({"gamma_tr_h": 1})
-    gamma_ci_vec = to_arr_o({"gamma_ci_h": 1})
+    J_ci_vec = to_arr_o({"J_ci_h": 1})
 
-    lhs = k_ci * chi_ci * d_c_ci_o(1)
+    lhs = (k_ci * chi_ci / Pen_ci) * d_c_ci_o(1)
 
-    rhs = Pen_ci * (Dam_tr * gamma_tr_vec - Dam_ci * gamma_ci_vec)
+    rhs = -J_ci_vec
 
     return np.array([lhs - rhs])
 
@@ -618,6 +634,7 @@ def light_intensity_o(f_o):
 def form_equations_o(f_o):
     return np.concatenate([
         no_slip_o(),
+        kin_fluxes_o(),
         surf_excess_o(),
         tangential_stress_o(),
         mass_balance_o(),
@@ -628,6 +645,7 @@ def form_equations_o(f_o):
 def form_inverse_equations_o():
     return np.concatenate([
         no_slip_o(),
+        kin_fluxes_o(),
         surf_excess_o(),
         tangential_stress_o(),
         mass_balance_o(),
