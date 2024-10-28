@@ -530,7 +530,7 @@ def c_ci_o(y):
     return to_arr_o({
         "A_1": 1 / (alpha + eta),
         "B_1": np.cosh(y * np.sqrt(zeta)),
-        "f_h": -B_0 * np.cosh(y * np.sqrt(zeta))
+        "f_h": (B_0 * np.sqrt(zeta) / 2) * y * np.sinh(y * np.sqrt(zeta))
     })
 
 def c_tr_o(y):
@@ -542,7 +542,10 @@ def c_o(y):
 def d_c_ci_o(y):
     return to_arr_o({
         "B_1": np.sqrt(zeta) * np.sinh(y * np.sqrt(zeta)),
-        "f_h": -B_0 * np.sqrt(zeta) * np.sinh(y * np.sqrt(zeta))
+        "f_h": (B_0 * np.sqrt(zeta) / 2) * (
+            np.sinh(y * np.sqrt(zeta))
+            + y * np.sqrt(zeta) * np.cosh(y * np.sqrt(zeta))
+        )
     })
 
 def d_c_tr_o(y):
@@ -555,7 +558,10 @@ def i_c_ci_o():
     return to_arr_o({
         "A_1": 1 / (alpha + eta),
         "B_1": np.sinh(np.sqrt(zeta)) / np.sqrt(zeta),
-        "f_h": -B_0 * np.sinh(np.sqrt(zeta)) / np.sqrt(zeta)
+        "f_h": (B_0 / 2) * (
+            np.cosh(np.sqrt(zeta))
+            - np.sinh(np.sqrt(zeta)) / np.sqrt(zeta)
+        )
     })
 
 def i_c_tr_o():
