@@ -84,3 +84,35 @@ def parameter_parser(parser: ArgumentParser):
         default=30.0,
         help="The desorption rate for the cis surfactant.",
     )
+
+
+def plot_parser(parser: ArgumentParser):
+    """Add plotting parameters to the parser."""
+    parser.add_argument(
+        "--wave_count", type=int, default=100, help="Number of wavenumbers to use."
+    )
+    parser.add_argument(
+        "--grid_size",
+        type=int,
+        default=1000,
+        help="Number of grid points to evaluate the solution on.",
+    )
+    parser.add_argument(
+        "-s", "--save", action="store_true", help="Save the figures to disk."
+    )
+    parser.add_argument(
+        "--path", type=str, default="./", help="Path to save the figures to."
+    )
+    parser.add_argument(
+        "--label", type=str, help="Label to append to the figure filenames."
+    )
+
+
+def leading_order_parser(parser: ArgumentParser):
+    """Add leading order parameters to the parser."""
+    parser.add_argument(
+        "--root_index",
+        type=int,
+        default=2,
+        help="The index of the root for the leading order problem.",
+    )

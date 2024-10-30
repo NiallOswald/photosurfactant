@@ -1,7 +1,7 @@
 #! /usr/bin/env python
-from photosurfactant.parameters import Parameters
+from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.leading_order import LeadingOrder
-from photosurfactant.utils import parameter_parser
+from photosurfactant.utils import parameter_parser, plot_parser, leading_order_parser
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,27 +12,15 @@ def plot_leading_order():  # noqa: D103
         description="Plot the leading order surfactant concentrations.",
         formatter_class=ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument(
-        "--root_index", type=int, default=2, help="Index of the solution branch to use."
-    )
-    parser.add_argument(
-        "-s", "--save", action="store_true", help="Save the figures to disk."
-    )
-    parser.add_argument(
-        "--path", type=str, default="./", help="Path to save the figures to."
-    )
-    parser.add_argument(
-        "--label", type=str, help="Label to append to the figure filenames."
-    )
-
     parameter_parser(parser)
+    plot_parser(parser)
+    leading_order_parser(parser)
     args = parser.parse_args()
+
     root_index = args.root_index
-    save = args.save
-    path = args.path
-    label = "_" + args.label if args.label else ""
 
     params = Parameters.from_dict(vars(args))
+    plot_params = PlottingParameters.from_dict(vars(args))
 
     # Solve leading order problem
     leading = LeadingOrder(params, root_index)
@@ -42,7 +30,7 @@ def plot_leading_order():  # noqa: D103
     print("Gamma_ci:", leading.gamma_ci)
 
     # Plot bulk concentrations
-    yy = np.linspace(0, 1, 100)
+    yy = np.linspace(0, 1, plot_params.grid_size)
 
     plt.figure(figsize=(8, 6))
     plt.plot(yy, leading.c_tr(yy), "k-", label=r"$c_{\mathrm{tr}, 0}$")
@@ -52,7 +40,10 @@ def plot_leading_order():  # noqa: D103
     plt.legend()
     plt.tight_layout()
 
-    if save:
-        plt.savefig(path + f"leading_bulk_concentrations{label}.png", dpi=300)
+    if plot_params.save:
+        plt.savefig(
+            plot_params.path + f"leading_bulk_concentrations{plot_params.label}.png",
+            dpi=300,
+        )
     else:
         plt.show()

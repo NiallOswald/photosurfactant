@@ -86,3 +86,34 @@ class Parameters:
                 if k in inspect.signature(cls).parameters
             }
         )
+
+
+@dataclass
+class PlottingParameters:
+    """Additional parameters for plotting.
+
+    :param wave_count: The number of wave numbers to use.
+    :param grid_size: The number of grid points to evaluate the solution on.
+    :param save: A flag to save the figures to disk.
+    :param path: The path to save the figures to.
+    :param label: A label to append to the figure filenames.
+    """
+
+    wave_count: int = 100
+    grid_size: int = 1000
+    save: bool = False
+    path: str = "./"
+    label: str = ""
+
+    def __post_init__(self):  # noqa: D105
+        self.label = "_" + self.label if self.label else ""
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        return cls(
+            **{
+                k: v
+                for k, v in kwargs.items()
+                if k in inspect.signature(cls).parameters
+            }
+        )
