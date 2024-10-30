@@ -1,6 +1,7 @@
 """A module for the Parameters class."""
 
 from dataclasses import dataclass
+import inspect
 import numpy as np
 
 
@@ -75,3 +76,13 @@ class Parameters:
 
         self.V = np.array([[self.alpha, self.eta], [1.0, -1.0]])
         self.Lambda = np.array([[0.0, 0.0], [0.0, self.zeta]])
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        return cls(
+            **{
+                k: v
+                for k, v in kwargs.items()
+                if k in inspect.signature(cls).parameters
+            }
+        )
