@@ -6,7 +6,7 @@ import numpy as np
 def fourier_series_coeff(func, L, N):
     """Calculate the first 2*N+1 Fourier series coeff. of a periodic function.
 
-    Given a periodic, function f(x) with period L, this function returns the
+    Given a periodic, function f(x) with period 2L, this function returns the
     coefficients {c0,c1,c2,...} such that:
 
     f(x) ~= sum_{k=-N}^{N} c_k * exp(i*2*pi*k*x/L)
@@ -17,7 +17,7 @@ def fourier_series_coeff(func, L, N):
     :param L: The period of the function f, so that f(0)==f(L).
     :param N: The function will return the first N + 1 Fourier coeff.
     """
-    xx = np.linspace(0, L, 2 * N, endpoint=False)
+    xx = np.linspace(-L, L, 2 * N, endpoint=False)
     f_coeffs = np.fft.rfft(np.array([func(x) for x in xx])) / len(xx)
     f_full = np.concatenate([[f_coeffs[0]], f_coeffs[1:][::-1].conj(), f_coeffs[1:]])
 
