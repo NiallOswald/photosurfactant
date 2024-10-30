@@ -231,7 +231,7 @@ class Figures:
         if self.plot_params.save:
             fig.savefig(
                 self.plot_params.path
-                + f"{self.direction}_interfacial_values_{self.label}.png",
+                + f"{self.direction}_interfacial_values{self.label}.png",
                 dpi=300,
             )
         else:
