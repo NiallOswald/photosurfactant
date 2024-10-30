@@ -116,3 +116,21 @@ def leading_order_parser(parser: ArgumentParser):
         default=2,
         help="The index of the root for the leading order problem.",
     )
+
+
+def first_order_parser(parser: ArgumentParser):
+    """Add first order parameters to the parser."""
+    parser.add_argument(
+        "--func",
+        type=str,
+        default="laser_pointer(delta=0.5)(x)",
+        help="An expression in the coordinate x for the light intensity/interface "
+        'perturbation. The function should be a quoted string. E.g. "sin(x)". The '
+        "function must be L-periodic and always return a float.",
+    )
+    parser.add_argument(
+        "--problem",
+        choices=["forward", "inverse"],
+        default="forward",
+        help="The type of problem to solve.",
+    )
