@@ -230,7 +230,9 @@ class Figures:
 
         if self.plot_params.save:
             fig.savefig(
-                self.plot_params.path + f"interfacial_values_{self.label}.png", dpi=300
+                self.plot_params.path
+                + f"{self.direction}_interfacial_values_{self.label}.png",
+                dpi=300,
             )
         else:
             plt.show()
@@ -244,7 +246,10 @@ class Figures:
         plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(self.plot_params.path + f"tension{self.label}.png", dpi=300)
+            plt.savefig(
+                self.plot_params.path + f"{self.direction}_tension{self.label}.png",
+                dpi=300,
+            )
         else:
             plt.show()
 
@@ -266,7 +271,10 @@ class Figures:
         plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(self.plot_params.path + f"flux{self.label}.png", dpi=300)
+            plt.savefig(
+                self.plot_params.path + f"{self.direction}_flux{self.label}.png",
+                dpi=300,
+            )
         else:
             plt.show()
 
