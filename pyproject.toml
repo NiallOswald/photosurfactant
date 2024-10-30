@@ -2,6 +2,9 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["photosurfactant"]
+
 [project]
 name = "photosurfactant"
 version = "2024.0"
@@ -12,8 +15,4 @@ authors = [
 dependencies = [
     "numpy",
     "matplotlib",
-    "ipykernel",
 ]
-
-[tool.hatch.build.targets.wheel]
-packages = ["linear"]
