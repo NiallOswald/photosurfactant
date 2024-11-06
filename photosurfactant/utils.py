@@ -113,8 +113,9 @@ def leading_order_parser(parser: ArgumentParser):
     parser.add_argument(
         "--root_index",
         type=int,
-        default=2,
-        help="The index of the root for the leading order problem.",
+        default=-1,
+        help="The index of solution branch for the leading order problem. If set to "
+        "-1, the branch is selected automatically.",
     )
 
 

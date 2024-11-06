@@ -7,16 +7,20 @@ import numpy as np
 class LeadingOrder(object):
     """Leading order solution to the photosurfactant model."""
 
-    def __init__(self, params: Parameters, root_index: int = 2):
+    def __init__(self, params: Parameters, root_index: int = -1, method="endpoints"):
         """Initalise solution to the leading order model.
 
         :param params: :class:`~.parameters.Parameters` object containing the
             model parameters.
-        :param root_index: Index of the solution branch to use.
+        :param root_index: Index of the solution branch to use. If set to -1,
+            the branch is selected automatically.
+        :param method: Method to use to select the solution branch. If set to
+            'endpoints', the solution branch is selected by checking the
+            concentrations at the endpoints of the domain.
         """
         self.params = params
         self.A_0_vals, self.B_0_vals = self._initialize()
-        self.set_root(root_index)
+        self.set_root(root_index, method)
 
     def _initialize(self):
         """Initialize the leading order solution."""
@@ -120,10 +124,29 @@ class LeadingOrder(object):
 
         return A_0, B_0
 
-    def set_root(self, root_index: int):
+    def set_root(self, root_index: int, method: str):
         """Set the solution branch."""
-        self.A_0 = self.A_0_vals[root_index]
-        self.B_0 = self.B_0_vals[root_index]
+        if root_index == -1:
+            self._set_root_auto(method)
+        else:
+            self.A_0 = self.A_0_vals[root_index]
+            self.B_0 = self.B_0_vals[root_index]
+
+    def _set_root_auto(self, method: str):
+        """Automatically set the solution branch."""
+        if method == "endpoints":
+            for A_0, B_0 in zip(self.A_0_vals, self.B_0_vals):
+                self.A_0, self.B_0 = A_0, B_0
+
+                if self.c_ci(0) < 0 or self.c_ci(1) < 0:
+                    continue
+                elif self.c_tr(0) < 0 or self.c_tr(1) < 0:
+                    continue
+                else:
+                    break
+
+            else:
+                raise ValueError("No valid solution found.")
 
     def c_ci(self, y):  # noqa: D102
         params = self.params
