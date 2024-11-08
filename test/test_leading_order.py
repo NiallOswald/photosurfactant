@@ -34,10 +34,14 @@ def test_surface_excess():
     leading = LeadingOrder(params)
 
     eq_tr = (
-        leading.J_tr - params.Dam_tr * leading.c_tr(1) + params.Dam_ci * leading.c_ci(1)
+        leading.J_tr
+        - params.Dam_tr * leading.gamma_tr
+        + params.Dam_ci * leading.gamma_ci
     )
     eq_ci = (
-        leading.J_ci + params.Dam_tr * leading.c_tr(1) - params.Dam_ci * leading.c_ci(1)
+        leading.J_ci
+        + params.Dam_tr * leading.gamma_tr
+        - params.Dam_ci * leading.gamma_ci
     )
 
     assert np.allclose(eq_tr, 0)
