@@ -180,6 +180,19 @@ class LeadingOrder(object):
     def d2_c(self, y):  # noqa: D102
         return np.array([self.d2_c_tr(y), self.d2_c_ci(y)])
 
+    def i_c_ci(self, y, y_s=0):
+        return (
+            self.A_0 / (self.params.alpha + self.params.eta) * y
+            + (self.B_0 / np.sqrt(self.params.zeta))
+            * np.sinh(y * np.sqrt(self.params.zeta))
+        ) - (self.i_c_ci(y_s) if y_s else 0)
+
+    def i_c_tr(self, y, y_s=0):
+        return self.A_0 * (y - y_s) - self.params.eta * self.i_c_ci(y, y_s)
+
+    def i_c(self, y, y_s):
+        return np.array([self.i_c_tr(y, y_s), self.i_c_ci(y, y_s)])
+
     @property
     def gamma_ci(self):  # noqa: D102
         return self.gamma[1]
@@ -204,6 +217,24 @@ class LeadingOrder(object):
                 ]
             )
         )
+
+    @property
+    def J_tr(self):
+        return self.params.Bit_tr * (
+            self.params.k_tr * self.c_tr(1) * (1 - self.gamma_tr - self.gamma_ci)
+            - self.gamma_tr
+        )
+
+    @property
+    def J_ci(self):
+        return self.params.Bit_ci * (
+            self.params.k_ci * self.c_ci(1) * (1 - self.gamma_tr - self.gamma_ci)
+            - self.gamma_ci
+        )
+
+    @property
+    def J(self):
+        return np.array([self.J_tr, self.J_ci])
 
     @property
     def Delta(self):  # noqa: D102, N802
