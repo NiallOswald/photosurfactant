@@ -55,6 +55,23 @@ class Figures:
         self.direction = self.first.direction
         self.label = self.plot_params.label
 
+    def export_data(self, path: str):
+        """Export data to a .csv file."""
+        np.savetxt(path + "xx.csv", self.xx.real, delimiter=",")
+        np.savetxt(path + "yy.csv", self.yy.real, delimiter=",")
+        np.savetxt(path + "ggamma_tr.csv", self.ggamma_tr.real, delimiter=",")
+        np.savetxt(path + "ggamma_ci.csv", self.ggamma_ci.real, delimiter=",")
+        np.savetxt(path + "ttension.csv", self.ttension.real, delimiter=",")
+        np.savetxt(path + "JJ_tr.csv", self.JJ_tr.real, delimiter=",")
+        np.savetxt(path + "JJ_ci.csv", self.JJ_ci.real, delimiter=",")
+        np.savetxt(path + "SS_inv.csv", self.SS_inv.real, delimiter=",")
+        np.savetxt(path + "ff_inv.csv", self.ff_inv.real, delimiter=",")
+        np.savetxt(path + "psii.csv", self.psii, delimiter=",")
+        np.savetxt(path + "uu.csv", self.uu.real, delimiter=",")
+        np.savetxt(path + "vv.csv", self.vv.real, delimiter=",")
+        np.savetxt(path + "cc_tr.csv", self.cc_tr.real, delimiter=",")
+        np.savetxt(path + "cc_ci.csv", self.cc_ci.real, delimiter=",")
+
     def plot_interfacial_velocity(self):
         """Plot the interfacial velocity."""
         plt.figure(figsize=(8, 6))
