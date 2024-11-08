@@ -95,4 +95,4 @@ def test_no_flux():
     params = Parameters()
     leading = LeadingOrder(params)
 
-    assert np.allclose(leading.c(0), 0)
+    assert np.allclose(leading.d_c(0), 0)
