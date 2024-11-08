@@ -204,19 +204,7 @@ class LeadingOrder(object):
     @property
     def gamma(self):  # noqa: D102
         params = self.params
-        return (1 / self.Delta) * (
-            (
-                params.k_tr * self.c_tr(1) / params.Bit_ci
-                + params.k_ci * self.c_ci(1) / params.Bit_tr
-            )
-            * np.array([params.Dam_ci, params.Dam_tr])
-            + np.array(
-                [
-                    params.k_tr * self.c_tr(1),
-                    params.k_ci * self.c_ci(1),
-                ]
-            )
-        )
+        return np.linalg.solve(self.M, params.B @ params.K @ self.c(1))
 
     @property
     def J_tr(self):
@@ -238,17 +226,7 @@ class LeadingOrder(object):
 
     @property
     def Delta(self):  # noqa: D102, N802
-        params = self.params
-        return (
-            (params.Dam_tr + params.Dam_ci)
-            * (
-                params.k_tr * self.c_tr(1) / params.Bit_ci
-                + params.k_ci * self.c_ci(1) / params.Bit_tr
-            )
-            + params.k_tr * self.c_tr(1)
-            + params.k_ci * self.c_ci(1)
-            + 1
-        )
+        return np.linalg.det(self.M)
 
     @property
     def M(self):  # noqa: D102, N802
