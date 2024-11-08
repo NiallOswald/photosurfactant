@@ -20,7 +20,7 @@ def test_bulk_concentrations():
     )
     eq_ci = (
         (1 / params.Pen_ci) * leading.d2_c_ci(yy)
-        + params.Dam_ci * leading.c_tr(yy)
+        + params.Dam_tr * leading.c_tr(yy)
         - params.Dam_ci * leading.c_ci(yy)
     )
 
