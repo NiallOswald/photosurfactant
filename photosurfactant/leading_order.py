@@ -162,7 +162,7 @@ class LeadingOrder(object):
 
     def d_c_ci(self, y):  # noqa: D102
         params = self.params
-        return self.B_0 * np.sqrt(params.zeta) * np.cosh(y * np.sqrt(params.zeta))
+        return self.B_0 * np.sqrt(params.zeta) * np.sinh(y * np.sqrt(params.zeta))
 
     def d_c_tr(self, y):  # noqa: D102
         return -self.params.eta * self.d_c_ci(y)
@@ -172,7 +172,7 @@ class LeadingOrder(object):
 
     def d2_c_ci(self, y):  # noqa: D102
         params = self.params
-        return self.B_0 * params.zeta * np.sinh(y * np.sqrt(params.zeta))
+        return self.B_0 * params.zeta * np.cosh(y * np.sqrt(params.zeta))
 
     def d2_c_tr(self, y):  # noqa: D102
         return -self.params.eta * self.d2_c_ci(y)
