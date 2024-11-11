@@ -667,7 +667,7 @@ class NonZeroFourierConditions(FourierConditions):
         rhs = (
             1.0j
             * self.omega**3
-            * (1 - self.params.Man * np.log(self.leading.Delta))
+            * (1 + self.params.Man * (1 - self.leading.gamma_tot))
             * self.to_arr(
                 {
                     "S": 1,
@@ -694,7 +694,9 @@ class NonZeroFourierConditions(FourierConditions):
         eq_1 = self.variables.c(1) + np.einsum(
             "i...,i->i...", S_vec, self.leading.d_c(1)
         )
-        eq_2 = 1 / self.leading.Delta * np.einsum("ij,j...->i...", self.params.K, eq_1)
+        eq_2 = (1 - self.leading.gamma_tot) * np.einsum(
+            "ij,j...->i...", self.params.K, eq_1
+        )
 
         eq_3 = np.tile(gamma_vec[0] + gamma_vec[1], (2, 1, 1))
         eq_4 = np.einsum("i,i...->i...", self.leading.c(1), eq_3)
@@ -739,7 +741,7 @@ class NonZeroFourierConditions(FourierConditions):
             -1.0j
             * self.omega
             * self.params.Man
-            * self.leading.Delta
+            / (1 - self.leading.gamma_tot)
             * self.to_arr(
                 {
                     "gamma_tr": 1,
@@ -838,14 +840,10 @@ class ZeroFourierConditions(FourierConditions):
             [self.to_arr({"gamma_tr": 1}), self.to_arr({"gamma_ci": 1})]
         )
 
-        eq_1 = (
-            1
-            / self.leading.Delta
-            * np.einsum(
-                "ij,j...->i...",
-                self.params.B @ self.params.K,
-                self.variables.c(1),
-            )
+        eq_1 = (1 - self.leading.gamma_tot) * np.einsum(
+            "ij,j...->i...",
+            self.params.B @ self.params.K,
+            self.variables.c(1),
         )
         eq_2 = -np.einsum("ij,j...->i...", self.leading.M - self.params.D, gamma_vec)
         rhs = eq_1 + eq_2

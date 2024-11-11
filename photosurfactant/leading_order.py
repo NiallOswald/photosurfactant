@@ -34,6 +34,7 @@ class LeadingOrder(object):
             + params.k_ci
             - params.eta * params.k_tr
         )
+        c_0 = 1 + params.Dam_tr / params.Bit_tr + params.Dam_ci / params.Bit_ci
 
         # Quadratic coefficients
         a = (
@@ -55,42 +56,35 @@ class LeadingOrder(object):
             * np.sinh(np.sqrt(params.zeta))
             * np.cosh(np.sqrt(params.zeta))
         )
-        d = (params.alpha + 1) / (params.alpha + params.eta) + (
+        d = c_0 * (params.alpha + 1) / (params.alpha + params.eta) + (
             1 / (params.k_tr * params.chi_tr) - 1 / (2 * params.L)
         ) * (a_0 + b_0 / (params.alpha + params.eta))
-        e = (1 - params.eta) / np.sqrt(params.zeta) * np.sinh(
+        e = c_0 * (1 - params.eta) / np.sqrt(params.zeta) * np.sinh(
             np.sqrt(params.zeta)
         ) + b_0 * (1 / (params.k_tr * params.chi_tr) - 1 / (2 * params.L)) * np.cosh(
             np.sqrt(params.zeta)
         )
-        f = -1 / (2 * params.L)
+        f = c_0 * (1 / (params.k_tr * params.chi_tr) - 1 / (2 * params.L)) - (
+            1 + params.kappa * (1 + params.alpha * params.beta)
+        ) / (params.k_tr * params.chi_tr)
 
         # Second Quadratic
-        p = (
-            params.k_ci
-            * params.chi_ci
-            * b_0
-            * (params.alpha + params.eta)
-            / np.sqrt(params.zeta)
-            * np.sinh(np.sqrt(params.zeta))
-            * np.cosh(np.sqrt(params.zeta))
-        )
-        q = (
-            params.k_ci
-            * params.chi_ci
-            * (a_0 + b_0 / (params.alpha + params.eta))
+        p_0 = -params.alpha / (params.alpha + params.eta) * (params.k_tr - params.k_ci)
+        q_0 = (
+            params.k_tr
+            * params.chi_tr
             * (params.alpha + params.eta)
             / np.sqrt(params.zeta)
             * np.sinh(np.sqrt(params.zeta))
         )
-        r = params.k_ci * params.chi_ci * (params.alpha + params.eta) / np.sqrt(
-            params.zeta
-        ) * np.sinh(np.sqrt(params.zeta)) + (
-            params.alpha * params.k_ci + params.eta * params.k_tr
-        ) * np.cosh(
+        r_0 = (params.eta * params.k_tr + params.alpha * params.k_ci) * np.cosh(
             np.sqrt(params.zeta)
         )
-        s = params.alpha / (params.alpha + params.eta) * (params.k_ci - params.k_tr)
+
+        p = b_0 * q_0 * np.cosh(np.sqrt(params.zeta))
+        q = (a_0 + b_0 / (params.alpha + params.eta)) * q_0
+        r = c_0 * q_0 + r_0
+        s = p_0
 
         # Solve for B_0
         poly = np.poly1d(
@@ -202,6 +196,10 @@ class LeadingOrder(object):
         return self.gamma[0]
 
     @property
+    def gamma_tot(self):
+        return self.gamma_tr + self.gamma_ci
+
+    @property
     def gamma(self):  # noqa: D102
         params = self.params
         return np.linalg.solve(self.M, params.B @ params.K @ self.c(1))
@@ -223,10 +221,6 @@ class LeadingOrder(object):
     @property
     def J(self):
         return np.array([self.J_tr, self.J_ci])
-
-    @property
-    def Delta(self):  # noqa: D102, N802
-        return np.linalg.det(self.M)
 
     @property
     def M(self):  # noqa: D102, N802

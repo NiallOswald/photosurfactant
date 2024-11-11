@@ -65,6 +65,10 @@ class Parameters:
         self.eta = self.Pen_tr / self.Pen_ci
         self.zeta = self.Pen_tr * self.Dam_tr + self.Pen_ci * self.Dam_ci
 
+        self.beta = self.Bit_tr / self.Bit_ci
+        self.kappa = self.Dam_tr / self.Bit_tr
+        self.xi = self.Dam_tr * self.Bit_ci + self.Dam_ci * self.Bit_tr
+
         self.D = np.array([[self.Dam_tr, -self.Dam_ci], [-self.Dam_tr, self.Dam_ci]])
         self.P = np.array([[self.Pen_tr, 0.0], [0.0, self.Pen_ci]])
         self.P_s = np.array([[self.Pen_tr_s, 0.0], [0.0, self.Pen_ci_s]])
