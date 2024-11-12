@@ -39,7 +39,9 @@ class Figures:
         self.ggamma_tr = self.first.gamma_tr(self.xx)
         self.ggamma_ci = self.first.gamma_ci(self.xx)
         self.ttension = (
-            -self.params.Man * (self.ggamma_tr + self.ggamma_ci) * self.leading.Delta
+            -self.params.Man
+            * (self.ggamma_tr + self.ggamma_ci)
+            / (1 - self.leading.gamma_tot)
         )
         self.JJ_tr = self.first.J_tr(self.xx)
         self.JJ_ci = self.first.J_ci(self.xx)
