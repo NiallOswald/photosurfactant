@@ -3,6 +3,16 @@
 from argparse import ArgumentParser
 
 
+def factorial(n: int) -> int:
+    """Return the factorial of n."""
+    if n > 0:
+        return n * factorial(n - 1)
+    elif n == 0:
+        return 1
+    else:
+        return 0
+
+
 def parameter_parser(parser: ArgumentParser):
     """Add model parameters to the parser."""
     parser.add_argument(

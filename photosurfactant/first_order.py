@@ -1,5 +1,6 @@
 """First order solution to the photosurfactant model."""
 
+from .utils import factorial
 from .parameters import Parameters
 from .leading_order import LeadingOrder
 from abc import ABC, abstractmethod
@@ -85,45 +86,40 @@ class NonZeroFourierVariables(FourierVariables):
             ]
         )
 
-    def psi(self, y):
+    def _psi(self, y, k):
         return self.to_arr(
             {
-                "A": y * np.exp(self.omega * y),
-                "B": np.exp(self.omega * y),
-                "C": y * np.exp(-self.omega * y),
-                "D": np.exp(-self.omega * y),
+                "A": self.omega ** (k - 1)
+                * (k + self.omega * y)
+                * np.exp(self.omega * y),
+                "B": self.omega**k * np.exp(self.omega * y),
+                "C": (-self.omega) ** (k - 1)
+                * (k - self.omega * y)
+                * np.exp(-self.omega * y),
+                "D": (-self.omega) ** k * np.exp(-self.omega * y),
             }
         )
+
+    def psi(self, y):
+        return self._psi(y, 0)
 
     def d_psi(self, y):
-        return self.to_arr(
-            {
-                "A": (1 + self.omega * y) * np.exp(self.omega * y),
-                "B": self.omega * np.exp(self.omega * y),
-                "C": (1 - self.omega * y) * np.exp(-self.omega * y),
-                "D": -self.omega * np.exp(-self.omega * y),
-            }
-        )
+        return self._psi(y, 1)
 
     def d2_psi(self, y):
-        return self.to_arr(
-            {
-                "A": self.omega * (2 + self.omega * y) * np.exp(self.omega * y),
-                "B": self.omega**2 * np.exp(self.omega * y),
-                "C": -self.omega * (2 - self.omega * y) * np.exp(-self.omega * y),
-                "D": self.omega**2 * np.exp(-self.omega * y),
-            }
-        )
+        return self._psi(y, 2)
 
     def d3_psi(self, y):
-        return self.to_arr(
-            {
-                "A": self.omega**2 * (3 + self.omega * y) * np.exp(self.omega * y),
-                "B": self.omega**3 * np.exp(self.omega * y),
-                "C": self.omega**2 * (3 - self.omega * y) * np.exp(-self.omega * y),
-                "D": -self.omega**3 * np.exp(-self.omega * y),
-            }
-        )
+        return self._psi(y, 3)
+
+    def d4_psi(self, y):
+        return self._psi(y, 4)
+
+    def pressure(self, y):
+        return (self.d3_psi(y) - self.omega**2 * self.d_psi(y)) / (1.0j * self.omega)
+
+    def d_pressure(self, y):
+        return (self.d4_psi(y) - self.omega**2 * self.d2_psi(y)) / (1.0j * self.omega)
 
     @property
     def a_c_1(self):
@@ -289,57 +285,83 @@ class NonZeroFourierVariables(FourierVariables):
             }
         )
 
-    def p_0(self, y):
-        eq_1 = self.to_arr(
+    def _p_0(self, y, k):
+        eq_1 = self.omega**k * self.to_arr(
             {
-                "E": np.sinh(self.omega * y),
-                "F": np.cosh(self.omega * y),
+                "E": (np.cosh if k % 2 else np.sinh)(self.omega * y),
+                "F": (np.sinh if k % 2 else np.cosh)(self.omega * y),
             }
         )
-        eq_2 = self.to_arr(
+        eq_2 = np.sqrt(self.params.zeta + self.omega**2) ** k * self.to_arr(
             {
-                "G": np.sinh(np.sqrt(self.params.zeta + self.omega**2) * y),
-                "H": np.cosh(np.sqrt(self.params.zeta + self.omega**2) * y),
+                "G": (np.cosh if k % 2 else np.sinh)(
+                    np.sqrt(self.params.zeta + self.omega**2) * y
+                ),
+                "H": (np.sinh if k % 2 else np.cosh)(
+                    np.sqrt(self.params.zeta + self.omega**2) * y
+                ),
             }
         )
 
         return np.array([eq_1, eq_2])
 
-    def p_1(self, y):
-        vec = (self.params.Lambda @ np.linalg.inv(self.params.V)) @ np.array(
-            [self.leading.A_0, 0]
+    def _p_1(self, y, k):
+        if k == 0:
+            vec = (self.params.Lambda @ np.linalg.inv(self.params.V)) @ np.array(
+                [self.leading.A_0, 0]
+            )
+            eq_1 = np.einsum("ij...,j->i...", self.Lambda_inv, vec)
+            f_vec = self.to_arr({"f": 1})
+
+            return -np.einsum("i...,j...->ij...", eq_1[:, -1], f_vec)
+
+        else:
+            return np.array([self.to_arr(dict()), self.to_arr(dict())])
+
+    def _p_2_1(self, y, k):
+        return self.to_arr(
+            {
+                "const": (
+                    (
+                        -self.leading.A_0
+                        / ((self.params.alpha + self.params.eta) * self.omega**2)
+                        if k == 0
+                        else 0
+                    )
+                    - self.leading.B_0
+                    * np.sqrt(self.params.zeta) ** k
+                    / (self.omega**2 - self.params.zeta)
+                    * (np.sinh if k % 2 else np.cosh)(y * np.sqrt(self.params.zeta))
+                ),
+            }
         )
-        eq_1 = np.einsum("ij...,j->i...", self.Lambda_inv, vec)
-        f_vec = self.to_arr({"f": 1})
 
-        return -np.einsum("i...,j...->ij...", eq_1[:, -1], f_vec)
+    def _p_2_2(self, y, k):
+        return self.to_arr(
+            {
+                "const": (
+                    (
+                        -self.leading.A_0
+                        / (
+                            (self.params.alpha + self.params.eta)
+                            * (self.omega**2 + self.params.zeta)
+                        )
+                        if k == 0
+                        else 0
+                    )
+                    - self.leading.B_0
+                    * np.sqrt(self.params.zeta) ** k
+                    / self.omega**2
+                    * (np.sinh if k % 2 else np.cosh)(y * np.sqrt(self.params.zeta))
+                ),
+            }
+        )
 
-    def p_2(self, y):
+    def _p_2(self, y, k):
         params = self.params
-        leading = self.leading
 
-        p_1 = self.to_arr(
-            {
-                "const": -(
-                    leading.A_0 / ((params.alpha + params.eta) * self.omega**2)
-                    + leading.B_0
-                    / (self.omega**2 - params.zeta)
-                    * np.cosh(y * np.sqrt(params.zeta))
-                ),
-            }
-        )
-        p_2 = self.to_arr(
-            {
-                "const": -(
-                    leading.A_0
-                    / ((params.alpha + params.eta) * (self.omega**2 + params.zeta))
-                    + leading.B_0 / self.omega**2 * np.cosh(y * np.sqrt(params.zeta))
-                ),
-            }
-        )
         zero = self.to_arr(dict())
-
-        matr = np.array([[p_1, zero], [zero, p_2]])
+        matr = np.array([[self._p_2_1(y, k), zero], [zero, self._p_2_2(y, k)]])
         vec = params.Lambda @ np.linalg.inv(params.V) @ np.array([-params.eta, 1.0])
         vec_2 = np.einsum("ij...,j->i...", matr, vec)
 
@@ -347,35 +369,36 @@ class NonZeroFourierVariables(FourierVariables):
 
         return np.einsum("i...,j...->ij...", vec_2[:, -1], f_vec)
 
-    def p_3_1(self, y):
+    def _p_3_const(self, s_1, s_2):
+        return s_1 * (self.omega + s_2 * np.sqrt(self.params.zeta))
+
+    def _p_3_gfunc(self, y, a, b, s_1, s_2, k=0):
         return (
-            (self.a_c_1 * y + self.b_c_1)
-            * np.exp((self.omega + np.sqrt(self.params.zeta)) * y)
-            + (self.c_c_1 * y + self.d_c_1)
-            * np.exp((self.omega - np.sqrt(self.params.zeta)) * y)
-            + (self.e_c_1 * y + self.f_c_1)
-            * np.exp(-(self.omega - np.sqrt(self.params.zeta)) * y)
-            + (self.g_c_1 * y + self.h_c_1)
-            * np.exp(-(self.omega + np.sqrt(self.params.zeta)) * y)
+            k * self._p_3_const(s_1, s_2) ** (k - 1) * a
+            + self._p_3_const(s_1, s_2) ** k * (a * y + b)
+        ) * np.exp(self._p_3_const(s_1, s_2) * y)
+
+    def _p_3_1(self, y, k):
+        return (
+            self._p_3_gfunc(y, self.a_c_1, self.b_c_1, 1, 1, k)
+            + self._p_3_gfunc(y, self.c_c_1, self.d_c_1, 1, -1, k)
+            + self._p_3_gfunc(y, self.e_c_1, self.f_c_1, -1, -1, k)
+            + self._p_3_gfunc(y, self.g_c_1, self.h_c_1, -1, 1, k)
         )
 
-    def p_3_2(self, y):
+    def _p_3_2(self, y, k):
         return (
-            (self.a_c_2 * y + self.b_c_2)
-            * np.exp((self.omega + np.sqrt(self.params.zeta)) * y)
-            + (self.c_c_2 * y + self.d_c_2)
-            * np.exp((self.omega - np.sqrt(self.params.zeta)) * y)
-            + (self.e_c_2 * y + self.f_c_2)
-            * np.exp(-(self.omega - np.sqrt(self.params.zeta)) * y)
-            + (self.g_c_2 * y + self.h_c_2)
-            * np.exp(-(self.omega + np.sqrt(self.params.zeta)) * y)
+            self._p_3_gfunc(y, self.a_c_2, self.b_c_2, 1, 1, k)
+            + self._p_3_gfunc(y, self.c_c_2, self.d_c_2, 1, -1, k)
+            + self._p_3_gfunc(y, self.e_c_2, self.f_c_2, -1, -1, k)
+            + self._p_3_gfunc(y, self.g_c_2, self.h_c_2, -1, 1, k)
         )
 
-    def p_3(self, y):
+    def _p_3(self, y, k):
         params = self.params
 
         zero = self.to_arr(dict())
-        matr = np.array([[self.p_3_1(y), zero], [zero, self.p_3_2(y)]])
+        matr = np.array([[self._p_3_1(y, k), zero], [zero, self._p_3_2(y, k)]])
         vec = np.linalg.inv(params.V) @ params.P @ np.array([-params.eta, 1])
 
         return (
@@ -384,108 +407,118 @@ class NonZeroFourierVariables(FourierVariables):
             * np.einsum("ij...,j->i...", matr, vec)
         )
 
+    def _p(self, y, k):
+        return self._p_0(y, k) + self._p_1(y, k) + self._p_2(y, k) + self._p_3(y, k)
+
     def p(self, y):
-        return self.p_0(y) + self.p_1(y) + self.p_2(y) + self.p_3(y)
+        return self._p(y, 0)
 
-    def d_p_0(self, y):
-        params = self.params
+    def d_p(self, y):
+        return self._p(y, 1)
 
-        eq_1 = self.omega * self.to_arr(
-            {
-                "E": np.cosh(self.omega * y),
-                "F": np.sinh(self.omega * y),
-            }
+    def d2_p(self, y):
+        return self._p(y, 2)
+
+    def _c(self, y, k):
+        return np.einsum("ij,j...->i...", self.params.V, self._p(y, k))
+
+    def c(self, y):
+        return self._c(y, 0)
+
+    def d_c(self, y):
+        return self._c(y, 1)
+
+    def d2_c(self, y):
+        return self._c(y, 2)
+
+    def i_p_0(self, y):
+        eq_1 = (
+            self.to_arr(
+                {
+                    "E": np.cosh(self.omega * y) - 1,
+                    "F": np.sinh(self.omega * y),
+                }
+            )
+            / self.omega
         )
-        eq_2 = np.sqrt(params.zeta + self.omega**2) * self.to_arr(
+
+        eq_2 = self.to_arr(
             {
-                "G": np.cosh(np.sqrt(params.zeta + self.omega**2) * y),
-                "H": np.sinh(np.sqrt(params.zeta + self.omega**2) * y),
+                "G": np.cosh(np.sqrt(self.params.zeta + self.omega**2) * y) - 1,
+                "H": np.sinh(np.sqrt(self.params.zeta + self.omega**2) * y),
             }
-        )
+        ) / np.sqrt(self.params.zeta + self.omega**2)
 
         return np.array([eq_1, eq_2])
 
-    def d_p_2(self, y):
+    def i_p_1(self, y):
+        return self._p_1(y, 0) * y
+
+    def i_p_2_1(self, y):
+        return self.to_arr(
+            {
+                "const": -y
+                * self.leading.A_0
+                / ((self.params.alpha + self.params.eta) * self.omega**2)
+                - self.leading.B_0
+                / (np.sqrt(self.params.zeta) * (self.omega**2 - self.params.zeta))
+                * np.sinh(y * np.sqrt(self.params.zeta))
+            }
+        )
+
+    def i_p_2_2(self, y):
+        return self.to_arr(
+            {
+                "const": -y
+                * self.leading.A_0
+                / (
+                    (self.params.alpha + self.params.eta)
+                    * (self.omega**2 + self.params.zeta)
+                )
+                - self.leading.B_0
+                / (np.sqrt(self.params.zeta) * self.omega**2)
+                * np.sinh(y * np.sqrt(self.params.zeta))
+            }
+        )
+
+    def i_p_2(self, y):
         params = self.params
-        leading = self.leading
 
-        d_p_1 = self.to_arr(
-            {
-                "const": -leading.B_0
-                * np.sqrt(params.zeta)
-                / (self.omega**2 - params.zeta)
-                * np.sinh(y * np.sqrt(params.zeta)),
-            }
-        )
-        d_p_2 = self.to_arr(
-            {
-                "const": -leading.B_0
-                * np.sqrt(params.zeta)
-                / self.omega**2
-                * np.sinh(y * np.sqrt(params.zeta)),
-            }
-        )
         zero = self.to_arr(dict())
-
-        matr = np.array([[d_p_1, zero], [zero, d_p_2]])
-        vec = params.Lambda @ np.linalg.inv(params.V) @ np.array([-params.eta, 1])
+        matr = np.array([[self.i_p_2_1(y), zero], [zero, self.i_p_2_2(y)]])
+        vec = params.Lambda @ np.linalg.inv(params.V) @ np.array([-params.eta, 1.0])
         vec_2 = np.einsum("ij...,j->i...", matr, vec)
 
         f_vec = self.to_arr({"f": 1})
 
         return np.einsum("i...,j...->ij...", vec_2[:, -1], f_vec)
 
-    def d_p_3_1(self, y):
-        params = self.params
-
+    def _i_p_3_gfunc(self, y, a, b, s_1, s_2):
         return (
-            self.a_c_1 * np.exp((self.omega + np.sqrt(params.zeta)) * y)
-            + self.c_c_1 * np.exp((self.omega - np.sqrt(params.zeta)) * y)
-            + self.e_c_1 * np.exp(-(self.omega - np.sqrt(params.zeta)) * y)
-            + self.g_c_1 * np.exp(-(self.omega + np.sqrt(params.zeta)) * y)
-        ) + (
-            (self.omega + np.sqrt(params.zeta))
-            * (self.a_c_1 * y + self.b_c_1)
-            * np.exp((self.omega + np.sqrt(params.zeta)) * y)
-            + (self.omega - np.sqrt(params.zeta))
-            * (self.c_c_1 * y + self.d_c_1)
-            * np.exp((self.omega - np.sqrt(params.zeta)) * y)
-            - (self.omega - np.sqrt(params.zeta))
-            * (self.e_c_1 * y + self.f_c_1)
-            * np.exp(-(self.omega - np.sqrt(params.zeta)) * y)
-            - (self.omega + np.sqrt(params.zeta))
-            * (self.g_c_1 * y + self.h_c_1)
-            * np.exp(-(self.omega + np.sqrt(params.zeta)) * y)
+            (a * y + b) / self._p_3_const(s_1, s_2) - a / self._p_3_const(s_1, s_2**2)
+        ) * np.exp(self._p_3_const(s_1, s_2) * y)
+
+    def i_p_3_1(self, y):
+        return (
+            self._i_p_3_gfunc(y, self.a_c_1, self.b_c_1, 1, 1)
+            + self._i_p_3_gfunc(y, self.c_c_1, self.d_c_1, 1, -1)
+            + self._i_p_3_gfunc(y, self.e_c_1, self.f_c_1, -1, -1)
+            + self._i_p_3_gfunc(y, self.g_c_1, self.h_c_1, -1, 1)
         )
 
-    def d_p_3_2(self, y):
-        params = self.params
-
+    def i_p_3_2(self, y):
         return (
-            self.a_c_2 * np.exp((self.omega + np.sqrt(params.zeta)) * y)
-            + self.c_c_2 * np.exp((self.omega - np.sqrt(params.zeta)) * y)
-            + self.e_c_2 * np.exp(-(self.omega - np.sqrt(params.zeta)) * y)
-            + self.g_c_2 * np.exp(-(self.omega + np.sqrt(params.zeta)) * y)
-        ) + (
-            (self.omega + np.sqrt(params.zeta))
-            * (self.a_c_2 * y + self.b_c_2)
-            * np.exp((self.omega + np.sqrt(params.zeta)) * y)
-            + (self.omega - np.sqrt(params.zeta))
-            * (self.c_c_2 * y + self.d_c_2)
-            * np.exp((self.omega - np.sqrt(params.zeta)) * y)
-            - (self.omega - np.sqrt(params.zeta))
-            * (self.e_c_2 * y + self.f_c_2)
-            * np.exp(-(self.omega - np.sqrt(params.zeta)) * y)
-            - (self.omega + np.sqrt(params.zeta))
-            * (self.g_c_2 * y + self.h_c_2)
-            * np.exp(-(self.omega + np.sqrt(params.zeta)) * y)
+            self._i_p_3_gfunc(y, self.a_c_2, self.b_c_2, 1, 1)
+            + self._i_p_3_gfunc(y, self.c_c_2, self.d_c_2, 1, -1)
+            + self._i_p_3_gfunc(y, self.e_c_2, self.f_c_2, -1, -1)
+            + self._i_p_3_gfunc(y, self.g_c_2, self.h_c_2, -1, 1)
         )
 
-    def d_p_3(self, y):
+    def i_p_3(self, y):
         params = self.params
 
         zero = self.to_arr(dict())
-        matr = np.array([[self.d_p_3_1(y), zero], [zero, self.d_p_3_2(y)]])
+        matr = np.array([[self.i_p_3_1(y), zero], [zero, self.i_p_3_2(y)]])
         vec = np.linalg.inv(params.V) @ params.P @ np.array([-params.eta, 1])
 
         return (
@@ -494,14 +527,11 @@ class NonZeroFourierVariables(FourierVariables):
             * np.einsum("ij...,j->i...", matr, vec)
         )
 
-    def d_p(self, y):
-        return self.d_p_0(y) + self.d_p_2(y) + self.d_p_3(y)
+    def i_p(self, y):
+        return self.i_p_0(y) + self.i_p_1(y) + self.i_p_2(y) + self.i_p_3(y)
 
-    def c(self, y):
-        return np.einsum("ij,j...->i...", self.params.V, self.p(y))
-
-    def d_c(self, y):
-        return np.einsum("ij,j...->i...", self.params.V, self.d_p(y))
+    def i_c(self, y):
+        return np.einsum("ij,j...->i...", self.params.V, self.i_p(y))
 
 
 class ZeroFourierVariables(FourierVariables):
@@ -524,89 +554,110 @@ class ZeroFourierVariables(FourierVariables):
     def to_arr(self, vals):
         return super().to_arr(vals, [0], self.unknowns)
 
-    def psi(self, y):
+    def _psi_poly(self, y, r, k):
+        return factorial(r) / factorial(r - k) * y ** (r - k) if r >= k else 0
+
+    def _psi(self, y, k):
         return self.to_arr(
             {
-                "A": y**2,
-                "B": y,
-                "C": 1,
+                "A": self._psi_poly(y, 2, k),
+                "B": self._psi_poly(y, 1, k),
+                "C": self._psi_poly(y, 0, k),
             }
         )
+
+    def psi(self, y):
+        return self._psi(y, 0)
 
     def d_psi(self, y):
-        return self.to_arr(
-            {
-                "A": 2 * y,
-                "B": 1,
-            }
-        )
+        return self._psi(y, 1)
 
     def d2_psi(self, y):
+        return self._psi(y, 2)
+
+    def d3_psi(self, y):
+        return self._psi(y, 3)
+
+    def d4_psi(self, y):
+        return self._psi(y, 4)
+
+    def pressure(self, y):
+        return self.to_arr(dict())
+
+    def d_pressure(self, y):
+        return self.to_arr(dict())
+
+    def _c_ci(self, y, k):
+        params = self.params
         return self.to_arr(
             {
-                "A": 2,
+                "A_1": 1 / (params.alpha + params.eta) if k == 0 else 0,
+                "B_1": np.sqrt(params.zeta) ** k
+                * (np.sinh if k % 2 else np.cosh)(y * np.sqrt(params.zeta)),
+                "f": (self.leading.B_0 * np.sqrt(params.zeta) / 2)
+                * (
+                    k
+                    * np.sqrt(params.zeta) ** (k - 1)
+                    * (np.sinh if k % 2 else np.cosh)(y * np.sqrt(params.zeta))
+                    + np.sqrt(params.zeta) ** k
+                    * y
+                    * (np.cosh if k % 2 else np.sinh)(y * np.sqrt(params.zeta))
+                ),
             }
         )
+
+    def _c_tr(self, y, k):
+        return self.to_arr({"A_1": int(k == 0)}) - self.params.eta * self._c_ci(y, k)
+
+    def _c(self, y, k):
+        return np.array([self._c_tr(y, k), self._c_ci(y, k)])
 
     def c_ci(self, y):
-        params = self.params
-        return self.to_arr(
-            {
-                "A_1": 1 / (params.alpha + params.eta),
-                "B_1": np.cosh(y * np.sqrt(params.zeta)),
-                "f": (self.leading.B_0 * np.sqrt(params.zeta) / 2)
-                * y
-                * np.sinh(y * np.sqrt(params.zeta)),
-            }
-        )
+        return self._c_ci(y, 0)
 
     def c_tr(self, y):
-        return self.to_arr({"A_1": 1}) - self.params.eta * self.c_ci(y)
+        return self._c_tr(y, 0)
 
     def c(self, y):
-        return np.array([self.c_tr(y), self.c_ci(y)])
+        return self._c(y, 0)
 
     def d_c_ci(self, y):
-        params = self.params
-        return self.to_arr(
-            {
-                "B_1": np.sqrt(params.zeta) * np.sinh(y * np.sqrt(params.zeta)),
-                "f": (self.leading.B_0 * np.sqrt(params.zeta) / 2)
-                * (
-                    np.sinh(y * np.sqrt(params.zeta))
-                    + y * np.sqrt(params.zeta) * np.cosh(y * np.sqrt(params.zeta))
-                ),
-            }
-        )
+        return self._c_ci(y, 1)
 
     def d_c_tr(self, y):
-        return -self.params.eta * self.d_c_ci(y)
+        return self._c_tr(y, 1)
 
     def d_c(self, y):
-        return np.array([self.d_c_tr(y), self.d_c_ci(y)])
+        return self._c(y, 1)
 
-    @property
-    def i_c_ci(self):
+    def d2_c_ci(self, y):
+        return self._c_ci(y, 2)
+
+    def d2_c_tr(self, y):
+        return self._c_tr(y, 2)
+
+    def d2_c(self, y):
+        return self._c(y, 2)
+
+    def i_c_ci(self, y):
         params = self.params
         return self.to_arr(
             {
-                "A_1": 1 / (params.alpha + params.eta),
-                "B_1": np.sinh(np.sqrt(params.zeta)) / np.sqrt(params.zeta),
+                "A_1": y / (params.alpha + params.eta),
+                "B_1": np.sinh(y * np.sqrt(params.zeta)) / np.sqrt(params.zeta),
                 "f": (self.leading.B_0 / 2)
                 * (
-                    np.cosh(np.sqrt(params.zeta))
-                    - np.sinh(np.sqrt(params.zeta)) / np.sqrt(params.zeta)
+                    y * np.cosh(y * np.sqrt(params.zeta))
+                    - np.sinh(y * np.sqrt(params.zeta)) / np.sqrt(params.zeta)
                 ),
             }
         )
 
-    @property
-    def i_c_tr(self):
-        return self.to_arr({"A_1": 1}) - self.params.eta * self.i_c_ci
+    def i_c_tr(self, y):
+        return self.to_arr({"A_1": y}) - self.params.eta * self.i_c_ci(y)
 
-    @property
-    def i_c(self):
-        return np.array([self.i_c_tr, self.i_c_ci])
+    def i_c(self, y):
+        return np.array([self.i_c_tr(y), self.i_c_ci(y)])
 
 
 class FourierConditions(ABC):
@@ -663,16 +714,11 @@ class NonZeroFourierConditions(FourierConditions):
     def normal_stress(self):
         """Normal stress balance."""
         vars = self.variables
-        lhs = vars.d3_psi(1) - 3 * self.omega**2 * vars.d_psi(1)
-        rhs = (
-            1.0j
-            * self.omega**3
-            * (1 + self.params.Man * (1 - self.leading.gamma_tot))
-            * self.to_arr(
-                {
-                    "S": 1,
-                }
-            )
+        lhs = -vars.pressure(1) - 2.0j * self.omega * vars.d_psi(1)
+        rhs = self.leading.tension * self.to_arr(
+            {
+                "S": -self.omega**2,
+            }
         )
 
         return np.array([lhs - rhs])
@@ -895,8 +941,8 @@ class ZeroFourierConditions(FourierConditions):
         return np.array(
             [
                 gamma_vec / (self.params.k_tr * self.params.chi_tr)
-                + self.variables.i_c_tr
-                + self.variables.i_c_ci
+                + self.variables.i_c_tr(1)
+                + self.variables.i_c_ci(1)
             ]
         )
 
@@ -962,6 +1008,8 @@ class FirstOrder(object):
         self.leading = leading
         self.direction = direction
 
+        self.omega_zero = np.concatenate([[0], omega])
+
         self._initialize(direction)
 
     def _initialize(self, direction):
@@ -1002,8 +1050,8 @@ class FirstOrder(object):
         return zero_sys, sys
 
     def _invert(self, func):
-        def _(x, *args):
-            coeffs = func(*args)
+        def _(x, *args, **kwargs):
+            coeffs = func(*args, **kwargs)
             return coeffs[0] + np.sum(
                 coeffs[1:, np.newaxis]
                 * np.exp(
@@ -1018,114 +1066,215 @@ class FirstOrder(object):
 
     def _invert_variables(self):
         self.psi = self._invert(self.psi_f)
+        self.d_psi = self._invert(self.d_psi_f)
+        self.d2_psi = self._invert(self.d2_psi_f)
+        self.d3_psi = self._invert(self.d3_psi_f)
+        self.d4_psi = self._invert(self.d4_psi_f)
+
         self.u = self._invert(self.u_f)
         self.v = self._invert(self.v_f)
+
+        self.d_u = self._invert(self.d_u_f)
+        self.d_v = self._invert(self.d_v_f)
+
+        self.d2_u = self._invert(self.d2_u_f)
+        self.d2_v = self._invert(self.d2_v_f)
+
+        self.pressure = self._invert(self.pressure_f)
+        self.d_pressure = self._invert(self.d_pressure_f)
+
         self.c_tr = self._invert(self.c_tr_f)
         self.c_ci = self._invert(self.c_ci_f)
+
+        self.d_c_tr = self._invert(self.d_c_tr_f)
+        self.d_c_ci = self._invert(self.d_c_ci_f)
+
+        self.d2_c_tr = self._invert(self.d2_c_tr_f)
+        self.d2_c_ci = self._invert(self.d2_c_ci_f)
+
+        self.i_c_tr = self._invert(self.i_c_tr_f)
+        self.i_c_ci = self._invert(self.i_c_ci_f)
+
         self.gamma_tr = self._invert(self.gamma_tr_f)
         self.gamma_ci = self._invert(self.gamma_ci_f)
+
         self.J_tr = self._invert(self.J_tr_f)
         self.J_ci = self._invert(self.J_ci_f)
+
         self.S_inv = self._invert(self.S_f)
+
         self.f_inv = self._invert(self.f_f)
 
-    def psi_f(self, y):
+        self.gamma_tot = lambda x, x_order=0: self.gamma_tr(x, x_order) + self.gamma_ci(
+            x, x_order
+        )
+        self.tension = (
+            lambda x, x_order=0: -self.params.Man
+            * self.gamma_tot(x, x_order)
+            / (1 - self.leading.gamma_tot)
+        )
+
+    def _gfunc_f(self, zero_val, val, x_order=0):
+        return (
+            np.concatenate(
+                [
+                    np.einsum("ij,...ji->...i", self.zero_sols, zero_val[..., :-1, :])
+                    + zero_val[..., -1, :],
+                    np.einsum("ij,...ji->...i", self.sols, val[..., :-1, :])
+                    + val[..., -1, :],
+                ],
+                axis=-1,
+            )
+            * (1.0j * self.omega_zero) ** x_order
+        )
+
+    def _const_f(self, key, x_order=0):
+        return (
+            np.concatenate(
+                [
+                    self.zero_sols[:, self.zero_vars[key]],
+                    self.sols[:, self.vars[key]],
+                ]
+            )
+            * (1.0j * self.omega_zero) ** x_order
+        )
+
+    def psi_f(self, y, x_order=0):
         """Streamfunction in Fourier space."""
         zero_val = self.zero_vars.psi(y)
         val = self.vars.psi(y)
-        return np.concatenate(
-            [
-                np.einsum("ij,ji->i", self.zero_sols, zero_val[:-1]) + zero_val[-1],
-                np.einsum("ij,ji->i", self.sols, val[:-1]) + val[-1],
-            ]
-        )
+        return self._gfunc_f(zero_val, val, x_order)
 
-    def u_f(self, y):
-        """Horizontal velocity in Fourier space."""
+    def d_psi_f(self, y, x_order=0):
+        """Derivative of streamfunction in Fourier space."""
         zero_val = self.zero_vars.d_psi(y)
         val = self.vars.d_psi(y)
-        return np.concatenate(
-            [
-                np.einsum("ij,ji->i", self.zero_sols, zero_val[:-1]) + zero_val[-1, 0],
-                np.einsum("ij,ji->i", self.sols, val[:-1] + val[-1]),
-            ]
-        )
+        return self._gfunc_f(zero_val, val, x_order)
 
-    def v_f(self, y):
+    def d2_psi_f(self, y, x_order=0):
+        """Second derivative of streamfunction in Fourier space."""
+        zero_val = self.zero_vars.d2_psi(y)
+        val = self.vars.d2_psi(y)
+        return self._gfunc_f(zero_val, val, x_order)
+
+    def d3_psi_f(self, y, x_order=0):
+        """Third derivative of streamfunction in Fourier space."""
+        zero_val = self.zero_vars.d3_psi(y)
+        val = self.vars.d3_psi(y)
+        return self._gfunc_f(zero_val, val, x_order)
+
+    def d4_psi_f(self, y, x_order=0):
+        """Fourth derivative of streamfunction in Fourier space."""
+        zero_val = self.zero_vars.d4_psi(y)
+        val = self.vars.d4_psi(y)
+        return self._gfunc_f(zero_val, val, x_order)
+
+    def u_f(self, y, x_order=0):
+        """Horizontal velocity in Fourier space."""
+        return self.d_psi_f(y, x_order)
+
+    def d_u_f(self, y, x_order=0):
+        """Derivative of horizontal velocity in Fourier space."""
+        return self.d2_psi_f(y, x_order)
+
+    def d2_u_f(self, y, x_order=0):
+        """Second derivative of horizontal velocity in Fourier space."""
+        return self.d3_psi_f(y, x_order)
+
+    def v_f(self, y, x_order=0):
         """Vertical velocity in Fourier space."""
-        val = self.vars.psi(y)
-        return np.concatenate(
-            [
-                [0],
-                -1.0j
-                * self.omega
-                * (np.einsum("ij,ji->i", self.sols, val[:-1]) + val[-1]),
-            ]
-        )
+        return -self.psi_f(y, x_order + 1)
 
-    def c_f(self, y):
+    def d_v_f(self, y, x_order=0):
+        """Derivative of vertical velocity in Fourier space."""
+        return -self.d_psi_f(y, x_order + 1)
+
+    def d2_v_f(self, y, x_order=0):
+        """Second derivative of vertical velocity in Fourier space."""
+        return -self.d2_psi_f(y, x_order + 1)
+
+    def pressure_f(self, y, x_order=0):
+        """Pressure in Fourier space."""
+        zero_val = self.zero_vars.pressure(y)
+        val = self.vars.pressure(y)
+        return self._gfunc_f(zero_val, val, x_order)
+
+    def d_pressure_f(self, y, x_order=0):
+        """Derivative of pressure in Fourier space."""
+        zero_val = self.zero_vars.d_pressure(y)
+        val = self.vars.d_pressure(y)
+        return self._gfunc_f(zero_val, val, x_order)
+
+    def c_f(self, y, x_order=0):
         """Concentration in Fourier space."""
         zero_val = self.zero_vars.c(y)
         val = self.vars.c(y)
-        return np.concatenate(
-            [
-                np.einsum("ij,kji->ki", self.zero_sols, zero_val[:, :-1])
-                + zero_val[:, -1],
-                np.einsum("ij,kji->ki", self.sols, val[:, :-1]) + val[:, -1],
-            ],
-            axis=1,
-        )
+        return self._gfunc_f(zero_val, val, x_order)
 
-    def c_tr_f(self, y):
-        return self.c_f(y)[0]
+    def c_tr_f(self, y, x_order=0):
+        return self.c_f(y, x_order)[0]
 
-    def c_ci_f(self, y):
-        return self.c_f(y)[1]
+    def c_ci_f(self, y, x_order=0):
+        return self.c_f(y, x_order)[1]
 
-    def gamma_tr_f(self):
-        return np.concatenate(
-            [
-                self.zero_sols[:, self.zero_vars["gamma_tr"]],
-                self.sols[:, self.vars["gamma_tr"]],
-            ]
-        )
+    def d_c_f(self, y, x_order=0):
+        """Derivative of concentration in Fourier space."""
+        zero_val = self.zero_vars.d_c(y)
+        val = self.vars.d_c(y)
+        return self._gfunc_f(zero_val, val, x_order)
 
-    def gamma_ci_f(self):
-        return np.concatenate(
-            [
-                self.zero_sols[:, self.zero_vars["gamma_ci"]],
-                self.sols[:, self.vars["gamma_ci"]],
-            ]
-        )
+    def d_c_tr_f(self, y):
+        return self.d_c_f(y)[0]
+
+    def d_c_ci_f(self, y):
+        return self.d_c_f(y)[1]
+
+    def d2_c_f(self, y, x_order=0):
+        """Second derivative of concentration in Fourier space."""
+        zero_val = self.zero_vars.d2_c(y)
+        val = self.vars.d2_c(y)
+        return self._gfunc_f(zero_val, val, x_order)
+
+    def d2_c_tr_f(self, y):
+        return self.d2_c_f(y)[0]
+
+    def d2_c_ci_f(self, y):
+        return self.d2_c_f(y)[1]
+
+    def i_c_f(self, y):
+        """Integral of concentration in Fourier space."""
+        zero_val = self.zero_vars.i_c(y)
+        val = self.vars.i_c(y)
+        return self._gfunc_f(zero_val, val)
+
+    def i_c_tr_f(self, y):
+        return self.i_c_f(y)[0]
+
+    def i_c_ci_f(self, y):
+        return self.i_c_f(y)[1]
+
+    def gamma_tr_f(self, x_order=0):
+        return self._const_f("gamma_tr", x_order)
+
+    def gamma_ci_f(self, x_order=0):
+        return self._const_f("gamma_ci", x_order)
 
     def J_tr_f(self):
-        return np.concatenate(
-            [
-                self.zero_sols[:, self.zero_vars["J_tr"]],
-                self.sols[:, self.vars["J_tr"]],
-            ]
-        )
+        return self._const_f("J_tr")
 
     def J_ci_f(self):
-        return np.concatenate(
-            [
-                self.zero_sols[:, self.zero_vars["J_ci"]],
-                self.sols[:, self.vars["J_ci"]],
-            ]
-        )
+        return self._const_f("J_ci")
 
-    def S_f(self):
-        return np.concatenate(
-            [
-                [0],
-                self.sols[:, self.vars["S"]],
-            ]
+    def S_f(self, x_order=0):
+        return (
+            np.concatenate(
+                [
+                    [0],
+                    self.sols[:, self.vars["S"]],
+                ]
+            )
+            * (1.0j * self.omega_zero) ** x_order
         )
 
     def f_f(self):
-        return np.concatenate(
-            [
-                self.zero_sols[:, self.zero_vars["f"]],
-                self.sols[:, self.vars["f"]],
-            ]
-        )
+        return self._const_f("f")

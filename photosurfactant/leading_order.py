@@ -223,6 +223,10 @@ class LeadingOrder(object):
         return np.array([self.J_tr, self.J_ci])
 
     @property
+    def tension(self):
+        return 1 + self.params.Man * np.log(1 - self.gamma_tot)
+
+    @property
     def M(self):  # noqa: D102, N802
         params = self.params
         return params.D + params.B @ np.array(
