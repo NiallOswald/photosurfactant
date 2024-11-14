@@ -9,8 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-N = 100
-GRID_N = 10
+WAVE_N = 5
+GRID_N = 100
 
 
 def plot_error():  # noqa: D103
@@ -29,7 +29,7 @@ def plot_error():  # noqa: D103
     params = Parameters.from_dict(vars(args))
 
     func = lambda x: 1.0  # noqa: E731
-    omega, func_coeffs = fourier_series_coeff(func, params.L, N)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, WAVE_N)
 
     # Solve first order problem
     leading = LeadingOrder(params)
