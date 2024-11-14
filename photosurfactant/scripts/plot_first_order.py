@@ -13,7 +13,6 @@ from photosurfactant.utils import (
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import numpy as np
 from math import *  # noqa: F401, F403
-import matplotlib.pyplot as plt
 from matplotlib import colors
 
 
@@ -27,6 +26,8 @@ class Figures:
 
         self.params = first.params
         self.leading = first.leading
+
+        self.plt = plot_params.plt
 
         self._initialize()
 
@@ -76,147 +77,147 @@ class Figures:
 
     def plot_interfacial_velocity(self):
         """Plot the interfacial velocity."""
-        plt.figure(figsize=(8, 6))
-        plt.plot(self.xx, self.uu[-1, :].real, "k-", label=r"$u_1$")
-        plt.plot(self.xx, self.vv[-1, :].real, "k--", label=r"$v_1$")
-        plt.xlabel(r"$x$")
-        plt.ylabel("Interfacial Velocity")
-        plt.legend()
-        plt.tight_layout()
+        self.plt.figure(figsize=(8, 6))
+        self.plt.plot(self.xx, self.uu[-1, :].real, "k-", label=r"$u_1$")
+        self.plt.plot(self.xx, self.vv[-1, :].real, "k--", label=r"$v_1$")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel("Interfacial Velocity")
+        self.plt.legend()
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(
+            self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_interfacial_velocity{self.label}.png",
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
     def plot_streamlines(self):
         """Plot the streamlines."""
-        plt.figure(figsize=(12, 4))
-        plt.contour(self.xx, self.yy, self.psii.real, levels=15, colors="black")
-        plt.xlabel(r"$x$")
-        plt.ylabel(r"$y$")
-        plt.tight_layout()
+        self.plt.figure(figsize=(12, 4))
+        self.plt.contour(self.xx, self.yy, self.psii.real, levels=15, colors="black")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$y$")
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(
+            self.plt.savefig(
                 self.plot_params.path + f"{self.direction}_streamlines{self.label}.png",
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
     def plot_velocity(self):
         """Plot the velocity field."""
         step = self.plot_params.grid_size // 20
 
-        plt.figure(figsize=(12, 4))
-        plt.quiver(
+        self.plt.figure(figsize=(12, 4))
+        self.plt.quiver(
             self.xx[::step],
             self.yy[::step],
             self.uu[::step, ::step].real,
             self.vv[::step, ::step].real,
         )
-        plt.imshow(
+        self.plt.imshow(
             np.sqrt(self.uu[::-1, :].real ** 2 + self.vv[::-1, :].real ** 2),
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
             cmap="viridis",
         )
-        plt.colorbar(label="Velocity")
-        plt.xlabel(r"$x$")
-        plt.ylabel(r"$y$")
-        plt.tight_layout()
+        self.plt.colorbar(label="Velocity")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$y$")
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(
+            self.plt.savefig(
                 self.plot_params.path + f"{self.direction}_velocity{self.label}.png",
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
     def plot_concentration_tr(self):
         """Plot the concentration field of the trans surfactant."""
-        plt.figure(figsize=(12, 4))
-        plt.imshow(
+        self.plt.figure(figsize=(12, 4))
+        self.plt.imshow(
             self.cc_tr[::-1, :].real,
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        plt.colorbar()
-        plt.title(r"$c_{\mathrm{tr}, 1}$")
-        plt.xlabel(r"$x$")
-        plt.ylabel(r"$y$")
-        plt.tight_layout()
+        self.plt.colorbar()
+        self.plt.title(r"$c_{\mathrm{tr}, 1}$")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$y$")
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(
+            self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_concentration_tr{self.label}.png",
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
     def plot_concentration_ci(self):
         """Plot the concentration field of the cis surfactant."""
-        plt.figure(figsize=(12, 4))
-        plt.imshow(
+        self.plt.figure(figsize=(12, 4))
+        self.plt.imshow(
             self.cc_ci[::-1, :].real,
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        plt.colorbar()
-        plt.title(r"$c_{\mathrm{ci}, 1}$")
-        plt.xlabel(r"$x$")
-        plt.ylabel(r"$y$")
-        plt.tight_layout()
+        self.plt.colorbar()
+        self.plt.title(r"$c_{\mathrm{ci}, 1}$")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$y$")
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(
+            self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_concentration_ci{self.label}.png",
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
     def plot_concentration_tot(self):
         """Plot the total surfactant concentration field."""
-        plt.figure(figsize=(12, 4))
-        plt.imshow(
+        self.plt.figure(figsize=(12, 4))
+        self.plt.imshow(
             self.cc_ci[::-1, :].real + self.cc_tr[::-1, :].real,
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        plt.colorbar()
-        plt.title(r"$c_{\mathrm{tot}, 1}$")
-        plt.xlabel(r"$x$")
-        plt.ylabel(r"$y$")
-        plt.tight_layout()
+        self.plt.colorbar()
+        self.plt.title(r"$c_{\mathrm{tot}, 1}$")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$y$")
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(
+            self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_concentration_tot{self.label}.png",
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
     def plot_interfacial_values(self):
         """Plot the interfacial values."""
-        fig, ax1 = plt.subplots(figsize=(10, 6))
+        fig, ax1 = self.plt.subplots(figsize=(10, 6))
         ax2 = ax1.twinx()
 
         ax1.plot(self.xx, self.ff_inv.real, "k-", label=r"$f_1$")
@@ -254,48 +255,48 @@ class Figures:
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
     def plot_surface_tension(self):
         """Plot the surface tension."""
-        plt.figure(figsize=(8, 6))
-        plt.plot(self.xx, self.ttension.real, "k-")
-        plt.xlabel(r"$x$")
-        plt.ylabel(r"$\gamma_1$")
-        plt.tight_layout()
+        self.plt.figure(figsize=(8, 6))
+        self.plt.plot(self.xx, self.ttension.real, "k-")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$\gamma_1$")
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(
+            self.plt.savefig(
                 self.plot_params.path + f"{self.direction}_tension{self.label}.png",
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
     def plot_fluxes(self):
         """Plot the fluxes."""
-        plt.figure(figsize=(8, 6))
-        plt.plot(self.xx, self.JJ_tr.real, "k-", label=r"$J_{\mathrm{tr}, 1}$")
-        plt.plot(self.xx, self.JJ_ci.real, "k--", label=r"$J_{\mathrm{ci}, 1}$")
-        plt.plot(
+        self.plt.figure(figsize=(8, 6))
+        self.plt.plot(self.xx, self.JJ_tr.real, "k-", label=r"$J_{\mathrm{tr}, 1}$")
+        self.plt.plot(self.xx, self.JJ_ci.real, "k--", label=r"$J_{\mathrm{ci}, 1}$")
+        self.plt.plot(
             self.xx,
             self.JJ_tr.real + self.JJ_ci.real,
             "k:",
             label=r"$J_{\mathrm{tr}, 1} + J_{\mathrm{ci}, 1}$",
         )
-        plt.xlabel(r"$x$")
-        plt.ylabel("Kinetic Flux")
-        plt.legend(loc="upper left", bbox_to_anchor=(0.7, 1.0))
-        plt.grid()
-        plt.tight_layout()
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel("Kinetic Flux")
+        self.plt.legend(loc="upper left", bbox_to_anchor=(0.7, 1.0))
+        self.plt.grid()
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            plt.savefig(
+            self.plt.savefig(
                 self.plot_params.path + f"{self.direction}_flux{self.label}.png",
                 dpi=300,
             )
         else:
-            plt.show()
+            self.plt.show()
 
 
 def plot_first_order():  # noqa: D103

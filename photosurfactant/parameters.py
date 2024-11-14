@@ -108,9 +108,11 @@ class PlottingParameters:
     save: bool = False
     path: str = "./"
     label: str = ""
+    usetex: bool = False
 
     def __post_init__(self):  # noqa: D105
         self.label = "_" + self.label if self.label else ""
+        self.plot_setup()
 
     @classmethod
     def from_dict(cls, kwargs):
@@ -121,3 +123,35 @@ class PlottingParameters:
                 if k in inspect.signature(cls).parameters
             }
         )
+
+    def plot_setup(self):
+        """Set up the matplotlib rcParams."""
+        import matplotlib.pyplot as plt
+
+        rcparams = {
+            "font.size": 16,
+            "axes.labelsize": 12,
+            "axes.titlesize": 12,
+            "xtick.labelsize": 10,
+            "ytick.labelsize": 10,
+            "legend.fontsize": 10,
+            "figure.figsize": [8, 6],
+            "figure.dpi": 100,
+            "figure.autolayout": True,
+        }
+
+        if self.usetex:
+            plt.rcParams.update(
+                {
+                    "text.usetex": True,
+                    "font.family": "serif",
+                    "font.serif": ["Computer Modern Roman"],
+                }
+                + rcparams
+            )
+
+        else:
+            plt.rcParams.update(rcparams)
+
+        plt.close("all")
+        self.plt = plt

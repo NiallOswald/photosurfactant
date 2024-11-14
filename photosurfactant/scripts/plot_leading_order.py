@@ -4,7 +4,6 @@ from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.utils import parameter_parser, plot_parser, leading_order_parser
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def plot_leading_order():  # noqa: D103
@@ -28,6 +27,9 @@ def plot_leading_order():  # noqa: D103
     # Print surface excess concentrations
     print("Gamma_tr:", leading.gamma_tr)
     print("Gamma_ci:", leading.gamma_ci)
+
+    # Figure setup
+    plt = plot_params.plt
 
     # Plot bulk concentrations
     yy = np.linspace(0, 1, plot_params.grid_size)

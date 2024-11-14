@@ -116,6 +116,9 @@ def plot_parser(parser: ArgumentParser):
     parser.add_argument(
         "--label", type=str, help="Label to append to the figure filenames."
     )
+    parser.add_argument(
+        "--usetex", action="store_true", help="Use LaTeX for rendering text."
+    )
 
 
 def leading_order_parser(parser: ArgumentParser):
