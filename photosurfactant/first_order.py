@@ -1,10 +1,10 @@
 """First order solution to the photosurfactant model."""
 
-from .utils import factorial
 from .parameters import Parameters
 from .leading_order import LeadingOrder
 from abc import ABC, abstractmethod
 import numpy as np
+from math import factorial
 
 
 class FourierVariables(ABC):
