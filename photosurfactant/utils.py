@@ -9,7 +9,7 @@ def parameter_parser(parser: ArgumentParser):
         "--L",
         type=float,
         default=10.0,
-        help="The aspect ratio of the domain." "domain.",
+        help="The aspect ratio of the domain.",
     )
     parser.add_argument(
         "--Dam_tr",
