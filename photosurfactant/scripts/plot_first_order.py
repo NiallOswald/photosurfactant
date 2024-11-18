@@ -244,7 +244,9 @@ class Figures:
             r"$\Gamma_{\mathrm{ci}, 1}$)"
         )
 
-        fig.legend(loc="upper left", bbox_to_anchor=(0.78, 0.96))
+        ax2.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+
+        fig.legend(loc="upper left", bbox_to_anchor=(0.79, 0.94))
         fig.tight_layout()
 
         if self.plot_params.save:
@@ -275,7 +277,9 @@ class Figures:
         ax2.set_ylim(-ylim_2, ylim_2)
         ax2.set_ylabel(r"Surface shape ($S_1$)")
 
-        fig.legend(loc="upper left", bbox_to_anchor=(0.79, 0.96))
+        ax2.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+
+        fig.legend(loc="upper left", bbox_to_anchor=(0.82, 0.93))
         fig.tight_layout()
 
         if self.plot_params.save:
@@ -318,6 +322,7 @@ class Figures:
         self.plt.ylabel("Kinetic Flux")
         self.plt.legend(loc="upper right")
         self.plt.grid()
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
 
         if self.plot_params.save:
