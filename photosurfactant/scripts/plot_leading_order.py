@@ -46,7 +46,6 @@ def plot_leading_order():  # noqa: D103
         plt.savefig(
             plot_params.path
             + f"leading_bulk_concentrations{plot_params.label}.{plot_params.format}",
-            dpi=300,
         )
     else:
         plt.show()

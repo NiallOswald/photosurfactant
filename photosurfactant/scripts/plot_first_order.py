@@ -90,7 +90,6 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_interfacial_velocity{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()
@@ -107,7 +106,6 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_streamlines{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()
@@ -138,7 +136,6 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_velocity{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()
@@ -163,7 +160,6 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_concentration_tr{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()
@@ -188,7 +184,6 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_concentration_ci{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()
@@ -213,7 +208,6 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_concentration_tot{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()
@@ -255,7 +249,6 @@ class Figures:
             fig.savefig(
                 self.plot_params.path
                 + f"{self.direction}_interfacial_values{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()
@@ -272,7 +265,6 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_tension{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()
@@ -298,7 +290,6 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_flux{self.label}.{self.format}",
-                dpi=300,
             )
         else:
             self.plt.show()

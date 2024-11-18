@@ -140,6 +140,7 @@ class PlottingParameters:
             "figure.figsize": [8, 6],
             "figure.dpi": 100,
             "figure.autolayout": True,
+            "savefig.dpi": 300,
         }
 
         if self.usetex:
