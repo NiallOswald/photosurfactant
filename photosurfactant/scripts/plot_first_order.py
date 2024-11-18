@@ -78,7 +78,7 @@ class Figures:
 
     def plot_interfacial_velocity(self):
         """Plot the interfacial velocity."""
-        self.plt.figure(figsize=(8, 6))
+        self.plt.figure()
         self.plt.plot(self.xx, self.uu[-1, :].real, "k-", label=r"$u_1$")
         self.plt.plot(self.xx, self.vv[-1, :].real, "k--", label=r"$v_1$")
         self.plt.xlabel(r"$x$")
@@ -257,7 +257,7 @@ class Figures:
 
     def plot_surface_tension(self):
         """Plot the surface tension."""
-        self.plt.figure(figsize=(8, 6))
+        self.plt.figure()
         self.plt.plot(self.xx, self.ttension.real, "k-")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$\gamma_1$")
@@ -273,7 +273,7 @@ class Figures:
 
     def plot_fluxes(self):
         """Plot the fluxes."""
-        self.plt.figure(figsize=(8, 6))
+        self.plt.figure()
         self.plt.plot(self.xx, self.JJ_tr.real, "k-", label=r"$J_{\mathrm{tr}, 1}$")
         self.plt.plot(self.xx, self.JJ_ci.real, "k--", label=r"$J_{\mathrm{ci}, 1}$")
         self.plt.plot(
