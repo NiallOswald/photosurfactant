@@ -34,13 +34,18 @@ def plot_leading_order():  # noqa: D103
     # Plot bulk concentrations
     yy = np.linspace(0, 1, plot_params.grid_size)
 
-    plt.figure(figsize=(8, 6))
-    plt.plot(yy, leading.c_tr(yy), "k-", label=r"$c_{\mathrm{tr}, 0}$")
-    plt.plot(yy, leading.c_ci(yy), "k--", label=r"$c_{\mathrm{ci}, 0}$")
-    plt.xlabel(r"$y$")
-    plt.ylabel("Concentration")
-    plt.legend()
-    plt.tight_layout()
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+    ax2 = ax1.twinx()
+
+    ax1.plot(yy, leading.c_tr(yy), "k-", label=r"$c_{\mathrm{tr}, 0}$")
+    ax2.plot(yy, leading.c_ci(yy), "k--", label=r"$c_{\mathrm{ci}, 0}$")
+
+    ax1.set_xlabel(r"$y$")
+    ax1.set_ylabel(r"Concentration ($c_{\mathrm{tr}, 0}$)")
+    ax2.set_ylabel(r"Concentration ($c_{\mathrm{ci}, 0}$)")
+
+    fig.legend(loc="upper left", bbox_to_anchor=(0.79, 0.96))
+    fig.tight_layout()
 
     if plot_params.save:
         plt.savefig(
