@@ -109,6 +109,12 @@ def plot_parser(parser: ArgumentParser):
     parser.add_argument(
         "--usetex", action="store_true", help="Use LaTeX for rendering text."
     )
+    parser.add_argument(
+        "--format",
+        type=str,
+        default="png",
+        help="Format to save the figures in.",
+    )
 
 
 def leading_order_parser(parser: ArgumentParser):

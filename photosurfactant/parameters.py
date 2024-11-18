@@ -101,6 +101,7 @@ class PlottingParameters:
     :param save: A flag to save the figures to disk.
     :param path: The path to save the figures to.
     :param label: A label to append to the figure filenames.
+    :param format: The format to save the figures in.
     """
 
     wave_count: int = 100
@@ -109,6 +110,7 @@ class PlottingParameters:
     path: str = "./"
     label: str = ""
     usetex: bool = False
+    format: str = "png"
 
     def __post_init__(self):  # noqa: D105
         self.label = "_" + self.label if self.label else ""
