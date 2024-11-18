@@ -98,6 +98,7 @@ class Figures:
         """Plot the streamlines."""
         self.plt.figure(figsize=(12, 4))
         self.plt.contour(self.xx, self.yy, self.psii.real, levels=15, colors="black")
+        self.plt.title("Streamlines")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -127,7 +128,8 @@ class Figures:
             aspect="auto",
             cmap="viridis",
         )
-        self.plt.colorbar(label="Velocity")
+        self.plt.colorbar()
+        self.plt.title("Velocity")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
