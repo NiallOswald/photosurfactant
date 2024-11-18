@@ -83,7 +83,7 @@ class Figures:
         self.plt.plot(self.xx, self.vv[-1, :].real, "k--", label=r"$v_1$")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel("Interfacial Velocity")
-        self.plt.legend()
+        self.plt.legend("top right")
         self.plt.tight_layout()
 
         if self.plot_params.save:
@@ -242,7 +242,7 @@ class Figures:
             r"$\Gamma_{\mathrm{ci}, 1}$)"
         )
 
-        fig.legend(loc="upper left", bbox_to_anchor=(0.73, 0.95))
+        fig.legend(loc="upper left", bbox_to_anchor=(0.79, 0.96))
         fig.tight_layout()
 
         if self.plot_params.save:
@@ -282,7 +282,7 @@ class Figures:
         )
         self.plt.xlabel(r"$x$")
         self.plt.ylabel("Kinetic Flux")
-        self.plt.legend(loc="upper left", bbox_to_anchor=(0.7, 1.0))
+        self.plt.legend(loc="upper right")
         self.plt.grid()
         self.plt.tight_layout()
 
