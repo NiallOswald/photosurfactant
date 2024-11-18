@@ -965,7 +965,7 @@ class ZeroFourierConditions(FourierConditions):
                 self.light_intensity(f),
             ],
             axis=0,
-        )
+        )[:, :, 0]
 
     def form_inverse_equations(self):
         return np.concatenate(
@@ -1038,13 +1038,13 @@ class FirstOrder(object):
         self._invert_variables()
 
     def _initialize_forward(self):
-        zero_sys = self.zero_conditions.form_equations(self.func_coeffs[0])[:, :, 0]
+        zero_sys = self.zero_conditions.form_equations(self.func_coeffs[0])
         sys = self.conditions.form_equations(self.func_coeffs[1:])
 
         return zero_sys, sys
 
     def _initialize_inverse(self):
-        zero_sys = self.zero_conditions.form_inverse_equations()[:, :, 0]
+        zero_sys = self.zero_conditions.form_inverse_equations()
         sys = self.conditions.form_inverse_equations(self.func_coeffs[1:])
 
         return zero_sys, sys
