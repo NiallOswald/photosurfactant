@@ -150,7 +150,7 @@ class PlottingParameters:
                     "font.family": "serif",
                     "font.serif": ["Computer Modern Roman"],
                 }
-                + rcparams
+                | rcparams
             )
 
         else:
