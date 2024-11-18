@@ -130,7 +130,10 @@ class LeadingOrder(object):
         """Automatically set the solution branch."""
         if method == "endpoints":
             for A_0, B_0 in zip(self.A_0_vals, self.B_0_vals):
-                self.A_0, self.B_0 = A_0, B_0
+                if np.isclose(A_0.imag, 0):
+                    self.A_0, self.B_0 = A_0.real, B_0.real
+                else:
+                    continue
 
                 if self.c_ci(0) < 0 or self.c_ci(1) < 0:
                     continue
