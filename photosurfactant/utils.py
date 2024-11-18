@@ -50,38 +50,38 @@ def parameter_parser(parser: ArgumentParser):
     parser.add_argument(
         "--Bit_tr",
         type=float,
-        default=3.33,
+        default=1 / 300,
         help="The Biot number for the trans surfactant.",
     )
     parser.add_argument(
         "--Bit_ci",
         type=float,
-        default=1.0e3,
+        default=1.0,
         help="The Biot number for the cis surfactant.",
     )
     parser.add_argument("--Man", type=float, default=2.0, help="The Marangoni number.")
     parser.add_argument(
         "--k_tr",
         type=float,
-        default=30.0,
+        default=1.0,
         help="The adsorption rate for the trans surfactant.",
     )
     parser.add_argument(
         "--k_ci",
         type=float,
-        default=1.0,
+        default=1 / 30,
         help="The adsorption rate for the cis surfactant.",
     )
     parser.add_argument(
         "--chi_tr",
         type=float,
-        default=1.0,
+        default=100 / 30,
         help="The desorption rate for the trans surfactant.",
     )
     parser.add_argument(
         "--chi_ci",
         type=float,
-        default=30.0,
+        default=100.0,
         help="The desorption rate for the cis surfactant.",
     )
 

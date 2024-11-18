@@ -42,18 +42,18 @@ class Parameters:
     Pen_ci_s: float = 10.0
 
     # Biot numbers
-    Bit_tr: float = 3.33
-    Bit_ci: float = 1.0e3
+    Bit_tr: float = 1 / 300
+    Bit_ci: float = 1.0
 
     # Marangoni number
     Man: float = 2.0
 
     # Adsorption and desorption rates
-    k_tr: float = 30.0
-    k_ci: float = 1.0
+    k_tr: float = 1.0
+    k_ci: float = 1 / 30
 
-    chi_tr: float = 1.0
-    chi_ci: float = 30.0
+    chi_tr: float = 100 / 30
+    chi_ci: float = 100.0
 
     def __post_init__(self):  # noqa: D105
         if self.k_tr * self.chi_tr != self.k_ci * self.chi_ci:
