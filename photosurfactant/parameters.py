@@ -132,11 +132,11 @@ class PlottingParameters:
 
         rcparams = {
             "font.size": 16,
-            "axes.labelsize": 12,
-            "axes.titlesize": 12,
-            "xtick.labelsize": 10,
-            "ytick.labelsize": 10,
-            "legend.fontsize": 10,
+            "axes.labelsize": 14,
+            "axes.titlesize": 14,
+            "xtick.labelsize": 12,
+            "ytick.labelsize": 12,
+            "legend.fontsize": 12,
             "figure.figsize": [8, 6],
             "figure.dpi": 100,
             "figure.autolayout": True,
