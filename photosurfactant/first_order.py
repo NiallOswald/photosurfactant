@@ -976,7 +976,7 @@ class ZeroFourierConditions(FourierConditions):
                 self.tangential_stress,
                 self.mass_balance,
                 self.integral,
-                self.light_intensity(1.0),
+                self.light_intensity(0.0),
             ],
             axis=0,
         )[:, :, 0]
