@@ -83,7 +83,7 @@ class Figures:
         self.plt.plot(self.xx, self.vv[-1, :].real, "k--", label=r"$v_1$")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel("Interfacial Velocity")
-        self.plt.legend("top right")
+        self.plt.legend(loc="upper right")
         self.plt.tight_layout()
 
         if self.plot_params.save:
@@ -326,7 +326,6 @@ def plot_first_order():  # noqa: D103
     # Plot figures
     figures = Figures(first, plot_params)
 
-    figures.plot_interfacial_velocity()
     figures.plot_streamlines()
     figures.plot_velocity()
     figures.plot_concentration_tr()
@@ -335,3 +334,4 @@ def plot_first_order():  # noqa: D103
     figures.plot_interfacial_values()
     figures.plot_surface_tension()
     figures.plot_fluxes()
+    figures.plot_interfacial_velocity()
