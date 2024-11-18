@@ -309,13 +309,15 @@ def plot_first_order():  # noqa: D103
     args = parser.parse_args()
 
     root_index = args.root_index
-    func = eval("lambda x: " + args.func)
+    func = eval("lambda x, L: " + args.func)
     problem = args.problem
 
     params = Parameters.from_dict(vars(args))
     plot_params = PlottingParameters.from_dict(vars(args))
 
-    omega, func_coeffs = fourier_series_coeff(func, params.L, plot_params.wave_count)
+    omega, func_coeffs = fourier_series_coeff(
+        lambda x: func(x, params.L), params.L, plot_params.wave_count
+    )
 
     # Solve leading order problem
     leading = LeadingOrder(params, root_index)
