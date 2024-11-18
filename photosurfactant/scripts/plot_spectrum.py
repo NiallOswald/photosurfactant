@@ -43,7 +43,7 @@ def plot_spectrum():  # noqa: D103
     plt = plot_params.plt
 
     # Plot the spectrum
-    plt.figure(figsize=(8, 6))
+    plt.figure()
     plt.plot(
         omega[plot_params.wave_count :],
         np.abs(first.S_f()[plot_params.wave_count + 1 :]),
@@ -56,8 +56,7 @@ def plot_spectrum():  # noqa: D103
 
     if plot_params.save:
         plt.savefig(
-            plot_params.path + f"spectrum{plot_params.label}.png",
-            dpi=300,
+            plot_params.path + f"spectrum{plot_params.label}.{plot_params.format}",
         )
     else:
         plt.show()
