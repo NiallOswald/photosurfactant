@@ -1054,11 +1054,7 @@ class FirstOrder(object):
             coeffs = func(*args, **kwargs)
             return coeffs[0] + np.sum(
                 coeffs[1:, np.newaxis]
-                * np.exp(
-                    1.0j
-                    * self.omega[:, np.newaxis]
-                    * (x + self.params.L)[np.newaxis, :]
-                ),
+                * np.exp(1.0j * self.omega[:, np.newaxis] * x[np.newaxis, :]),
                 axis=0,
             )
 
