@@ -136,7 +136,7 @@ def first_order_parser(parser: ArgumentParser):
         default="smoothed_square(x, delta=0.5)",
         help="An expression in the coordinate x for the light intensity/interface "
         'perturbation. The function should be a quoted string. E.g. "sin(x)". The '
-        "function must be L-periodic and always return a float.",
+        "function must be 2L-periodic and always return a float.",
     )
     parser.add_argument(
         "--problem",
