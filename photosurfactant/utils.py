@@ -133,7 +133,7 @@ def first_order_parser(parser: ArgumentParser):
     parser.add_argument(
         "--func",
         type=str,
-        default="laser_pointer(delta=0.5)(x)",
+        default="laser_square(x, delta=0.5)",
         help="An expression in the coordinate x for the light intensity/interface "
         'perturbation. The function should be a quoted string. E.g. "sin(x)". The '
         "function must be L-periodic and always return a float.",

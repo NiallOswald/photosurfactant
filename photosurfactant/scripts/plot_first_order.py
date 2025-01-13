@@ -3,7 +3,7 @@ from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.first_order import FirstOrder
 from photosurfactant.fourier import fourier_series_coeff
-from photosurfactant.functions import laser_pointer  # noqa: F401
+from photosurfactant.functions import *  # noqa: F401, F403
 from photosurfactant.utils import (
     parameter_parser,
     plot_parser,

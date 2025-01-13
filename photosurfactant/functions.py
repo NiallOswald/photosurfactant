@@ -3,10 +3,11 @@
 import numpy as np
 
 
-def laser_pointer(delta, sign=1.0):
-    """Return a laser-pointer-like function."""
+def laser_square(x, delta):
+    """Return a smoothed square wave."""
+    return 0.5 * (np.tanh((x + 1) / delta) - np.tanh((x - 1) / delta))
 
-    def _(x):
-        return sign * 0.5 * (np.tanh((x + 1) / delta) - np.tanh((x - 1) / delta))
 
-    return _
+def laser_gauss(x):
+    """Return a Gaussian-like function."""
+    return np.exp(-4 * x**2)
