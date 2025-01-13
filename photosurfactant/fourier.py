@@ -15,7 +15,7 @@ def fourier_series_coeff(func, L, N):
 
     :param func: The periodic function, a callable like f(x).
     :param L: Half the period of the function f, so that f(-L)==f(L).
-    :param N: The function will return the first N + 1 Fourier coeff.
+    :param N: The function will return the first 2N + 1 Fourier coeff.
     """
     xx = np.linspace(-L, L, 2 * N, endpoint=False)
     f_coeffs = np.fft.rfft(np.array([func(x) for x in xx])) / len(xx)
@@ -42,7 +42,7 @@ def convolution_coeff(f, g, L, N):
     :param f: A periodic function, a callable like f(x).
     :param g: A periodic function, a callable like f(x).
     :param L: Half the period of the function f, so that f(-L)==f(L).
-    :param N: The function will return the first N + 1 Fourier coeff.
+    :param N: The function will return the first 2N + 1 Fourier coeff.
     """
     omega, f_full = fourier_series_coeff(f, L, N)
     _, g_full = fourier_series_coeff(g, L, N)
