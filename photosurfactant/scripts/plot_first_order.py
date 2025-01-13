@@ -2,7 +2,7 @@
 from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.first_order import FirstOrder
-from photosurfactant.fourier import fourier_series_coeff
+from photosurfactant.fourier import fourier_series_coeff, convolution_coeff
 from photosurfactant.functions import *  # noqa: F401, F403
 from photosurfactant.utils import (
     parameter_parser,
@@ -352,9 +352,19 @@ def plot_first_order():  # noqa: D103
     params = Parameters.from_dict(vars(args))
     plot_params = PlottingParameters.from_dict(vars(args))
 
-    omega, func_coeffs = fourier_series_coeff(
-        lambda x: func(x, params.L), params.L, plot_params.wave_count
-    )
+    # Calculate Fourier series coefficients
+    if args.mollify:
+        mol = mollifier(delta=args.delta)  # noqa: F405
+        omega, func_coeffs = convolution_coeff(
+            lambda x: func(x, params.L),
+            mol,
+            params.L,
+            plot_params.wave_count,
+        )
+    else:
+        omega, func_coeffs = fourier_series_coeff(
+            lambda x: func(x, params.L), params.L, plot_params.wave_count
+        )
 
     # Solve leading order problem
     leading = LeadingOrder(params, root_index)

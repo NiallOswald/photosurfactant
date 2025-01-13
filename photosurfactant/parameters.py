@@ -98,6 +98,8 @@ class PlottingParameters:
 
     :param wave_count: The number of wave numbers to use.
     :param grid_size: The number of grid points to evaluate the solution on.
+    :param mollify: A flag to mollify the input function.
+    :param delta: The mollification parameter.
     :param save: A flag to save the figures to disk.
     :param path: The path to save the figures to.
     :param label: A label to append to the figure filenames.
@@ -106,6 +108,8 @@ class PlottingParameters:
 
     wave_count: int = 100
     grid_size: int = 1000
+    mollify: bool = False
+    delta: float = 0.5
     save: bool = False
     path: str = "./"
     label: str = ""

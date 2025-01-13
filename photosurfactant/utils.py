@@ -133,7 +133,7 @@ def first_order_parser(parser: ArgumentParser):
     parser.add_argument(
         "--func",
         type=str,
-        default="laser_square(x, delta=0.5)",
+        default="smoothed_square(x, delta=0.5)",
         help="An expression in the coordinate x for the light intensity/interface "
         'perturbation. The function should be a quoted string. E.g. "sin(x)". The '
         "function must be L-periodic and always return a float.",
@@ -143,4 +143,16 @@ def first_order_parser(parser: ArgumentParser):
         choices=["forward", "inverse"],
         default="forward",
         help="The type of problem to solve.",
+    )
+    parser.add_argument(
+        "--mollify",
+        action="store_true",
+        help="Apply mollification to the light intensity/interface perturbation.",
+    )
+    parser.add_argument(
+        "--delta",
+        type=float,
+        default=0.5,
+        help="The mollification parameter for the light intensity/interface "
+        "perturbation.",
     )
