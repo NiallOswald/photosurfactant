@@ -89,7 +89,7 @@ class LeadingOrder(object):
         # Solve for B_0
         poly = np.poly1d(
             [
-                (a * p**2 - b * p * q + c * q**2),
+                (0.0 if params.eta == 1 else (a * p**2 - b * p * q + c * q**2)),
                 (
                     2 * a * p * r
                     - b * p * s
