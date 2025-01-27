@@ -30,27 +30,26 @@ def plot_leading_order():  # noqa: D103
 
     # Figure setup
     plt = plot_params.plt
-
-    # Plot bulk concentrations
     yy = np.linspace(0, 1, plot_params.grid_size)
 
-    fig, ax1 = plt.subplots(figsize=(10, 6))
-    ax2 = ax1.twinx()
+    # Plot concentration profiles
+    fig, ax = plt.subplots(2, 1)
 
-    ax1.plot(yy, leading.c_tr(yy), "k-", label=r"$c_{\mathrm{tr}, 0}$")
-    ax2.plot(yy, leading.c_ci(yy), "k--", label=r"$c_{\mathrm{ci}, 0}$")
+    ax[0].plot(yy, leading.c_tr(yy), "k-")
+    ax[0].set_ylabel(r"$c_{\mathrm{tr}, 0}$")
+    ax[0].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
-    ax1.set_xlabel(r"$y$")
-    ax1.set_ylabel(r"Concentration ($c_{\mathrm{tr}, 0}$)")
-    ax2.set_ylabel(r"Concentration ($c_{\mathrm{ci}, 0}$)")
+    ax[1].plot(yy, leading.c_ci(yy), "k-")
+    ax[1].set_xlabel(r"$y$")
+    ax[1].set_ylabel(r"$c_{\mathrm{ci}, 0}$")
+    ax[1].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
-    fig.legend(loc="upper left", bbox_to_anchor=(0.79, 0.96))
-    fig.tight_layout()
+    plt.tight_layout()
 
     if plot_params.save:
         plt.savefig(
             plot_params.path
-            + f"leading_bulk_concentrations{plot_params.label}.{plot_params.format}",
+            + f"leading_concentrations{plot_params.label}.{plot_params.format}",
         )
     else:
         plt.show()

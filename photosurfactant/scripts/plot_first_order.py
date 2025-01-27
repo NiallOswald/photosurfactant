@@ -79,12 +79,11 @@ class Figures:
     def plot_interfacial_velocity(self):
         """Plot the interfacial velocity."""
         self.plt.figure()
-        self.plt.plot(self.xx, self.uu[-1, :].real, "k-", label=r"$u_1$")
-        self.plt.plot(self.xx, self.vv[-1, :].real, "k--", label=r"$v_1$")
+        self.plt.plot(self.xx, self.uu[-1, :].real, "k-")
         self.plt.xlabel(r"$x$")
-        self.plt.ylabel("Interfacial Velocity")
+        self.plt.ylabel(r"$u_1$")
+        self.plt.grid()
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
-        self.plt.legend(loc="upper right")
         self.plt.tight_layout()
 
         if self.plot_params.save:
@@ -97,9 +96,8 @@ class Figures:
 
     def plot_streamlines(self):
         """Plot the streamlines."""
-        self.plt.figure(figsize=(12, 4))
+        self.plt.figure(figsize=(10.5, 4))
         self.plt.contour(self.xx, self.yy, self.psii.real, levels=15, colors="black")
-        self.plt.title("Streamlines")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -127,10 +125,9 @@ class Figures:
             np.sqrt(self.uu[::-1, :].real ** 2 + self.vv[::-1, :].real ** 2),
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
-            cmap="viridis",
+            cmap="Reds",
         )
-        self.plt.colorbar()
-        self.plt.title("Velocity")
+        self.plt.colorbar(label="Velocity")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -153,8 +150,7 @@ class Figures:
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        self.plt.colorbar()
-        self.plt.title(r"$c_{\mathrm{tr}, 1}$")
+        self.plt.colorbar(label=r"$c_{\mathrm{tr}, 1}$")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -177,8 +173,7 @@ class Figures:
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        self.plt.colorbar()
-        self.plt.title(r"$c_{\mathrm{ci}, 1}$")
+        self.plt.colorbar(label=r"$c_{\mathrm{ci}, 1}$")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -201,8 +196,7 @@ class Figures:
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        self.plt.colorbar()
-        self.plt.title(r"$c_{\mathrm{tot}, 1}$")
+        self.plt.colorbar(label=r"$c_{\mathrm{tot}, 1}$")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -217,73 +211,62 @@ class Figures:
 
     def plot_surface_excess(self):
         """Plot the surface excess concentrations."""
-        fig, ax1 = self.plt.subplots(figsize=(10, 6))
-        ax2 = ax1.twinx()
-
-        ax1.plot(self.xx, self.ff_inv.real, "k-", label=r"$f_1$")
-
-        ax2.plot(
-            self.xx, self.ggamma_tr.real, "k--", label=r"$\Gamma_{\mathrm{tr}, 1}$"
+        self.plt.figure()
+        self.plt.plot(
+            self.xx,
+            self.ggamma_tr.real + self.ggamma_ci.real,
+            "k-",
+            label=r"$\Gamma_{\mathrm{tr}, 1} + \Gamma_{\mathrm{ci}, 1}$",
         )
-        ax2.plot(
-            self.xx, self.ggamma_ci.real, "k-.", label=r"$\Gamma_{\mathrm{ci}, 1}$"
+        self.plt.plot(
+            self.xx, self.ggamma_tr.real, "r--", label=r"$\Gamma_{\mathrm{tr}, 1}$"
         )
-
-        packing = 1.1
-        ylim_1 = max(abs(self.ff_inv)) * packing
-
-        ax1.set_ylim(-ylim_1, ylim_1)
-        ax1.set_xlabel(r"$x$")
-        ax1.set_ylabel(r"Light intensity ($f_1$)")
-
-        ylim_2 = max(max(abs(self.ggamma_tr)), max(abs(self.ggamma_ci))) * packing
-
-        ax2.set_ylim(-ylim_2, ylim_2)
-        ax2.set_ylabel(
-            r"Surface excess concentrations ($\Gamma_{\mathrm{tr}, 1}$, "
-            r"$\Gamma_{\mathrm{ci}, 1}$)"
+        self.plt.plot(
+            self.xx, self.ggamma_ci.real, "b-.", label=r"$\Gamma_{\mathrm{ci}, 1}$"
         )
-
-        ax2.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
-
-        fig.legend(loc="upper left", bbox_to_anchor=(0.79, 0.94))
-        fig.tight_layout()
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel("Surface Excess Concentration")
+        self.plt.legend(loc="lower right")
+        self.plt.grid()
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            fig.savefig(
+            self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_surface_excess{self.label}.{self.format}",
             )
         else:
             self.plt.show()
 
-    def plot_interface(self):
-        """Plot the surface shape."""
-        fig, ax1 = self.plt.subplots(figsize=(10, 6))
-        ax2 = ax1.twinx()
-
-        ax1.plot(self.xx, self.ff_inv.real, "k-", label=r"$f_1$")
-        ax2.plot(self.xx, self.SS_inv.real, "k:", label=r"$S_1$")
-
-        packing = 1.1
-        ylim_1 = max(abs(self.ff_inv)) * packing
-
-        ax1.set_ylim(-ylim_1, ylim_1)
-        ax1.set_xlabel(r"$x$")
-        ax1.set_ylabel(r"Light intensity ($f_1$)")
-
-        ylim_2 = max(abs(self.SS_inv)) * packing
-
-        ax2.set_ylim(-ylim_2, ylim_2)
-        ax2.set_ylabel(r"Surface shape ($S_1$)")
-
-        ax2.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
-
-        fig.legend(loc="upper left", bbox_to_anchor=(0.82, 0.93))
-        fig.tight_layout()
+    def plot_intensity(self):
+        """Plot the light intensity."""
+        self.plt.figure(figsize=(10, 4))
+        self.plt.plot(self.xx, self.ff_inv.real, "k-")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$f_1$")
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+        self.plt.tight_layout()
 
         if self.plot_params.save:
-            fig.savefig(
+            self.plt.savefig(
+                self.plot_params.path
+                + f"{self.direction}_intensity{self.label}.{self.format}",
+            )
+        else:
+            self.plt.show()
+
+    def plot_interface(self):
+        """Plot the surface shape."""
+        self.plt.figure(figsize=(10, 4))
+        self.plt.plot(self.xx, self.SS_inv.real, "k-")
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$S_1$")
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+        self.plt.tight_layout()
+
+        if self.plot_params.save:
+            self.plt.savefig(
                 self.plot_params.path
                 + f"{self.direction}_interface{self.label}.{self.format}",
             )
@@ -296,6 +279,7 @@ class Figures:
         self.plt.plot(self.xx, self.ttension.real, "k-")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$\gamma_1$")
+        self.plt.grid()
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
 
@@ -310,14 +294,14 @@ class Figures:
     def plot_fluxes(self):
         """Plot the fluxes."""
         self.plt.figure()
-        self.plt.plot(self.xx, self.JJ_tr.real, "k-", label=r"$J_{\mathrm{tr}, 1}$")
-        self.plt.plot(self.xx, self.JJ_ci.real, "k--", label=r"$J_{\mathrm{ci}, 1}$")
         self.plt.plot(
             self.xx,
             self.JJ_tr.real + self.JJ_ci.real,
-            "k:",
+            "k-",
             label=r"$J_{\mathrm{tr}, 1} + J_{\mathrm{ci}, 1}$",
         )
+        self.plt.plot(self.xx, self.JJ_tr.real, "r--", label=r"$J_{\mathrm{tr}, 1}$")
+        self.plt.plot(self.xx, self.JJ_ci.real, "b-.", label=r"$J_{\mathrm{ci}, 1}$")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel("Kinetic Flux")
         self.plt.legend(loc="upper right")
@@ -380,6 +364,7 @@ def plot_first_order():  # noqa: D103
     figures.plot_concentration_tr()
     figures.plot_concentration_ci()
     figures.plot_concentration_tot()
+    figures.plot_intensity()
     figures.plot_interface()
     figures.plot_surface_excess()
     figures.plot_surface_tension()
