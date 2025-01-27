@@ -135,13 +135,13 @@ class PlottingParameters:
         import matplotlib.pyplot as plt
 
         rcparams = {
-            "font.size": 16,
-            "axes.labelsize": 14,
-            "axes.titlesize": 14,
-            "xtick.labelsize": 12,
-            "ytick.labelsize": 12,
-            "legend.fontsize": 12,
-            "figure.figsize": [8, 6],
+            "font.size": 18,
+            "axes.labelsize": 18,
+            "axes.titlesize": 18,
+            "xtick.labelsize": 16,
+            "ytick.labelsize": 16,
+            "legend.fontsize": 16,
+            "figure.figsize": [7, 6],
             "figure.dpi": 100,
             "figure.autolayout": True,
             "savefig.dpi": 300,
