@@ -3,7 +3,6 @@
 from photosurfactant.parameters import Parameters
 from photosurfactant.leading_order import LeadingOrder
 import numpy as np
-import pytest
 
 
 def test_bulk_concentrations():
@@ -84,7 +83,7 @@ def test_surf_cons():
         + (2 * params.L)
         / (params.k_tr * params.chi_tr)
         * (leading.gamma_tr + leading.gamma_ci)
-        - 1
+        - 2 * params.L
     )
 
     assert np.allclose(eq, 0)

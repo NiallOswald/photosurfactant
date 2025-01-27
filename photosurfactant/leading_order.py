@@ -57,14 +57,14 @@ class LeadingOrder(object):
             * np.cosh(np.sqrt(params.zeta))
         )
         d = c_0 * (params.alpha + 1) / (params.alpha + params.eta) + (
-            1 / (params.k_tr * params.chi_tr) - 1 / (2 * params.L)
+            1 / (params.k_tr * params.chi_tr) - 1
         ) * (a_0 + b_0 / (params.alpha + params.eta))
         e = c_0 * (1 - params.eta) / np.sqrt(params.zeta) * np.sinh(
             np.sqrt(params.zeta)
-        ) + b_0 * (1 / (params.k_tr * params.chi_tr) - 1 / (2 * params.L)) * np.cosh(
+        ) + b_0 * (1 / (params.k_tr * params.chi_tr) - 1) * np.cosh(
             np.sqrt(params.zeta)
         )
-        f = c_0 * (1 / (params.k_tr * params.chi_tr) - 1 / (2 * params.L)) - (
+        f = c_0 * (1 / (params.k_tr * params.chi_tr) - 1) - (
             1 + params.kappa * (1 + params.alpha * params.beta)
         ) / (params.k_tr * params.chi_tr)
 
