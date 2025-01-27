@@ -69,7 +69,7 @@ def plot_spectrum():  # noqa: D103
         half_omega,
         np.exp(slope[0] * half_omega),
         "k--",
-        label=r"$e^{k_n^{" f"{slope[0]:.2f}" r"}}$",
+        label=r"$e^{" f"{slope[0]:.2f}" r"k_n}$",
     )
     plt.yscale("log")
     plt.xlabel(r"$k_n$")
