@@ -4,20 +4,23 @@ from photosurfactant.parameters import Parameters
 from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.first_order import FirstOrder
 from photosurfactant.fourier import fourier_series_coeff
-from photosurfactant.functions import laser_pointer
+from photosurfactant.functions import gaussian, super_gaussian, smoothed_square
 import numpy as np
 import pytest
 
-DELTA = 0.1
 N_WAVE = 20
 
 
-def test_biharmonic():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_biharmonic(func):
     """Test the biharmonic equations."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -36,12 +39,16 @@ def test_biharmonic():
     assert np.allclose(eq, 0)
 
 
-def test_navier_stokes():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_navier_stokes(func):
     """Test the Navier-Stokes equations."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -67,12 +74,16 @@ def test_navier_stokes():
     assert np.allclose(eq_y, 0)
 
 
-def test_continuity():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_continuity(func):
     """Test the continuity equation."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -84,12 +95,16 @@ def test_continuity():
     assert np.allclose(eq, 0)
 
 
-def test_bulk_concentrations():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_bulk_concentrations(func):
     """Test bulk surfactant concentration equations."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -119,12 +134,16 @@ def test_bulk_concentrations():
     assert np.allclose(eq_ci, 0)
 
 
-def test_surface_excess():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_surface_excess(func):
     """Test the surface excess concentration equations."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -149,12 +168,16 @@ def test_surface_excess():
     assert np.allclose(eq_ci, 0)
 
 
-def test_kinetic_flux():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_kinetic_flux(func):
     """Test the kinetic fluxes."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -179,12 +202,16 @@ def test_kinetic_flux():
     assert np.allclose(eq_ci, 0)
 
 
-def test_normal_stress():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_normal_stress(func):
     """Test the normal stress balance."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -199,12 +226,16 @@ def test_normal_stress():
     assert np.allclose(eq, 0)
 
 
-def test_tangential_stress():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_tangential_stress(func):
     """Test the tangential stress balance."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -215,12 +246,16 @@ def test_tangential_stress():
     assert np.allclose(eq, 0)
 
 
-def test_mass_balance():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_mass_balance(func):
     """Test the mass balances."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -237,12 +272,16 @@ def test_mass_balance():
     assert np.allclose(eq_ci, 0)
 
 
-def test_kinematic():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_kinematic(func):
     """Test the kinematic condition."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -251,12 +290,16 @@ def test_kinematic():
     assert np.allclose(first.v(xx, 1), 0)
 
 
-def test_mass_cons():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_mass_cons(func):
     """Test the mass conservation condition."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -267,12 +310,16 @@ def test_mass_cons():
     assert np.allclose(eq, 0)
 
 
-def test_surf_cons():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_surf_cons(func):
     """Test the surfactant conservation condition."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
@@ -289,12 +336,16 @@ def test_surf_cons():
     assert np.allclose(eq, 0)
 
 
-def test_no_flux():
+@pytest.mark.parametrize(
+    "func",
+    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+)
+def test_no_flux(func):
     """Test no-flux condition on the lower wall."""
     params = Parameters()
     leading = LeadingOrder(params)
 
-    omega, func_coeffs = fourier_series_coeff(laser_pointer(DELTA), params.L, N_WAVE)
+    omega, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
 
     first = FirstOrder(omega, func_coeffs, params, leading)
 
