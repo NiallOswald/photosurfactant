@@ -69,20 +69,21 @@ class Parameters:
         self.kappa = self.Dam_tr / self.Bit_tr
         self.xi = self.Dam_tr * self.Bit_ci + self.Dam_ci * self.Bit_tr
 
-        self.D = np.array([[self.Dam_tr, -self.Dam_ci], [-self.Dam_tr, self.Dam_ci]])
+        self._D = np.array([[self.Dam_tr, -self.Dam_ci], [-self.Dam_tr, self.Dam_ci]])
         self.P = np.array([[self.Pen_tr, 0.0], [0.0, self.Pen_ci]])
         self.P_s = np.array([[self.Pen_tr_s, 0.0], [0.0, self.Pen_ci_s]])
         self.B = np.array([[self.Bit_tr, 0.0], [0.0, self.Bit_ci]])
         self.K = np.array([[self.k_tr, 0.0], [0.0, self.k_ci]])
 
-        self.A = self.P @ self.D
-        self.A_s = self.P_s @ self.D
+        self.A = self.P @ self._D
+        self.A_s = self.P_s @ self._D
 
         self.V = np.array([[self.alpha, self.eta], [1.0, -1.0]])
         self.Lambda = np.array([[0.0, 0.0], [0.0, self.zeta]])
 
     @classmethod
     def from_dict(cls, kwargs):
+        """Load parameters from a dictionary."""
         return cls(
             **{
                 k: v
@@ -122,6 +123,7 @@ class PlottingParameters:
 
     @classmethod
     def from_dict(cls, kwargs):
+        """Load parameters from a dictionary."""
         return cls(
             **{
                 k: v
