@@ -79,11 +79,9 @@ def test_surf_cons():
     leading = LeadingOrder(params)
 
     eq = (
-        2 * params.L * (leading.i_c_tr(1) + leading.i_c_ci(1))
-        + (2 * params.L)
-        / (params.k_tr * params.chi_tr)
-        * (leading.gamma_tr + leading.gamma_ci)
-        - 2 * params.L
+        (leading.i_c_tr(1) + leading.i_c_ci(1))
+        + 1 / (params.k_tr * params.chi_tr) * (leading.gamma_tr + leading.gamma_ci)
+        - 1
     )
 
     assert np.allclose(eq, 0)
