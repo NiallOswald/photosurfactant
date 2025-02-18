@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.leading_order import LeadingOrder
-from photosurfactant.first_order import FirstOrder
+from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff, convolution_coeff
 from photosurfactant.functions import square_wave, mollifier
 from photosurfactant.utils import (
@@ -30,10 +30,9 @@ def plot_spectrum():  # noqa: D103
     params = Parameters.from_dict(vars(args))
     plot_params = PlottingParameters.from_dict(vars(args))
 
-    omega, func_coeffs = fourier_series_coeff(
+    wavenumbers, func_coeffs = fourier_series_coeff(
         lambda x: 0.0, params.L, plot_params.wave_count
     )
-    half_omega = omega[plot_params.wave_count :]
 
     func_coeffs = np.ones_like(func_coeffs, dtype=np.complex128)
 
@@ -52,22 +51,24 @@ def plot_spectrum():  # noqa: D103
     leading = LeadingOrder(params, root_index)
 
     # Solve first order problem
-    first = FirstOrder(omega, func_coeffs, params, leading)
-    S_n = abs(first.S_f())[plot_params.wave_count + 1 :]
+    first = FirstOrder(wavenumbers, params, leading)
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
+
+    S_n = abs(first.solution @ Variables.S)
 
     # Calculate the slope of the spectrum on a log plot
     index = S_n > 1e-20
-    slope = np.polyfit(half_omega[index], np.log(S_n[index]), 1)
+    slope = np.polyfit(wavenumbers[index], np.log(S_n[index]), 1)
 
     # Figure setup
     plt = plot_params.plt
 
     # Plot the spectrum
     plt.figure()
-    plt.plot(half_omega, S_n, "k-")
+    plt.plot(wavenumbers[1:], S_n[1:], "k-")
     plt.plot(
-        half_omega,
-        np.exp(slope[0] * half_omega),
+        wavenumbers,
+        np.exp(slope[0] * wavenumbers),
         "k--",
         label=r"$e^{" f"{slope[0]:.2f}" r"k_n}$",
     )
@@ -88,14 +89,14 @@ def plot_spectrum():  # noqa: D103
     # Plot the square wave spectrum
     plt.figure()
     plt.plot(
-        half_omega,
-        square_wave_coeffs[plot_params.wave_count + 1 :],
+        wavenumbers,
+        square_wave_coeffs.real,
         "k-",
         label="Square wave",
     )
     plt.plot(
-        half_omega,
-        mol_wave_coeffs[plot_params.wave_count + 1 :],
+        wavenumbers,
+        mol_wave_coeffs.real,
         "r--",
         label="Mollified square wave",
     )
@@ -114,10 +115,14 @@ def plot_spectrum():  # noqa: D103
 
     # Plot the square wave
     def invert(fourier_coeffs, x):
-        return fourier_coeffs[0] + np.sum(
-            fourier_coeffs[1:, np.newaxis]
-            * np.exp(1j * omega[:, np.newaxis] * x[np.newaxis, :]),
-            axis=0,
+        return (
+            fourier_coeffs[0].real
+            + 2
+            * np.sum(
+                fourier_coeffs[1:, np.newaxis]
+                * np.exp(1j * wavenumbers[1:, np.newaxis] * x[np.newaxis, :]),
+                axis=0,
+            ).real
         )
 
     x = np.linspace(-params.L, params.L, plot_params.grid_size)
