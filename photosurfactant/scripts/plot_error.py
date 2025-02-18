@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from photosurfactant.parameters import Parameters
 from photosurfactant.leading_order import LeadingOrder
-from photosurfactant.first_order import FirstOrder
+from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff
 from photosurfactant.utils import parameter_parser
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -28,12 +28,12 @@ def plot_error():  # noqa: D103
 
     params = Parameters.from_dict(vars(args))
 
-    func = lambda x: 1.0  # noqa: E731
-    omega, func_coeffs = fourier_series_coeff(func, params.L, WAVE_N)
+    wavenumbers, func_coeffs = fourier_series_coeff(lambda x: 1.0, params.L, WAVE_N)
 
     # Solve first order problem
     leading = LeadingOrder(params)
-    first = FirstOrder(omega, func_coeffs, params, leading)
+    first = FirstOrder(wavenumbers, params, leading)
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     # Solve the linearised system
     yy = np.linspace(0, 1, GRID_N)

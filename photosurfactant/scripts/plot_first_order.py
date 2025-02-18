@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.leading_order import LeadingOrder
-from photosurfactant.first_order import FirstOrder
+from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff, convolution_coeff
 from photosurfactant.functions import *  # noqa: F401, F403
 from photosurfactant.utils import (
@@ -42,12 +42,12 @@ class Figures:
         self.ttension = (
             -self.params.Man
             * (self.ggamma_tr + self.ggamma_ci)
-            / (1 - self.leading.gamma_tot)
+            / (1 - self.leading.gamma_tr - self.leading.gamma_ci)
         )
         self.JJ_tr = self.first.J_tr(self.xx)
         self.JJ_ci = self.first.J_ci(self.xx)
-        self.SS_inv = self.first.S_inv(self.xx)
-        self.ff_inv = self.first.f_inv(self.xx)
+        self.SS = self.first.S(self.xx)
+        self.ff = self.first.f(self.xx)
 
         self.psii = np.array([self.first.psi(self.xx, y) for y in self.yy])
         self.uu = np.array([self.first.u(self.xx, y) for y in self.yy])
@@ -55,31 +55,30 @@ class Figures:
         self.cc_tr = np.array([self.first.c_tr(self.xx, y) for y in self.yy])
         self.cc_ci = np.array([self.first.c_ci(self.xx, y) for y in self.yy])
 
-        self.direction = self.first.direction
         self.label = self.plot_params.label
         self.format = self.plot_params.format
 
     def export_data(self, path: str):
         """Export data to a .csv file."""
-        np.savetxt(path + "xx.csv", self.xx.real, delimiter=",")
-        np.savetxt(path + "yy.csv", self.yy.real, delimiter=",")
-        np.savetxt(path + "ggamma_tr.csv", self.ggamma_tr.real, delimiter=",")
-        np.savetxt(path + "ggamma_ci.csv", self.ggamma_ci.real, delimiter=",")
-        np.savetxt(path + "ttension.csv", self.ttension.real, delimiter=",")
-        np.savetxt(path + "JJ_tr.csv", self.JJ_tr.real, delimiter=",")
-        np.savetxt(path + "JJ_ci.csv", self.JJ_ci.real, delimiter=",")
-        np.savetxt(path + "SS_inv.csv", self.SS_inv.real, delimiter=",")
-        np.savetxt(path + "ff_inv.csv", self.ff_inv.real, delimiter=",")
+        np.savetxt(path + "xx.csv", self.xx, delimiter=",")
+        np.savetxt(path + "yy.csv", self.yy, delimiter=",")
+        np.savetxt(path + "ggamma_tr.csv", self.ggamma_tr, delimiter=",")
+        np.savetxt(path + "ggamma_ci.csv", self.ggamma_ci, delimiter=",")
+        np.savetxt(path + "ttension.csv", self.ttension, delimiter=",")
+        np.savetxt(path + "JJ_tr.csv", self.JJ_tr, delimiter=",")
+        np.savetxt(path + "JJ_ci.csv", self.JJ_ci, delimiter=",")
+        np.savetxt(path + "SS.csv", self.SS, delimiter=",")
+        np.savetxt(path + "ff.csv", self.ff, delimiter=",")
         np.savetxt(path + "psii.csv", self.psii, delimiter=",")
-        np.savetxt(path + "uu.csv", self.uu.real, delimiter=",")
-        np.savetxt(path + "vv.csv", self.vv.real, delimiter=",")
-        np.savetxt(path + "cc_tr.csv", self.cc_tr.real, delimiter=",")
-        np.savetxt(path + "cc_ci.csv", self.cc_ci.real, delimiter=",")
+        np.savetxt(path + "uu.csv", self.uu, delimiter=",")
+        np.savetxt(path + "vv.csv", self.vv, delimiter=",")
+        np.savetxt(path + "cc_tr.csv", self.cc_tr, delimiter=",")
+        np.savetxt(path + "cc_ci.csv", self.cc_ci, delimiter=",")
 
     def plot_interfacial_velocity(self):
         """Plot the interfacial velocity."""
         self.plt.figure()
-        self.plt.plot(self.xx, self.uu[-1, :].real, "k-")
+        self.plt.plot(self.xx, self.uu[-1, :], "k-")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$u_1$")
         self.plt.grid()
@@ -89,7 +88,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path
-                + f"{self.direction}_interfacial_velocity{self.label}.{self.format}",
+                + f"interfacial_velocity{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -97,15 +96,14 @@ class Figures:
     def plot_streamlines(self):
         """Plot the streamlines."""
         self.plt.figure(figsize=(10.5, 4))
-        self.plt.contour(self.xx, self.yy, self.psii.real, levels=15, colors="black")
+        self.plt.contour(self.xx, self.yy, self.psii, levels=15, colors="black")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_streamlines{self.label}.{self.format}",
+                self.plot_params.path + f"streamlines{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -118,11 +116,11 @@ class Figures:
         self.plt.quiver(
             self.xx[::step],
             self.yy[::step],
-            self.uu[::step, ::step].real,
-            self.vv[::step, ::step].real,
+            self.uu[::step, ::step],
+            self.vv[::step, ::step],
         )
         self.plt.imshow(
-            np.sqrt(self.uu[::-1, :].real ** 2 + self.vv[::-1, :].real ** 2),
+            np.sqrt(self.uu[::-1, :] ** 2 + self.vv[::-1, :] ** 2),
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
             cmap="Reds",
@@ -134,8 +132,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_velocity{self.label}.{self.format}",
+                self.plot_params.path + f"velocity{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -144,7 +141,7 @@ class Figures:
         """Plot the concentration field of the trans surfactant."""
         self.plt.figure(figsize=(12, 4))
         self.plt.imshow(
-            self.cc_tr[::-1, :].real,
+            self.cc_tr[::-1, :],
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
             cmap="coolwarm",
@@ -157,8 +154,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_concentration_tr{self.label}.{self.format}",
+                self.plot_params.path + f"concentration_tr{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -167,7 +163,7 @@ class Figures:
         """Plot the concentration field of the cis surfactant."""
         self.plt.figure(figsize=(12, 4))
         self.plt.imshow(
-            self.cc_ci[::-1, :].real,
+            self.cc_ci[::-1, :],
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
             cmap="coolwarm",
@@ -180,8 +176,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_concentration_ci{self.label}.{self.format}",
+                self.plot_params.path + f"concentration_ci{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -190,7 +185,7 @@ class Figures:
         """Plot the total surfactant concentration field."""
         self.plt.figure(figsize=(12, 4))
         self.plt.imshow(
-            self.cc_ci[::-1, :].real + self.cc_tr[::-1, :].real,
+            self.cc_ci[::-1, :] + self.cc_tr[::-1, :],
             extent=[-self.params.L, self.params.L, 0, 1],
             aspect="auto",
             cmap="coolwarm",
@@ -203,8 +198,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_concentration_tot{self.label}.{self.format}",
+                self.plot_params.path + f"concentration_tot{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -214,15 +208,15 @@ class Figures:
         self.plt.figure()
         self.plt.plot(
             self.xx,
-            self.ggamma_tr.real + self.ggamma_ci.real,
+            self.ggamma_tr + self.ggamma_ci,
             "k-",
             label=r"$\Gamma_{\mathrm{tr}, 1} + \Gamma_{\mathrm{ci}, 1}$",
         )
         self.plt.plot(
-            self.xx, self.ggamma_tr.real, "r--", label=r"$\Gamma_{\mathrm{tr}, 1}$"
+            self.xx, self.ggamma_tr, "r--", label=r"$\Gamma_{\mathrm{tr}, 1}$"
         )
         self.plt.plot(
-            self.xx, self.ggamma_ci.real, "b-.", label=r"$\Gamma_{\mathrm{ci}, 1}$"
+            self.xx, self.ggamma_ci, "b-.", label=r"$\Gamma_{\mathrm{ci}, 1}$"
         )
         self.plt.xlabel(r"$x$")
         self.plt.ylabel("Surface Excess Concentration")
@@ -233,8 +227,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_surface_excess{self.label}.{self.format}",
+                self.plot_params.path + f"surface_excess{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -242,7 +235,7 @@ class Figures:
     def plot_intensity(self):
         """Plot the light intensity."""
         self.plt.figure(figsize=(10, 4))
-        self.plt.plot(self.xx, self.ff_inv.real, "k-")
+        self.plt.plot(self.xx, self.ff, "k-")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$f_1$")
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
@@ -250,8 +243,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_intensity{self.label}.{self.format}",
+                self.plot_params.path + f"intensity{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -259,7 +251,7 @@ class Figures:
     def plot_interface(self):
         """Plot the surface shape."""
         self.plt.figure(figsize=(10, 4))
-        self.plt.plot(self.xx, self.SS_inv.real, "k-")
+        self.plt.plot(self.xx, self.SS, "k-")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$S_1$")
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
@@ -267,8 +259,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_interface{self.label}.{self.format}",
+                self.plot_params.path + f"interface{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -276,7 +267,7 @@ class Figures:
     def plot_surface_tension(self):
         """Plot the surface tension."""
         self.plt.figure()
-        self.plt.plot(self.xx, self.ttension.real, "k-")
+        self.plt.plot(self.xx, self.ttension, "k-")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$\gamma_1$")
         self.plt.grid()
@@ -285,8 +276,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_tension{self.label}.{self.format}",
+                self.plot_params.path + f"tension{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -296,12 +286,12 @@ class Figures:
         self.plt.figure()
         self.plt.plot(
             self.xx,
-            self.JJ_tr.real + self.JJ_ci.real,
+            self.JJ_tr + self.JJ_ci,
             "k-",
             label=r"$J_{\mathrm{tr}, 1} + J_{\mathrm{ci}, 1}$",
         )
-        self.plt.plot(self.xx, self.JJ_tr.real, "r--", label=r"$J_{\mathrm{tr}, 1}$")
-        self.plt.plot(self.xx, self.JJ_ci.real, "b-.", label=r"$J_{\mathrm{ci}, 1}$")
+        self.plt.plot(self.xx, self.JJ_tr, "r--", label=r"$J_{\mathrm{tr}, 1}$")
+        self.plt.plot(self.xx, self.JJ_ci, "b-.", label=r"$J_{\mathrm{ci}, 1}$")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel("Kinetic Flux")
         self.plt.legend(loc="upper right")
@@ -311,8 +301,7 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path
-                + f"{self.direction}_flux{self.label}.{self.format}",
+                self.plot_params.path + f"flux{self.label}.{self.format}",
             )
         else:
             self.plt.show()
@@ -338,15 +327,14 @@ def plot_first_order():  # noqa: D103
 
     # Calculate Fourier series coefficients
     if args.mollify:
-        mol = mollifier(delta=args.delta)  # noqa: F405
-        omega, func_coeffs = convolution_coeff(
+        wavenumbers, func_coeffs = convolution_coeff(
             lambda x: func(x, params.L),
-            mol,
+            mollifier(delta=args.delta),  # noqa: F405
             params.L,
             plot_params.wave_count,
         )
     else:
-        omega, func_coeffs = fourier_series_coeff(
+        wavenumbers, func_coeffs = fourier_series_coeff(
             lambda x: func(x, params.L), params.L, plot_params.wave_count
         )
 
@@ -354,7 +342,18 @@ def plot_first_order():  # noqa: D103
     leading = LeadingOrder(params, root_index)
 
     # Solve first order problem
-    first = FirstOrder(omega, func_coeffs, params, leading, direction=problem)
+    if problem == "forward":
+        constraint = lambda n: (  # noqa: E731
+            Variables.f,
+            func_coeffs[n],
+        )
+    elif problem == "inverse":
+        constraint = lambda n: (  # noqa: E731
+            (Variables.f, 1.0) if n == 0 else (Variables.S, func_coeffs[n])
+        )
+
+    first = FirstOrder(wavenumbers, params, leading)
+    first.solve(constraint)
 
     # Plot figures
     figures = Figures(first, plot_params)
