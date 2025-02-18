@@ -127,7 +127,8 @@ class FirstOrder(object):
 
             _ = (
                 coeffs[0] * (x_order == 0)
-                + np.sum(
+                + 2
+                * np.sum(
                     (1.0j * self.wavenumbers[1:, np.newaxis]) ** x_order
                     * coeffs[1:, np.newaxis]
                     * np.exp(
