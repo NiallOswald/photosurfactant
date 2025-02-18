@@ -80,15 +80,12 @@ class FirstOrder(object):
     def __init__(
         self,
         wavenumbers: np.ndarray,
-        condition: Callable[[float], tuple],
         params: Parameters,
         leading: LeadingOrder,
     ):
         """Initalise solution to the first order model.
 
         :param wavenumbers: Array of wavenumbers.
-        :param condition: Prescription to close the system. Should be a linear
-            function in the given variables.
         :param params: :class:`~.parameters.Parameters` object containing the
             model parameters.
         :param leading: :class:`~.leadingrder.LeadingOrder` object containing
@@ -98,25 +95,27 @@ class FirstOrder(object):
         self.params = params
         self.leading = leading
 
-        self._initialize(condition)
-
-    def _initialize(self, condition: Callable[[float], tuple]):
-        """Initialize the first order solution."""
-        bc = BoundaryConditions(self)
-
-        zeros = np.zeros([len(Symbols) - 1], dtype=complex)
         self.solution = np.zeros([len(self.wavenumbers), len(Symbols)], dtype=complex)
 
-        for i, k in enumerate(self.wavenumbers):
+    def solve(self, constraint: Callable[[int], tuple]):
+        """Initialize the first order solution.
+
+        :param condition: Prescription to close the system. Should be a linear
+            function in the given variables.
+        """
+        zeros = np.zeros([len(Symbols) - 1], dtype=complex)
+
+        bc = BoundaryConditions(self)
+        for n, k in enumerate(self.wavenumbers):
             # Formulate the boundary conditions
             sys = bc.formulate(k)
 
             # Apply prescrition
-            cond, val = condition(k)
+            cond, val = constraint(n)
             sys = np.vstack([sys, cond])
 
             # Solve the system of equations
-            self.solution[i, :] = np.linalg.solve(sys, np.hstack([zeros, val]))
+            self.solution[n, :] = np.linalg.solve(sys, np.hstack([zeros, val]))
 
     def _invert(self, func):
         """Invert the function to real space."""

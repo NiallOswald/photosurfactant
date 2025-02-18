@@ -9,11 +9,6 @@ import numpy as np
 N_WAVE = 20
 
 
-def dummy_condition(k):
-    """Dummy condition for testing."""  # noqa: D401
-    return (Variables.f, 1) if k == 0 else (Variables.f, 0)
-
-
 def test_streamfunction():
     """Test the streamfunction."""
     params = Parameters()
@@ -23,7 +18,6 @@ def test_streamfunction():
 
     first = FirstOrder(
         wavenumbers,
-        dummy_condition,
         params,
         leading,
     )
@@ -54,7 +48,6 @@ def test_p_0():
 
     first = FirstOrder(
         wavenumbers,
-        dummy_condition,
         params,
         leading,
     )
@@ -84,7 +77,6 @@ def test_p_1():
 
     first = FirstOrder(
         wavenumbers,
-        dummy_condition,
         params,
         leading,
     )
@@ -125,7 +117,6 @@ def test_p_2():
 
     first = FirstOrder(
         wavenumbers,
-        dummy_condition,
         params,
         leading,
     )
@@ -168,7 +159,6 @@ def test_p():
 
     first = FirstOrder(
         wavenumbers,
-        dummy_condition,
         params,
         leading,
     )
@@ -216,7 +206,6 @@ def test_bulk_concentration():
 
     first = FirstOrder(
         wavenumbers,
-        dummy_condition,
         params,
         leading,
     )

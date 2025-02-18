@@ -24,10 +24,10 @@ def test_biharmonic(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
     yy = np.linspace(0, 1, 100)
@@ -57,10 +57,10 @@ def test_navier_stokes(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
     yy = np.linspace(0, 1, 100)
@@ -99,10 +99,10 @@ def test_continuity(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
     yy = np.linspace(0, 1, 100)
@@ -125,10 +125,10 @@ def test_bulk_concentrations(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
     yy = np.linspace(0, 1, 100)
@@ -173,10 +173,10 @@ def test_surface_excess(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -212,10 +212,10 @@ def test_kinetic_flux(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -251,10 +251,10 @@ def test_normal_stress(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -280,10 +280,10 @@ def test_tangential_stress(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -309,10 +309,10 @@ def test_mass_balance(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -340,10 +340,10 @@ def test_kinematic(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -363,10 +363,10 @@ def test_mass_cons(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -388,10 +388,10 @@ def test_surf_cons(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -419,10 +419,10 @@ def test_no_slip(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
@@ -443,10 +443,10 @@ def test_no_flux(func):
 
     first = FirstOrder(
         wavenumbers,
-        lambda k: (Variables.f, func_coeffs[np.searchsorted(wavenumbers, k)]),
         params,
         leading,
     )
+    first.solve(lambda n: (Variables.f, func_coeffs[n]))
 
     xx = np.linspace(-params.L, params.L, 100)
 
