@@ -349,7 +349,7 @@ def plot_first_order():  # noqa: D103
         )
     elif problem == "inverse":
         constraint = lambda n: (  # noqa: E731
-            (Variables.f, 1.0) if n == 0 else (Variables.S, func_coeffs[n])
+            (Variables.f, 0.0) if n == 0 else (Variables.S, func_coeffs[n])
         )
 
     first = FirstOrder(wavenumbers, params, leading)
