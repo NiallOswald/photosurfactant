@@ -125,7 +125,9 @@ class Figures:
             aspect="auto",
             cmap="Reds",
         )
-        self.plt.colorbar(label="Velocity")
+        cbar = self.plt.colorbar(label="Velocity")
+        cbar.formatter.set_powerlimits((0, 0))
+        cbar.formatter.set_useMathText(True)
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -147,7 +149,9 @@ class Figures:
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        self.plt.colorbar(label=r"$c_{\mathrm{tr}, 1}$")
+        cbar = self.plt.colorbar(label=r"$c_{\mathrm{tr}, 1}$")
+        cbar.formatter.set_powerlimits((0, 0))
+        cbar.formatter.set_useMathText(True)
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -169,7 +173,9 @@ class Figures:
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        self.plt.colorbar(label=r"$c_{\mathrm{ci}, 1}$")
+        cbar = self.plt.colorbar(label=r"$c_{\mathrm{ci}, 1}$")
+        cbar.formatter.set_powerlimits((0, 0))
+        cbar.formatter.set_useMathText(True)
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
@@ -191,7 +197,9 @@ class Figures:
             cmap="coolwarm",
             norm=colors.CenteredNorm(),
         )
-        self.plt.colorbar(label=r"$c_{\mathrm{tot}, 1}$")
+        cbar = self.plt.colorbar(label=r"$c_{\mathrm{tot}, 1}$")
+        cbar.formatter.set_powerlimits((0, 0))
+        cbar.formatter.set_useMathText(True)
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$y$")
         self.plt.tight_layout()
