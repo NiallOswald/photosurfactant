@@ -37,12 +37,12 @@ def plot_leading_order():  # noqa: D103
 
     ax[0].plot(yy, leading.c_tr(yy), "k-")
     ax[0].set_ylabel(r"$c_{\mathrm{tr}, 0}$")
-    ax[0].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+    # ax[0].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
     ax[1].plot(yy, leading.c_ci(yy), "k-")
     ax[1].set_xlabel(r"$y$")
     ax[1].set_ylabel(r"$c_{\mathrm{ci}, 0}$")
-    ax[1].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+    # ax[1].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
     plt.tight_layout()
 
