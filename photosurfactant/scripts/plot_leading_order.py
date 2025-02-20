@@ -28,6 +28,10 @@ def plot_leading_order():  # noqa: D103
     print("Gamma_tr:", leading.gamma_tr)
     print("Gamma_ci:", leading.gamma_ci)
 
+    # Print kinetic fluxes
+    print("J_tr:", leading.J_tr)
+    print("J_ci:", leading.J_ci)
+
     # Figure setup
     plt = plot_params.plt
     yy = np.linspace(0, 1, plot_params.grid_size)
