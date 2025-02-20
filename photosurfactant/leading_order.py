@@ -1,6 +1,7 @@
 """Leading order solution to the photosurfactant model."""
 
 from .parameters import Parameters
+from .utils import hyperbolic, polyder, Y
 import numpy as np
 
 
@@ -143,58 +144,35 @@ class LeadingOrder(object):
         else:
             raise ValueError("No valid solution found.")
 
-    def c_ci(self, y):
+    def c_tr(self, y, y_order=0):
+        """Concentration of trans surfactant at leading order."""
+        params = self.params
+        return params.alpha * self.A_0 * polyder(Y**0, y_order)(
+            y
+        ) + params.eta * self.B_0 * np.sqrt(params.zeta) ** y_order * hyperbolic(
+            y_order
+        )(
+            y * np.sqrt(params.zeta)
+        )
+
+    def c_ci(self, y, y_order=0):
         """Concentration of cis surfactant at leading order."""
         params = self.params
-        return self.A_0 - self.B_0 * np.cosh(y * np.sqrt(params.zeta))
+        return self.A_0 * polyder(Y**0, y_order)(y) - self.B_0 * np.sqrt(
+            params.zeta
+        ) ** y_order * hyperbolic(y_order)(y * np.sqrt(params.zeta))
 
-    def c_tr(self, y):
-        """Concentration of trans surfactant at leading order."""
-        return (self.params.alpha + 1) * self.A_0 - self.params.eta * self.c_ci(y)
-
-    def c(self, y):
+    def c(self, y, y_order=0):
         """Concentration of surfactant at leading order."""
-        return np.array([self.c_tr(y), self.c_ci(y)])
-
-    def d_c_ci(self, y):
-        """First derivative of the cis concentration at leading order."""
-        params = self.params
-        return -self.B_0 * np.sqrt(params.zeta) * np.sinh(y * np.sqrt(params.zeta))
-
-    def d_c_tr(self, y):
-        """First derivative of the trans concentration at leading order."""
-        return -self.params.eta * self.d_c_ci(y)
-
-    def d_c(self, y):
-        """First derivative of the surfactant concentration at leading order."""
-        return np.array([self.d_c_tr(y), self.d_c_ci(y)])
-
-    def d2_c_ci(self, y):
-        """Second derivative of the cis concentration at leading order."""
-        params = self.params
-        return -self.B_0 * params.zeta * np.cosh(y * np.sqrt(params.zeta))
-
-    def d2_c_tr(self, y):
-        """Second derivative of the trans concentration at leading order."""
-        return -self.params.eta * self.d2_c_ci(y)
-
-    def d2_c(self, y):
-        """Second derivative of the surfactant concentration at leading order."""
-        return np.array([self.d2_c_tr(y), self.d2_c_ci(y)])
-
-    def i_c_ci(self, y, y_s=0):
-        """Integral of the cis concentration at leading order."""
-        params = self.params
-        return (
-            self.A_0 * y
-            - self.B_0 / np.sqrt(params.zeta) * np.sinh(y * np.sqrt(params.zeta))
-        ) - (self.i_c_ci(y_s) if y_s else 0)
+        return np.array([self.c_tr(y, y_order), self.c_ci(y, y_order)])
 
     def i_c_tr(self, y, y_s=0):
         """Integral of the trans concentration at leading order."""
-        return (self.params.alpha + 1) * self.A_0 * (
-            y - y_s
-        ) - self.params.eta * self.i_c_ci(y, y_s)
+        return self.c_tr(y, y_order=-1) - self.c_tr(y_s, y_order=-1)
+
+    def i_c_ci(self, y, y_s=0):
+        """Integral of the cis concentration at leading order."""
+        return self.c_ci(y, y_order=-1) - self.c_ci(y_s, y_order=-1)
 
     def i_c(self, y, y_s):
         """Integral of the surfactant concentration at leading order."""
