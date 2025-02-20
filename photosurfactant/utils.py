@@ -1,6 +1,36 @@
 """Utility functions for the photosurfactant model."""
 
 from argparse import ArgumentParser
+import numpy as np
+
+
+Y = np.poly1d([1, 0])  # Polynomial for differentiation
+
+
+def hyperbolic(n):
+    """Return the n-th derivative of cosh."""
+    return np.sinh if n % 2 else np.cosh
+
+
+def polyder(p: np.poly1d, n: int):
+    """Wrap np.polyder and np.polyint."""
+    return p.deriv(n) if n > 0 else p.integ(-n)
+
+
+def to_arr(vals, unknowns):
+    """Convert a dictionary of values to an array."""
+    arr = np.zeros(len(unknowns), dtype=complex)
+    for key in vals.keys():
+        if key not in unknowns:
+            raise ValueError(f"Unknown key: {key}")
+
+    for i, key in enumerate(unknowns):
+        try:
+            arr[i] = vals[key]
+        except KeyError:
+            pass
+
+    return arr
 
 
 def parameter_parser(parser: ArgumentParser):

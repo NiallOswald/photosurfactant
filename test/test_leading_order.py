@@ -13,12 +13,12 @@ def test_bulk_concentrations():
     yy = np.linspace(0, 1, 100)
 
     eq_tr = (
-        (1 / params.Pen_tr) * leading.d2_c_tr(yy)
+        (1 / params.Pen_tr) * leading.c_tr(yy, y_order=2)
         - params.Dam_tr * leading.c_tr(yy)
         + params.Dam_ci * leading.c_ci(yy)
     )
     eq_ci = (
-        (1 / params.Pen_ci) * leading.d2_c_ci(yy)
+        (1 / params.Pen_ci) * leading.c_ci(yy, y_order=2)
         + params.Dam_tr * leading.c_tr(yy)
         - params.Dam_ci * leading.c_ci(yy)
     )
@@ -63,10 +63,12 @@ def test_mass_balance():
     leading = LeadingOrder(params)
 
     eq_tr = (
-        params.k_tr * params.chi_tr / params.Pen_tr * leading.d_c_tr(1) + leading.J_tr
+        params.k_tr * params.chi_tr / params.Pen_tr * leading.c_tr(1, y_order=1)
+        + leading.J_tr
     )
     eq_ci = (
-        params.k_ci * params.chi_ci / params.Pen_ci * leading.d_c_ci(1) + leading.J_ci
+        params.k_ci * params.chi_ci / params.Pen_ci * leading.c_ci(1, y_order=1)
+        + leading.J_ci
     )
 
     assert np.allclose(eq_tr, 0)
@@ -92,4 +94,4 @@ def test_no_flux():
     params = Parameters()
     leading = LeadingOrder(params)
 
-    assert np.allclose(leading.d_c(0), 0)
+    assert np.allclose(leading.c(0, y_order=1), 0)

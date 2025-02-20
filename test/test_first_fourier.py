@@ -134,7 +134,7 @@ def test_p_2():
                     1.0j
                     * k
                     * first._psi(k, y)[np.newaxis, :]
-                    * leading.d_c_ci(y)
+                    * leading.c_ci(y, y_order=1)
                     * params.Pen_ci
                     / (alpha + eta)
                     * np.array([eta**2 - eta, eta**2 + alpha])[:, np.newaxis]
@@ -183,7 +183,7 @@ def test_p():
                     1.0j
                     * k
                     * first._psi(k, y)[np.newaxis, :]
-                    * leading.d_c_ci(y)
+                    * leading.c_ci(y, y_order=1)
                     * params.Pen_ci
                     / (alpha + eta)
                     * np.array([eta**2 - eta, eta**2 + alpha])[:, np.newaxis]
@@ -222,7 +222,7 @@ def test_bulk_concentration():
                     1.0j
                     * k
                     * first._psi(k, y)
-                    * (params.P @ leading.d_c(y)[:, np.newaxis])
+                    * (params.P @ leading.c(y, y_order=1)[:, np.newaxis])
                 )
                 for k in wavenumbers
             ]

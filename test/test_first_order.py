@@ -135,7 +135,7 @@ def test_bulk_concentrations(func):
 
     eq_tr = np.array(
         [
-            leading.d_c_tr(y) * first.v(xx, y)
+            leading.c_tr(y, y_order=1) * first.v(xx, y)
             - 1
             / params.Pen_tr
             * (first.c_tr(xx, y, x_order=2) + first.c_tr(xx, y, y_order=2))
@@ -146,7 +146,7 @@ def test_bulk_concentrations(func):
     )
     eq_ci = np.array(
         [
-            leading.d_c_ci(y) * first.v(xx, y)
+            leading.c_ci(y, y_order=1) * first.v(xx, y)
             - 1
             / params.Pen_ci
             * (first.c_ci(xx, y, x_order=2) + first.c_ci(xx, y, y_order=2))
@@ -221,14 +221,14 @@ def test_kinetic_flux(func):
 
     eq_tr = params.Bit_tr * (
         params.k_tr
-        * (first.c_tr(xx, 1) + first.S(xx) * leading.d_c_tr(1))
+        * (first.c_tr(xx, 1) + first.S(xx) * leading.c_tr(1, y_order=1))
         * (1 - leading.gamma_tr - leading.gamma_ci)
         - params.k_tr * leading.c_tr(1) * (first.gamma_tr(xx) + first.gamma_ci(xx))
         - first.gamma_tr(xx)
     ) - first.J_tr(xx)
     eq_ci = params.Bit_ci * (
         params.k_ci
-        * (first.c_ci(xx, 1) + first.S(xx) * leading.d_c_ci(1))
+        * (first.c_ci(xx, 1) + first.S(xx) * leading.c_ci(1, y_order=1))
         * (1 - leading.gamma_tr - leading.gamma_ci)
         - params.k_ci * leading.c_ci(1) * (first.gamma_tr(xx) + first.gamma_ci(xx))
         - first.gamma_ci(xx)
@@ -317,10 +317,10 @@ def test_mass_balance(func):
     xx = np.linspace(-params.L, params.L, 100)
 
     eq_tr = params.k_tr * params.chi_tr / params.Pen_tr * (
-        first.c_tr(xx, 1, y_order=1) + first.S(xx) * leading.d2_c_tr(1)
+        first.c_tr(xx, 1, y_order=1) + first.S(xx) * leading.c_tr(1, y_order=2)
     ) + first.J_tr(xx)
     eq_ci = params.k_ci * params.chi_ci / params.Pen_ci * (
-        first.c_ci(xx, 1, y_order=1) + first.S(xx) * leading.d2_c_ci(1)
+        first.c_ci(xx, 1, y_order=1) + first.S(xx) * leading.c_ci(1, y_order=2)
     ) + first.J_ci(xx)
 
     assert np.allclose(eq_tr, 0)
