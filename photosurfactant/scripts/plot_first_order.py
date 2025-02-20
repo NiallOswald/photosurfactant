@@ -302,7 +302,7 @@ class Figures:
         self.plt.plot(self.xx, self.JJ_ci, "b-.", label=r"$J_{\mathrm{ci}, 1}$")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel("Kinetic Flux")
-        self.plt.legend(loc="upper right")
+        self.plt.legend(loc="lower right")
         self.plt.grid()
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
