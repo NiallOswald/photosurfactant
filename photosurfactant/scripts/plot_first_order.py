@@ -326,24 +326,24 @@ def plot_first_order():  # noqa: D103
     first_order_parser(parser)
     args = parser.parse_args()
 
-    root_index = args.root_index
-    func = eval("lambda x, L: " + args.func)
-    problem = args.problem
-
     params = Parameters.from_dict(vars(args))
     plot_params = PlottingParameters.from_dict(vars(args))
+
+    root_index = args.root_index
+    func = eval("lambda x, params: " + args.func)
+    problem = args.problem
 
     # Calculate Fourier series coefficients
     if args.mollify:
         wavenumbers, func_coeffs = convolution_coeff(
-            lambda x: func(x, params.L),
+            lambda x: func(x, params),
             mollifier(delta=args.delta),  # noqa: F405
             params.L,
             plot_params.wave_count,
         )
     else:
         wavenumbers, func_coeffs = fourier_series_coeff(
-            lambda x: func(x, params.L), params.L, plot_params.wave_count
+            lambda x: func(x, params), params.L, plot_params.wave_count
         )
 
     # Solve leading order problem
