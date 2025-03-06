@@ -224,7 +224,7 @@ class LeadingOrder(object):
 
     @property
     def M(self):  # noqa: N802
-        """Matrix M from (x.xx)."""  # TODO: Add equation reference
+        """Matrix M from (5.8)."""
         params = self.params
         return params.A + params.P @ params.B @ np.array(
             [
