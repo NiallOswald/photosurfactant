@@ -17,8 +17,17 @@ class LeadingOrder(object):
             the branch is selected automatically.
         """
         self.params = params
-        self.A_0_vals, self.B_0_vals = self._initialize()
-        self.set_root(root_index)
+        self._initialize()
+
+        if root_index == -1:
+            self._trim_roots()
+            if len(self.roots) > 1:
+                raise ValueError(
+                    "Multiple valid solution branches detected. You can override this "
+                    "message by explicitly setting a solution branch using root_index."
+                )
+
+        (self.A_0, self.B_0) = self.roots[root_index]
 
     def _initialize(self):
         """Initialize the leading order solution."""
@@ -114,19 +123,12 @@ class LeadingOrder(object):
         # Solve for A_0
         A_0 = -(p * B_0 + s) / (q * B_0 + r) * B_0  # noqa: N806
 
-        return A_0, B_0
+        self.roots = [(a, b) for a, b in zip(A_0, B_0)]
 
-    def set_root(self, root_index: int):
-        """Set the solution branch."""
-        if root_index == -1:
-            self._set_root_auto()
-        else:
-            self.A_0 = self.A_0_vals[root_index]
-            self.B_0 = self.B_0_vals[root_index]
-
-    def _set_root_auto(self):
-        """Automatically set the solution branch."""
-        for A_0, B_0 in zip(self.A_0_vals, self.B_0_vals):
+    def _trim_roots(self):
+        """Trim any invalid roots."""
+        verified_roots = []
+        for A_0, B_0 in self.roots:
             if np.isclose(A_0.imag, 0):
                 self.A_0, self.B_0 = A_0.real, B_0.real
             else:
@@ -138,11 +140,10 @@ class LeadingOrder(object):
                 continue
             elif self.c_tr(0) < 0 or self.c_tr(1) < 0:
                 continue
-            else:
-                break
 
-        else:
-            raise ValueError("No valid solution found.")
+            verified_roots.append([A_0, B_0])
+
+        self.roots = verified_roots
 
     def c_tr(self, y, y_order=0):
         """Concentration of trans surfactant at leading order."""
