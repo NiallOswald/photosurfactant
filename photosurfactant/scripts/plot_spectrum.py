@@ -82,6 +82,7 @@ def plot_spectrum():  # noqa: D103
         plt.savefig(
             plot_params.path
             + f"interface_spectrum{plot_params.label}.{plot_params.format}",
+            bbox_inches="tight",
         )
     else:
         plt.show()
@@ -109,6 +110,7 @@ def plot_spectrum():  # noqa: D103
         plt.savefig(
             plot_params.path
             + f"square_wave_spectrum{plot_params.label}.{plot_params.format}",
+            bbox_inches="tight",
         )
     else:
         plt.show()
@@ -138,6 +140,7 @@ def plot_spectrum():  # noqa: D103
     if plot_params.save:
         plt.savefig(
             plot_params.path + f"square_wave{plot_params.label}.{plot_params.format}",
+            bbox_inches="tight",
         )
     else:
         plt.show()
