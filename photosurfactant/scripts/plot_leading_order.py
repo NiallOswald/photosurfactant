@@ -54,6 +54,7 @@ def plot_leading_order():  # noqa: D103
         plt.savefig(
             plot_params.path
             + f"leading_concentrations{plot_params.label}.{plot_params.format}",
+            bbox_inches="tight",
         )
     else:
         plt.show()

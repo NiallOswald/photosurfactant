@@ -89,6 +89,7 @@ class Figures:
             self.plt.savefig(
                 self.plot_params.path
                 + f"interfacial_velocity{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -104,6 +105,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"streamlines{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -135,6 +137,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"velocity{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -159,6 +162,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"concentration_tr{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -183,6 +187,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"concentration_ci{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -207,6 +212,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"concentration_tot{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -236,6 +242,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"surface_excess{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -252,6 +259,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"intensity{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -268,6 +276,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"interface{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -285,6 +294,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"tension{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
@@ -310,6 +320,7 @@ class Figures:
         if self.plot_params.save:
             self.plt.savefig(
                 self.plot_params.path + f"flux{self.label}.{self.format}",
+                bbox_inches="tight",
             )
         else:
             self.plt.show()
