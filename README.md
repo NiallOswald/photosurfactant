@@ -5,7 +5,7 @@
 ## Installation
 This package can be installed using `pip` through PyPI (Python Package Index). Simply run:
 ```bash
-$ python -m pip install <not-yet-available>
+$ python -m pip install git+https://github.com/NiallOswald/photosurfactant
 ```
 This will install the `photosurfactant` Python package and any necessary dependencies.
 
