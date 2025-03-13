@@ -120,6 +120,7 @@ class Figures:
             self.yy[::step],
             self.uu[::step, ::step],
             self.vv[::step, ::step],
+            scale=1e1 * np.linalg.norm([self.uu, self.vv], axis=0).max(),
         )
         self.plt.imshow(
             np.sqrt(self.uu[::-1, :] ** 2 + self.vv[::-1, :] ** 2),
