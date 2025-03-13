@@ -141,7 +141,7 @@ class LeadingOrder(object):
             elif self.c_tr(0) < 0 or self.c_tr(1) < 0:
                 continue
 
-            verified_roots.append([A_0, B_0])
+            verified_roots.append([self.A_0, self.B_0])
 
         self.roots = verified_roots
 
