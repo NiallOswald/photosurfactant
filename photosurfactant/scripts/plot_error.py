@@ -56,7 +56,7 @@ def plot_error():  # noqa: D103
         # Compute error
         error[i, 0] = np.linalg.norm(cc_tr_delta - cc_tr_0)
         error[i, 1] = np.linalg.norm(cc_tr_delta - (cc_tr_0 + delta * cc_tr_1))
-        print(f"Error at delta = {delta}. Leading: {error[i, 0]}, first: {error[i, 1]}")
+        print(f"Error at delta = {delta:.2e}. Leading: {error[i, 0]:.2e}, first: {error[i, 1]:.2e}")
 
     plt.loglog(delta_values, error[:, 0], "o-", label="Leading order")
     plt.loglog(delta_values, error[:, 1], "o-", label="First order")
