@@ -1,6 +1,7 @@
 """A module for the Parameters class."""
 
 import inspect
+from copy import copy
 from dataclasses import dataclass
 
 import numpy as np
@@ -62,22 +63,6 @@ class Parameters:
                 "Adsorption rates do not satisfy the condition k * chi = const."
             )
 
-        self.alpha = self.Dam_ci / self.Dam_tr
-        self.eta = self.Pen_tr / self.Pen_ci
-        self.zeta = self.Pen_tr * self.Dam_tr + self.Pen_ci * self.Dam_ci
-
-        self._D = np.array([[self.Dam_tr, -self.Dam_ci], [-self.Dam_tr, self.Dam_ci]])
-        self.P = np.array([[self.Pen_tr, 0.0], [0.0, self.Pen_ci]])
-        self.P_s = np.array([[self.Pen_tr_s, 0.0], [0.0, self.Pen_ci_s]])
-        self.B = np.array([[self.Bit_tr, 0.0], [0.0, self.Bit_ci]])
-        self.K = np.array([[self.k_tr, 0.0], [0.0, self.k_ci]])
-
-        self.A = self.P @ self._D
-        self.A_s = self.P_s @ self._D
-
-        self.V = np.array([[self.alpha, self.eta], [1.0, -1.0]])
-        self.Lambda = np.array([[0.0, 0.0], [0.0, self.zeta]])
-
     @classmethod
     def from_dict(cls, kwargs):
         """Load parameters from a dictionary."""
@@ -89,6 +74,58 @@ class Parameters:
             }
         )
 
+    def copy(self):
+        """Return a copy of the class."""
+        return copy(self)
+
+    @property
+    def alpha(self):
+        return self.Dam_ci / self.Dam_tr
+
+    @property
+    def eta(self):
+        return self.Pen_tr / self.Pen_ci
+
+    @property
+    def zeta(self):
+        return self.Pen_tr * self.Dam_tr + self.Pen_ci * self.Dam_ci
+
+    @property
+    def P(self):
+        return np.array([[self.Pen_tr, 0.0], [0.0, self.Pen_ci]])
+
+    @property
+    def P_s(self):
+        return np.array([[self.Pen_tr_s, 0.0], [0.0, self.Pen_ci_s]])
+
+    @property
+    def B(self):
+        return np.array([[self.Bit_tr, 0.0], [0.0, self.Bit_ci]])
+
+    @property
+    def K(self):
+        return np.array([[self.k_tr, 0.0], [0.0, self.k_ci]])
+
+    @property
+    def A(self):
+        return self.P @ self._D
+
+    @property
+    def A_s(self):
+        return self.P_s @ self._D
+
+    @property
+    def V(self):
+        return np.array([[self.alpha, self.eta], [1.0, -1.0]])
+
+    @property
+    def Lambda(self):
+        return np.array([[0.0, 0.0], [0.0, self.zeta]])
+
+    @property
+    def _D(self):
+        return np.array([[self.Dam_tr, -self.Dam_ci], [-self.Dam_tr, self.Dam_ci]])
+
 
 @dataclass
 class PlottingParameters:
@@ -98,6 +135,7 @@ class PlottingParameters:
     :param grid_size: The number of grid points to evaluate the solution on.
     :param mollify: A flag to mollify the input function.
     :param delta: The mollification parameter.
+    :param norm_scale: Normalization type. Either "linear" or "log".
     :param save: A flag to save the figures to disk.
     :param path: The path to save the figures to.
     :param label: A label to append to the figure filenames.
@@ -108,6 +146,7 @@ class PlottingParameters:
     grid_size: int = 1000
     mollify: bool = False
     delta: float = 0.5
+    norm_scale: str = "linear"
     save: bool = False
     path: str = "./"
     label: str = ""
@@ -129,6 +168,10 @@ class PlottingParameters:
             }
         )
 
+    def copy(self):
+        """Return a copy of the class."""
+        return copy(self)
+
     def plot_setup(self):
         """Set up the matplotlib rcParams."""
         import matplotlib.pyplot as plt
@@ -137,6 +180,7 @@ class PlottingParameters:
             "font.size": 18,
             "axes.labelsize": 18,
             "axes.titlesize": 18,
+            "axes.formatter.useoffset": True,
             "xtick.labelsize": 16,
             "ytick.labelsize": 16,
             "legend.fontsize": 16,
@@ -152,6 +196,7 @@ class PlottingParameters:
                     "text.usetex": True,
                     "font.family": "serif",
                     "font.serif": ["Computer Modern Roman"],
+                    "axes.formatter.use_mathtext": True,
                 }
                 | rcparams
             )
