@@ -186,3 +186,9 @@ def first_order_parser(parser: ArgumentParser):
         help="The mollification parameter for the light intensity/interface "
         "perturbation.",
     )
+    parser.add_argument(
+        "--norm_scale",
+        choices=["linear", "log"],
+        default="linear",
+        help="The normalization type.",
+    )

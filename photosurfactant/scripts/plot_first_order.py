@@ -52,6 +52,7 @@ class Figures:
         self.ff = self.first.f(self.xx)
 
         self.psii = np.array([self.first.psi(self.xx, y) for y in self.yy])
+        self.ppressure = np.array([self.first.pressure(self.xx, y) for y in self.yy])
         self.uu = np.array([self.first.u(self.xx, y) for y in self.yy])
         self.vv = np.array([self.first.v(self.xx, y) for y in self.yy])
         self.cc_tr = np.array([self.first.c_tr(self.xx, y) for y in self.yy])
@@ -72,6 +73,7 @@ class Figures:
         np.savetxt(path + "SS.csv", self.SS, delimiter=",")
         np.savetxt(path + "ff.csv", self.ff, delimiter=",")
         np.savetxt(path + "psii.csv", self.psii, delimiter=",")
+        np.savetxt(path + "ppressure.csv", self.ppressure, delimiter=",")
         np.savetxt(path + "uu.csv", self.uu, delimiter=",")
         np.savetxt(path + "vv.csv", self.vv, delimiter=",")
         np.savetxt(path + "cc_tr.csv", self.cc_tr, delimiter=",")
@@ -79,10 +81,10 @@ class Figures:
 
     def plot_interfacial_velocity(self):
         """Plot the interfacial velocity."""
-        self.plt.figure()
+        self.plt.figure(figsize=(6, 5))
         self.plt.plot(self.xx, self.uu[-1, :], "k-")
         self.plt.xlabel(r"$x$")
-        self.plt.ylabel(r"$u_1$")
+        self.plt.ylabel(r"Interfacial Velocity ($u_1$)")
         self.plt.grid()
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
@@ -96,37 +98,14 @@ class Figures:
         else:
             self.plt.show()
 
-    def plot_streamlines(self):
-        """Plot the streamlines."""
-        self.plt.figure(figsize=(10.5, 4))
-        self.plt.contour(self.xx, self.yy, self.psii, levels=15, colors="black")
-        self.plt.xlabel(r"$x$")
-        self.plt.ylabel(r"$y$")
-        self.plt.tight_layout()
-
-        if self.plot_params.save:
-            self.plt.savefig(
-                self.plot_params.path + f"streamlines{self.label}.{self.format}",
-                bbox_inches="tight",
-            )
-        else:
-            self.plt.show()
-
-    def plot_velocity(self):
-        """Plot the velocity field."""
-        step = self.plot_params.grid_size // 20
-
+    def plot_streamplot(self):
+        """Plot the streamlines and velocity field."""
         self.plt.figure(figsize=(12, 4))
-        self.plt.quiver(
-            self.xx[::step],
-            self.yy[::step],
-            self.uu[::step, ::step],
-            self.vv[::step, ::step],
-            scale=1e1 * np.linalg.norm([self.uu, self.vv], axis=0).max(),
-        )
+        self.plt.streamplot(self.xx, self.yy, self.uu, self.vv, color="black")
         self.plt.imshow(
-            np.sqrt(self.uu[::-1, :] ** 2 + self.vv[::-1, :] ** 2),
+            np.sqrt(self.uu**2 + self.vv**2),
             extent=[-self.params.L, self.params.L, 0, 1],
+            origin="lower",
             aspect="auto",
             cmap="Reds",
         )
@@ -139,90 +118,163 @@ class Figures:
 
         if self.plot_params.save:
             self.plt.savefig(
-                self.plot_params.path + f"velocity{self.label}.{self.format}",
+                self.plot_params.path + f"streamplot{self.label}.{self.format}",
                 bbox_inches="tight",
             )
         else:
             self.plt.show()
+
+    def plot_streamlines(self):
+        """Plot the streamlines and velocity field."""
+        self.plt.figure(figsize=(12, 4))
+        self.plt.contour(self.xx, self.yy, self.psii, colors="black")
+        self.plt.imshow(
+            np.sqrt(self.uu**2 + self.vv**2),
+            extent=[-self.params.L, self.params.L, 0, 1],
+            origin="lower",
+            aspect="auto",
+            cmap="Reds",
+        )
+        cbar = self.plt.colorbar(label="Velocity")
+        cbar.formatter.set_powerlimits((0, 0))
+        cbar.formatter.set_useMathText(True)
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$y$")
+        self.plt.tight_layout()
+
+        if self.plot_params.save:
+            self.plt.savefig(
+                self.plot_params.path + f"streamlines{self.label}.{self.format}",
+                bbox_inches="tight",
+            )
+        else:
+            self.plt.show()
+
+    def plot_concentration_crop(self, lims):
+        """Plot the concentration field."""
+        _, axs = self.plt.subplots(1, 3, figsize=(12, 4), constrained_layout=True)
+        conc_fields = [self.cc_tr, self.cc_ci, self.cc_tr + self.cc_ci]
+        ax_labels = [
+            r"$c_{\mathrm{tr}, 1}$",
+            r"$c_{\mathrm{ci}, 1}$",
+            r"$c_{\mathrm{tot}, 1}$",
+        ]
+
+        conc_lim = np.max(np.abs(conc_fields))
+        if self.plot_params.norm_scale == "linear":
+            norm = colors.CenteredNorm(vcenter=0.0, halfrange=conc_lim)
+        elif self.plot_params.norm_scale == "log":
+            norm = colors.SymLogNorm(
+                linthresh=1e-2 * conc_lim,
+                vmin=-conc_lim,
+                vmax=conc_lim,
+            )
+        else:
+            raise ValueError("Invalid norm scale.")
+
+        images = []
+        for ax, field, label in zip(axs.flat, conc_fields, ax_labels):
+            images.append(
+                ax.imshow(
+                    field,
+                    extent=[-self.params.L, self.params.L, 0, 1],
+                    origin="lower",
+                    aspect="auto",
+                    cmap="coolwarm",
+                    norm=norm,
+                )
+            )
+
+            ax.set_xlabel(r"$x$")
+            ax.set_ylabel(r"$y$")
+            ax.set_title(label)
+            ax.set_xlim(lims)
+
+        # Hide duplicate labels
+        for ax in axs.flat:
+            ax.label_outer()
+
+        cbar = self.plt.colorbar(
+            images[0], label="Concentration", ax=axs.ravel().tolist()
+        )
+
+        if self.plot_params.norm_scale == "linear":
+            cbar.formatter.set_powerlimits((0, 0))
+            cbar.formatter.set_useMathText(True)
+
+        if self.plot_params.save:
+            self.plt.savefig(
+                self.plot_params.path + f"concentration{self.label}.{self.format}",
+                bbox_inches="tight",
+            )
+        else:
+            self.plt.show()
+
+    def _plot_field(self, field, label, prefix=""):
+        """Plot the field of a given scalar."""
+        if self.plot_params.norm_scale == "linear":
+            norm = colors.CenteredNorm()
+        elif self.plot_params.norm_scale == "log":
+            conc_lim = np.max(np.abs(field))
+            norm = colors.SymLogNorm(
+                linthresh=1e-2 * conc_lim,
+                vmin=-conc_lim,
+                vmax=conc_lim,
+            )
+        else:
+            raise ValueError("Invalid norm scale.")
+
+        self.plt.figure(figsize=(12, 4))
+        self.plt.imshow(
+            field,
+            extent=[-self.params.L, self.params.L, 0, 1],
+            origin="lower",
+            aspect="auto",
+            cmap="coolwarm",
+            norm=norm,
+        )
+
+        cbar = self.plt.colorbar(label=label)
+
+        if self.plot_params.norm_scale == "linear":
+            cbar.formatter.set_powerlimits((0, 0))
+            cbar.formatter.set_useMathText(True)
+
+        self.plt.xlabel(r"$x$")
+        self.plt.ylabel(r"$y$")
+        self.plt.tight_layout()
+
+        if self.plot_params.save:
+            self.plt.savefig(
+                self.plot_params.path + prefix + f"{self.label}.{self.format}",
+                bbox_inches="tight",
+            )
+        else:
+            self.plt.show()
+
+    def plot_pressure(self):
+        """Plot the pressure field."""
+        self._plot_field(self.ppressure, r"$p_1$", "pressure")
 
     def plot_concentration_tr(self):
         """Plot the concentration field of the trans surfactant."""
-        self.plt.figure(figsize=(12, 4))
-        self.plt.imshow(
-            self.cc_tr[::-1, :],
-            extent=[-self.params.L, self.params.L, 0, 1],
-            aspect="auto",
-            cmap="coolwarm",
-            norm=colors.CenteredNorm(),
-        )
-        cbar = self.plt.colorbar(label=r"$c_{\mathrm{tr}, 1}$")
-        cbar.formatter.set_powerlimits((0, 0))
-        cbar.formatter.set_useMathText(True)
-        self.plt.xlabel(r"$x$")
-        self.plt.ylabel(r"$y$")
-        self.plt.tight_layout()
-
-        if self.plot_params.save:
-            self.plt.savefig(
-                self.plot_params.path + f"concentration_tr{self.label}.{self.format}",
-                bbox_inches="tight",
-            )
-        else:
-            self.plt.show()
+        self._plot_field(self.cc_tr, r"$c_{\mathrm{tr}, 1}$", "concentration_tr")
 
     def plot_concentration_ci(self):
         """Plot the concentration field of the cis surfactant."""
-        self.plt.figure(figsize=(12, 4))
-        self.plt.imshow(
-            self.cc_ci[::-1, :],
-            extent=[-self.params.L, self.params.L, 0, 1],
-            aspect="auto",
-            cmap="coolwarm",
-            norm=colors.CenteredNorm(),
-        )
-        cbar = self.plt.colorbar(label=r"$c_{\mathrm{ci}, 1}$")
-        cbar.formatter.set_powerlimits((0, 0))
-        cbar.formatter.set_useMathText(True)
-        self.plt.xlabel(r"$x$")
-        self.plt.ylabel(r"$y$")
-        self.plt.tight_layout()
-
-        if self.plot_params.save:
-            self.plt.savefig(
-                self.plot_params.path + f"concentration_ci{self.label}.{self.format}",
-                bbox_inches="tight",
-            )
-        else:
-            self.plt.show()
+        self._plot_field(self.cc_ci, r"$c_{\mathrm{ci}, 1}$", "concentration_ci")
 
     def plot_concentration_tot(self):
         """Plot the total surfactant concentration field."""
-        self.plt.figure(figsize=(12, 4))
-        self.plt.imshow(
-            self.cc_ci[::-1, :] + self.cc_tr[::-1, :],
-            extent=[-self.params.L, self.params.L, 0, 1],
-            aspect="auto",
-            cmap="coolwarm",
-            norm=colors.CenteredNorm(),
+        self._plot_field(
+            self.cc_tr + self.cc_ci,
+            r"$c_{\mathrm{tot}, 1}$",
+            "concentration_tot",
         )
-        cbar = self.plt.colorbar(label=r"$c_{\mathrm{tot}, 1}$")
-        cbar.formatter.set_powerlimits((0, 0))
-        cbar.formatter.set_useMathText(True)
-        self.plt.xlabel(r"$x$")
-        self.plt.ylabel(r"$y$")
-        self.plt.tight_layout()
-
-        if self.plot_params.save:
-            self.plt.savefig(
-                self.plot_params.path + f"concentration_tot{self.label}.{self.format}",
-                bbox_inches="tight",
-            )
-        else:
-            self.plt.show()
 
     def plot_surface_excess(self):
         """Plot the surface excess concentrations."""
-        self.plt.figure()
+        self.plt.figure(figsize=(6, 5))
         self.plt.plot(
             self.xx,
             self.ggamma_tr + self.ggamma_ci,
@@ -236,7 +288,7 @@ class Figures:
             self.xx, self.ggamma_ci, "b-.", label=r"$\Gamma_{\mathrm{ci}, 1}$"
         )
         self.plt.xlabel(r"$x$")
-        self.plt.ylabel("Surface Excess Concentration")
+        self.plt.ylabel("Surface Excess")
         self.plt.legend(loc="lower right")
         self.plt.grid()
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
@@ -267,6 +319,57 @@ class Figures:
         else:
             self.plt.show()
 
+    def plot_intensity_slip_tension(self):
+        """Plot the light intensity, interfacial slip velocity, and surface tension."""
+        _, ax1 = self.plt.subplots(figsize=(10, 4.5))
+
+        slip_plt = ax1.plot(self.xx, self.uu[-1, :], "k-", label=r"$u_1$")
+        ax1.set_xlabel(r"$x$")
+        ax1.set_ylabel(r"$u_1$")
+        ax1.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+
+        ax2 = ax1.twinx()
+
+        tension_plt = ax2.plot(self.xx, self.ttension, "k--", label=r"$\gamma_1$")
+        ax2.set_ylabel(r"$\gamma_1$")
+        ax2.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+
+        # Align and stretch axes (must occur before intensity plot)
+        offset, scale = 2, 0.5  # Relative location/scale of intensity
+        _, limit = ax1.get_ylim()
+        ax1.set_ylim(-limit, offset * limit)
+        _, limit = ax2.get_ylim()
+        ax2.set_ylim(-limit, offset * limit)
+
+        # Plot intensity on first axes scaled by slip velocity
+        max_u = np.max(self.uu[-1, :])
+        base, max_height = offset * max_u, scale * max_u
+        arrow_xx, arrow_ff = self.xx[::20], self.ff[::20]
+        ax1.quiver(
+            arrow_xx,
+            [base + 0.5 * max_height],  # base of arrow
+            np.zeros_like(arrow_ff),
+            -(0.75 + arrow_ff),  # arrow length (scaled by max_height)
+            scale=1 / max_height,
+            width=0.005,
+            scale_units="y",
+            color="b",
+        )
+
+        # Fix for having a single legend over multiple axes
+        plots = slip_plt + tension_plt
+        labels = [plot.get_label() for plot in plots]
+        ax1.legend(plots, labels, loc="lower right")
+
+        if self.plot_params.save:
+            self.plt.savefig(
+                self.plot_params.path
+                + f"intensity_slip_tension{self.label}.{self.format}",
+                bbox_inches="tight",
+            )
+        else:
+            self.plt.show()
+
     def plot_interface(self):
         """Plot the surface shape."""
         self.plt.figure(figsize=(10, 4))
@@ -286,10 +389,10 @@ class Figures:
 
     def plot_surface_tension(self):
         """Plot the surface tension."""
-        self.plt.figure()
+        self.plt.figure(figsize=(6, 5))
         self.plt.plot(self.xx, self.ttension, "k-")
         self.plt.xlabel(r"$x$")
-        self.plt.ylabel(r"$\gamma_1$")
+        self.plt.ylabel(r"Surface Tension ($\gamma_1$)")
         self.plt.grid()
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
@@ -304,7 +407,7 @@ class Figures:
 
     def plot_fluxes(self):
         """Plot the fluxes."""
-        self.plt.figure()
+        self.plt.figure(figsize=(6, 5))
         self.plt.plot(
             self.xx,
             self.JJ_tr + self.JJ_ci,
@@ -380,12 +483,15 @@ def plot_first_order():  # noqa: D103
     # Plot figures
     figures = Figures(first, plot_params)
 
+    figures.plot_streamplot()
     figures.plot_streamlines()
-    figures.plot_velocity()
+    figures.plot_pressure()
+    figures.plot_concentration_crop(lims=[-3.0, 3.0])
     figures.plot_concentration_tr()
     figures.plot_concentration_ci()
     figures.plot_concentration_tot()
     figures.plot_intensity()
+    figures.plot_intensity_slip_tension()
     figures.plot_interface()
     figures.plot_surface_excess()
     figures.plot_surface_tension()
