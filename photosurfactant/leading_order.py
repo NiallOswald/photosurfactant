@@ -1,8 +1,9 @@
 """Leading order solution to the photosurfactant model."""
 
-from .parameters import Parameters
-from .utils import hyperbolic, polyder, Y
 import numpy as np
+
+from .parameters import Parameters
+from .utils import Y, hyperbolic, polyder
 
 
 class LeadingOrder(object):
@@ -89,9 +90,7 @@ class LeadingOrder(object):
             params.zeta
         ) * np.sinh(np.sqrt(params.zeta)) + params.Bit_tr * params.Bit_ci * (
             params.eta * params.k_tr + params.alpha * params.k_ci
-        ) * np.cosh(
-            np.sqrt(params.zeta)
-        )
+        ) * np.cosh(np.sqrt(params.zeta))
 
         # Solve for B_0
         poly = np.poly1d(
@@ -152,9 +151,7 @@ class LeadingOrder(object):
             y
         ) + params.eta * self.B_0 * np.sqrt(params.zeta) ** y_order * hyperbolic(
             y_order
-        )(
-            y * np.sqrt(params.zeta)
-        )
+        )(y * np.sqrt(params.zeta))
 
     def c_ci(self, y, y_order=0):
         """Concentration of cis surfactant at leading order."""

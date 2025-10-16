@@ -1,10 +1,11 @@
 """Test the eigenfunctions to first order problem."""
 
-from photosurfactant.parameters import Parameters
-from photosurfactant.leading_order import LeadingOrder
+import numpy as np
+
 from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff
-import numpy as np
+from photosurfactant.leading_order import LeadingOrder
+from photosurfactant.parameters import Parameters
 
 N_WAVE = 20
 

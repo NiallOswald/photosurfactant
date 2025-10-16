@@ -1,19 +1,21 @@
 #! /usr/bin/env python
-from photosurfactant.parameters import Parameters, PlottingParameters
-from photosurfactant.leading_order import LeadingOrder
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from math import *  # noqa: F401, F403
+
+import numpy as np
+from matplotlib import colors
+
 from photosurfactant.first_order import FirstOrder, Variables
-from photosurfactant.fourier import fourier_series_coeff, convolution_coeff
+from photosurfactant.fourier import convolution_coeff, fourier_series_coeff
 from photosurfactant.functions import *  # noqa: F401, F403
+from photosurfactant.leading_order import LeadingOrder
+from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.utils import (
+    first_order_parser,
+    leading_order_parser,
     parameter_parser,
     plot_parser,
-    leading_order_parser,
-    first_order_parser,
 )
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-import numpy as np
-from math import *  # noqa: F401, F403
-from matplotlib import colors
 
 
 class Figures:

@@ -1,17 +1,19 @@
 #! /usr/bin/env python
-from photosurfactant.parameters import Parameters, PlottingParameters
-from photosurfactant.leading_order import LeadingOrder
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+
+import numpy as np
+
 from photosurfactant.first_order import FirstOrder, Variables
-from photosurfactant.fourier import fourier_series_coeff, convolution_coeff
-from photosurfactant.functions import square_wave, mollifier
+from photosurfactant.fourier import convolution_coeff, fourier_series_coeff
+from photosurfactant.functions import mollifier, square_wave
+from photosurfactant.leading_order import LeadingOrder
+from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.utils import (
+    first_order_parser,
+    leading_order_parser,
     parameter_parser,
     plot_parser,
-    leading_order_parser,
-    first_order_parser,
 )
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-import numpy as np
 
 
 def plot_spectrum():  # noqa: D103
