@@ -167,3 +167,9 @@ data/
 
 # Mac stuff
 .DS_Store
+
+# IDEA
+.idea/
+
+# Lock files
+# uv.lock
