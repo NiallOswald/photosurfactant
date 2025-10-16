@@ -1,8 +1,9 @@
 """Test the solutions to leading order problem."""
 
-from photosurfactant.parameters import Parameters
-from photosurfactant.leading_order import LeadingOrder
 import numpy as np
+
+from photosurfactant.leading_order import LeadingOrder
+from photosurfactant.parameters import Parameters
 
 
 def test_bulk_concentrations():

@@ -1,12 +1,13 @@
 """Test the solutions to first order problem."""
 
-from photosurfactant.parameters import Parameters
-from photosurfactant.leading_order import LeadingOrder
-from photosurfactant.first_order import FirstOrder, Variables
-from photosurfactant.fourier import fourier_series_coeff
-from photosurfactant.functions import gaussian, super_gaussian, smoothed_square
 import numpy as np
 import pytest
+
+from photosurfactant.first_order import FirstOrder, Variables
+from photosurfactant.fourier import fourier_series_coeff
+from photosurfactant.functions import gaussian, smoothed_square, super_gaussian
+from photosurfactant.leading_order import LeadingOrder
+from photosurfactant.parameters import Parameters
 
 N_WAVE = 20
 

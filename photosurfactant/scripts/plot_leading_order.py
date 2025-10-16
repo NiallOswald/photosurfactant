@@ -1,10 +1,13 @@
 #! /usr/bin/env python
-from photosurfactant.parameters import Parameters, PlottingParameters
-from photosurfactant.leading_order import LeadingOrder
-from photosurfactant.utils import parameter_parser, plot_parser, leading_order_parser
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-import numpy as np
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 
+import numpy as np
+from matplotlib import colors
+
+from photosurfactant.leading_order import LeadingOrder
+from photosurfactant.limits import LargeDam, SmallDam
+from photosurfactant.parameters import Parameters, PlottingParameters
+from photosurfactant.utils import leading_order_parser, parameter_parser, plot_parser
 
 def plot_leading_order():  # noqa: D103
     parser = ArgumentParser(

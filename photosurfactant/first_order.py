@@ -1,12 +1,14 @@
 """First order solution to the photosurfactant model."""
 
-from .parameters import Parameters
-from .leading_order import LeadingOrder
-from .utils import to_arr, hyperbolic, polyder, Y
 from enum import Enum
 from functools import wraps
 from typing import Callable
+
 import numpy as np
+
+from .leading_order import LeadingOrder
+from .parameters import Parameters
+from .utils import Y, hyperbolic, polyder, to_arr
 
 
 class Symbols(Enum):  # TODO: This is unnecessary

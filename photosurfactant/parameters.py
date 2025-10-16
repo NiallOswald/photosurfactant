@@ -1,7 +1,8 @@
 """A module for the Parameters class."""
 
-from dataclasses import dataclass
 import inspect
+from dataclasses import dataclass
+
 import numpy as np
 
 
@@ -58,7 +59,7 @@ class Parameters:
     def __post_init__(self):  # noqa: D105
         if self.k_tr * self.chi_tr != self.k_ci * self.chi_ci:
             raise ValueError(
-                "Adsorption rates do not satisfy the condition " "k * chi = const."
+                "Adsorption rates do not satisfy the condition k * chi = const."
             )
 
         self.alpha = self.Dam_ci / self.Dam_tr

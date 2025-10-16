@@ -9,7 +9,7 @@ def gaussian(x, d=1.0):
 
 
 def super_gaussian(x, k, d=1.0):
-    return np.exp(-abs(x / d) ** k)
+    return np.exp(-(abs(x / d) ** k))
 
 
 def square_wave(x):

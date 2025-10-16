@@ -1,8 +1,8 @@
 """Utility functions for the photosurfactant model."""
 
 from argparse import ArgumentParser
-import numpy as np
 
+import numpy as np
 
 Y = np.poly1d([1, 0])  # Polynomial for differentiation
 
