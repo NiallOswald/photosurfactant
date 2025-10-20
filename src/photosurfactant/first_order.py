@@ -100,7 +100,7 @@ class FirstOrder(object):
             vals = np.array([func(k, *args, **kwargs) for k in self.wavenumbers])
             coeffs = np.einsum("ij,ij->i", self.solution, vals)
 
-            _ = (
+            res = (
                 coeffs[0] * (x_order == 0)
                 + 2
                 * np.sum(
@@ -117,7 +117,7 @@ class FirstOrder(object):
                 )
             ).real
 
-            return _ if isinstance(x, np.ndarray) else _[0]
+            return res if isinstance(x, np.ndarray) else res[0]
 
         return wrapper
 
