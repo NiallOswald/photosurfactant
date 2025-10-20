@@ -17,7 +17,7 @@ def plot_bulk_concentration(
 ):
     """Plot the bulk concentrations for varying intensity."""
 
-    default_intensity = np.sqrt(default_params.Dam_tr**2 + default_params.Dam_ci**2)
+    default_intensity = np.sqrt(default_params.Da_tr**2 + default_params.Da_ci**2)
 
     # Figure setup
     plt = plot_params.plt
@@ -37,8 +37,8 @@ def plot_bulk_concentration(
     # Plot concentrations for varying intensity
     for intensity in intensities:
         params = default_params.copy()
-        params.Dam_tr *= intensity / default_intensity
-        params.Dam_ci *= intensity / default_intensity
+        params.Da_tr *= intensity / default_intensity
+        params.Da_ci *= intensity / default_intensity
 
         # Solve leading order problem
         leading = LeadingOrder(params, root_index)
@@ -56,11 +56,11 @@ def plot_bulk_concentration(
     # Tidy up figure
     axs[0].set_xticklabels([])
     axs[0].set_ylabel(r"$c_{\mathrm{tr}, 0}$")
-    axs[0].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+    axs[0].ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
 
-    axs[1].set_xlabel(r"$y$")
+    axs[1].set_xlabel(r"$z$")
     axs[1].set_ylabel(r"$c_{\mathrm{ci}, 0}$")
-    axs[1].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+    axs[1].ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     cbar = fig.colorbar(sm, ax=axs.ravel().tolist(), label=r"Intensity ($Da$)")
@@ -100,21 +100,21 @@ def plot_interfacial_concentration(
     # Collect interfacial values for varying intensity
     gamma_tr, gamma_ci = [], []
     tension = []
-    default_intensity = np.sqrt(default_params.Dam_tr**2 + default_params.Dam_ci**2)
+    default_intensity = np.sqrt(default_params.Da_tr**2 + default_params.Da_ci**2)
 
     for intensity in intensities:
         params = default_params.copy()
-        params.Dam_tr *= intensity / default_intensity
-        params.Dam_ci *= intensity / default_intensity
+        params.Da_tr *= intensity / default_intensity
+        params.Da_ci *= intensity / default_intensity
 
         # Solve leading order problem
         leading = LeadingOrder(params, root_index)
 
         # Store values
-        gamma_tr.append(leading.gamma_tr)
-        gamma_ci.append(leading.gamma_ci)
+        gamma_tr.append(leading.Gamma_tr)
+        gamma_ci.append(leading.Gamma_ci)
 
-        tension.append(leading.tension)
+        tension.append(leading.gamma)
 
     gamma_tr, gamma_ci = np.array(gamma_tr), np.array(gamma_ci)
     tension = np.array(tension)
@@ -166,7 +166,7 @@ def plot_interfacial_concentration(
     ax1.set_ylabel(
         r"Surface Excess ($\Gamma_{\mathrm{tr}, 0}, \Gamma_{\mathrm{ci}, 0}$)"
     )
-    ax1.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+    ax1.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
     ax1.grid()
 
     ax2 = ax1.twinx()
@@ -179,13 +179,13 @@ def plot_interfacial_concentration(
         label=r"$\gamma_0$",
     )
     ax2.set_ylabel(r"$\gamma_0$")
-    ax2.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+    ax2.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
 
     # Annotate points at unit intensity
     leading = LeadingOrder(default_params, root_index)
-    ax1.plot([default_intensity], [leading.gamma_tr], color="r", marker="D")
-    ax1.plot([default_intensity], [leading.gamma_ci], color="b", marker="D")
-    ax2.plot([default_intensity], [leading.tension], color="k", marker="D")
+    ax1.plot([default_intensity], [leading.Gamma_tr], color="r", marker="D")
+    ax1.plot([default_intensity], [leading.Gamma_ci], color="b", marker="D")
+    ax2.plot([default_intensity], [leading.gamma], color="k", marker="D")
 
     # Merge legends
     plots = tension_plt + gamma_tr_plt + gamma_ci_plt

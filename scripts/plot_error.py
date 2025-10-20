@@ -24,8 +24,8 @@ def plot_error():  # noqa: D103
 
     # Extract parameters
     kwargs = vars(args)
-    Dam_tr = kwargs["Dam_tr"]
-    Dam_ci = kwargs["Dam_ci"]
+    Da_tr = kwargs["Da_tr"]
+    Da_ci = kwargs["Da_ci"]
 
     params = Parameters.from_dict(vars(args))
 
@@ -47,8 +47,8 @@ def plot_error():  # noqa: D103
 
     for i, delta in enumerate(delta_values):
         # Update parameters
-        kwargs["Dam_tr"] = (1 + delta) * Dam_tr
-        kwargs["Dam_ci"] = (1 + delta) * Dam_ci
+        kwargs["Da_tr"] = (1 + delta) * Da_tr
+        kwargs["Da_ci"] = (1 + delta) * Da_ci
 
         params_delta = Parameters.from_dict(kwargs)
         leading_delta = LeadingOrder(params_delta)

@@ -3,7 +3,7 @@
 import numpy as np
 
 from .parameters import Parameters
-from .utils import Y, hyperbolic, polyder
+from .utils import Y, hyperder, polyder
 
 
 class LeadingOrder(object):
@@ -28,23 +28,23 @@ class LeadingOrder(object):
                     "message by explicitly setting a solution branch using root_index."
                 )
 
-        (self.A_0, self.B_0) = self.roots[root_index]
+        (self.A, self.B) = self.roots[root_index]
 
     def _initialize(self):
         """Initialize the leading order solution."""
         params = self.params
 
         # Define determinant coefficients
-        a_0 = (params.Dam_tr + params.Dam_ci) * (
-            params.alpha * params.Bit_tr * params.k_tr + params.Bit_ci * params.k_ci
-        ) + params.Bit_tr * params.Bit_ci * (params.alpha * params.k_tr + params.k_ci)
-        b_0 = (params.Dam_tr + params.Dam_ci) * (
-            params.eta * params.Bit_tr * params.k_tr - params.Bit_ci * params.k_ci
-        ) + params.Bit_tr * params.Bit_ci * (params.eta * params.k_tr - params.k_ci)
+        a_0 = (params.Da_tr + params.Da_ci) * (
+            params.alpha * params.Bi_tr * params.k_tr + params.Bi_ci * params.k_ci
+        ) + params.Bi_tr * params.Bi_ci * (params.alpha * params.k_tr + params.k_ci)
+        b_0 = (params.Da_tr + params.Da_ci) * (
+            params.eta * params.Bi_tr * params.k_tr - params.Bi_ci * params.k_ci
+        ) + params.Bi_tr * params.Bi_ci * (params.eta * params.k_tr - params.k_ci)
         c_0 = (
-            params.Dam_tr * params.Bit_ci
-            + params.Dam_ci * params.Bit_tr
-            + params.Bit_tr * params.Bit_ci
+            params.Da_tr * params.Bi_ci
+            + params.Da_ci * params.Bi_tr
+            + params.Bi_tr * params.Bi_ci
         )
 
         # Quadratic coefficients
@@ -85,14 +85,14 @@ class LeadingOrder(object):
             / np.sqrt(params.zeta)
             * np.sinh(np.sqrt(params.zeta))
         )
-        r = params.alpha * params.Bit_tr * params.Bit_ci * (params.k_tr - params.k_ci)
+        r = params.alpha * params.Bi_tr * params.Bi_ci * (params.k_tr - params.k_ci)
         s = c_0 * params.k_tr * params.chi_tr * (params.alpha + params.eta) / np.sqrt(
             params.zeta
-        ) * np.sinh(np.sqrt(params.zeta)) + params.Bit_tr * params.Bit_ci * (
+        ) * np.sinh(np.sqrt(params.zeta)) + params.Bi_tr * params.Bi_ci * (
             params.eta * params.k_tr + params.alpha * params.k_ci
         ) * np.cosh(np.sqrt(params.zeta))
 
-        # Solve for B_0
+        # Solve for B
         poly = np.poly1d(
             [
                 (0.0 if params.eta == 1 else (a * p**2 - b * p * q + c * q**2)),
@@ -117,19 +117,19 @@ class LeadingOrder(object):
                 f * r**2,
             ]
         )
-        B_0 = poly.roots  # noqa: N806
+        B = poly.roots  # noqa: N806
 
-        # Solve for A_0
-        A_0 = -(p * B_0 + s) / (q * B_0 + r) * B_0  # noqa: N806
+        # Solve for A
+        A = -(p * B + s) / (q * B + r) * B  # noqa: N806
 
-        self.roots = [(a, b) for a, b in zip(A_0, B_0)]
+        self.roots = [(a, b) for a, b in zip(A, B)]
 
     def _trim_roots(self):
         """Trim any invalid roots."""
         verified_roots = []
         for A_0, B_0 in self.roots:
             if np.isclose(A_0.imag, 0):
-                self.A_0, self.B_0 = A_0.real, B_0.real
+                self.A, self.B = A_0.real, B_0.real
             else:
                 continue
 
@@ -140,55 +140,55 @@ class LeadingOrder(object):
             elif self.c_tr(0) < 0 or self.c_tr(1) < 0:
                 continue
 
-            verified_roots.append([self.A_0, self.B_0])
+            verified_roots.append([self.A, self.B])
 
         self.roots = verified_roots
 
-    def c_tr(self, y, y_order=0):
+    def c_tr(self, z, z_order=0):
         """Concentration of trans surfactant at leading order."""
         params = self.params
-        return params.alpha * self.A_0 * polyder(Y**0, y_order)(
-            y
-        ) + params.eta * self.B_0 * np.sqrt(params.zeta) ** y_order * hyperbolic(
-            y_order
-        )(y * np.sqrt(params.zeta))
+        return params.alpha * self.A * polyder(Y**0, z_order)(
+            z
+        ) + params.eta * self.B * np.sqrt(params.zeta) ** z_order * hyperder(z_order)(
+            z * np.sqrt(params.zeta)
+        )
 
-    def c_ci(self, y, y_order=0):
+    def c_ci(self, z, z_order=0):
         """Concentration of cis surfactant at leading order."""
         params = self.params
-        return self.A_0 * polyder(Y**0, y_order)(y) - self.B_0 * np.sqrt(
+        return self.A * polyder(Y**0, z_order)(z) - self.B * np.sqrt(
             params.zeta
-        ) ** y_order * hyperbolic(y_order)(y * np.sqrt(params.zeta))
+        ) ** z_order * hyperder(z_order)(z * np.sqrt(params.zeta))
 
-    def c(self, y, y_order=0):
+    def c(self, z, z_order=0):
         """Concentration of surfactant at leading order."""
-        return np.array([self.c_tr(y, y_order), self.c_ci(y, y_order)])
+        return np.array([self.c_tr(z, z_order), self.c_ci(z, z_order)])
 
-    def i_c_tr(self, y, y_s=0):
+    def i_c_tr(self, z, z_s=0):
         """Integral of the trans concentration at leading order."""
-        return self.c_tr(y, y_order=-1) - self.c_tr(y_s, y_order=-1)
+        return self.c_tr(z, z_order=-1) - self.c_tr(z_s, z_order=-1)
 
-    def i_c_ci(self, y, y_s=0):
+    def i_c_ci(self, z, z_s=0):
         """Integral of the cis concentration at leading order."""
-        return self.c_ci(y, y_order=-1) - self.c_ci(y_s, y_order=-1)
+        return self.c_ci(z, z_order=-1) - self.c_ci(z_s, z_order=-1)
 
-    def i_c(self, y, y_s):
+    def i_c(self, z, z_s):
         """Integral of the surfactant concentration at leading order."""
-        return np.array([self.i_c_tr(y, y_s), self.i_c_ci(y, y_s)])
+        return np.array([self.i_c_tr(z, z_s), self.i_c_ci(z, z_s)])
 
     # The following properties should be cached post init
     @property
-    def gamma_ci(self):
+    def Gamma_ci(self):
         """Surface excess of cis surfactant at leading order."""
-        return self.gamma[1]
+        return self.Gamma[1]
 
     @property
-    def gamma_tr(self):
+    def Gamma_tr(self):
         """Surface excess of trans surfactant at leading order."""
-        return self.gamma[0]
+        return self.Gamma[0]
 
     @property
-    def gamma(self):
+    def Gamma(self):
         """Surface excess of surfactant at leading order."""
         params = self.params
         return np.linalg.solve(self.M, params.P @ params.B @ params.K @ self.c(1))
@@ -196,17 +196,17 @@ class LeadingOrder(object):
     @property
     def J_ci(self):
         """Kinetic flux of the cis surfactant at leading order."""
-        return self.params.Bit_ci * (
-            self.params.k_ci * self.c_ci(1) * (1 - self.gamma_tr - self.gamma_ci)
-            - self.gamma_ci
+        return self.params.Bi_ci * (
+            self.params.k_ci * self.c_ci(1) * (1 - self.Gamma_tr - self.Gamma_ci)
+            - self.Gamma_ci
         )
 
     @property
     def J_tr(self):
         """Kinetic flux of the trans surfactant at leading order."""
-        return self.params.Bit_tr * (
-            self.params.k_tr * self.c_tr(1) * (1 - self.gamma_tr - self.gamma_ci)
-            - self.gamma_tr
+        return self.params.Bi_tr * (
+            self.params.k_tr * self.c_tr(1) * (1 - self.Gamma_tr - self.Gamma_ci)
+            - self.Gamma_tr
         )
 
     @property
@@ -215,9 +215,9 @@ class LeadingOrder(object):
         return np.array([self.J_tr, self.J_ci])
 
     @property
-    def tension(self):
+    def gamma(self):
         """Surface tension at leading order."""
-        return 1 + self.params.Man * np.log(1 - self.gamma_tr - self.gamma_ci)
+        return 1 + self.params.Ma * np.log(1 - self.Gamma_tr - self.Gamma_ci)
 
     @property
     def M(self):  # noqa: N802

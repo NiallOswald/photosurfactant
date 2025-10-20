@@ -29,8 +29,8 @@ def test_streamfunction():
         [
             [
                 k**4 * first._psi(k, y)
-                - 2 * k**2 * first._psi(k, y, y_order=2)
-                + first._psi(k, y, y_order=4)
+                - 2 * k**2 * first._psi(k, y, z_order=2)
+                + first._psi(k, y, z_order=4)
                 for k in wavenumbers
             ]
             for y in yy
@@ -53,16 +53,16 @@ def test_p_0():
         leading,
     )
 
-    yy = np.linspace(0, 1, 10)
+    zz = np.linspace(0, 1, 10)
 
     eq = np.array(
         [
             [
-                first._p_0(k, y, y_order=2)
-                - (params.Lambda + k**2 * np.eye(2)) @ first._p_0(k, y)
+                first._q_0(k, z, z_order=2)
+                - (params.Lambda + k**2 * np.eye(2)) @ first._q_0(k, z)
                 for k in wavenumbers
             ]
-            for y in yy
+            for z in zz
         ]
     )
 
@@ -88,12 +88,12 @@ def test_p_1():
         [
             [
                 (
-                    first._p_1(k, y, y_order=2)
-                    - (params.Lambda + k**2 * np.eye(2)) @ first._p_1(k, y)
+                    first._q_1(k, y, z_order=2)
+                    - (params.Lambda + k**2 * np.eye(2)) @ first._q_1(k, y)
                 )
                 - (
                     Variables.f[np.newaxis, :]
-                    * leading.B_0
+                    * leading.B
                     * params.zeta
                     * np.cosh(y * np.sqrt(params.zeta))
                     * np.array([0, 1])[:, np.newaxis]
@@ -128,15 +128,15 @@ def test_p_2():
         [
             [
                 (
-                    first._p_2(k, y, y_order=2)
-                    - (params.Lambda + k**2 * np.eye(2)) @ first._p_2(k, y)
+                    first._q_2(k, y, z_order=2)
+                    - (params.Lambda + k**2 * np.eye(2)) @ first._q_2(k, y)
                 )
                 - (
                     1.0j
                     * k
                     * first._psi(k, y)[np.newaxis, :]
-                    * leading.c_ci(y, y_order=1)
-                    * params.Pen_ci
+                    * leading.c_ci(y, z_order=1)
+                    * params.Pe_ci
                     / (alpha + eta)
                     * np.array([eta**2 - eta, eta**2 + alpha])[:, np.newaxis]
                 )
@@ -170,12 +170,12 @@ def test_p():
         [
             [
                 (
-                    first._p(k, y, y_order=2)
-                    - (params.Lambda + k**2 * np.eye(2)) @ first._p(k, y)
+                    first._q(k, y, z_order=2)
+                    - (params.Lambda + k**2 * np.eye(2)) @ first._q(k, y)
                 )
                 - (
                     Variables.f[np.newaxis, :]
-                    * leading.B_0
+                    * leading.B
                     * zeta
                     * np.cosh(y * np.sqrt(zeta))
                     * np.array([0, 1])[:, np.newaxis]
@@ -184,8 +184,8 @@ def test_p():
                     1.0j
                     * k
                     * first._psi(k, y)[np.newaxis, :]
-                    * leading.c_ci(y, y_order=1)
-                    * params.Pen_ci
+                    * leading.c_ci(y, z_order=1)
+                    * params.Pe_ci
                     / (alpha + eta)
                     * np.array([eta**2 - eta, eta**2 + alpha])[:, np.newaxis]
                 )
@@ -216,14 +216,14 @@ def test_bulk_concentration():
     eq = np.array(
         [
             [
-                first._c(k, y, y_order=2)
+                first._c(k, y, z_order=2)
                 - (params.A + k**2 * np.eye(2)) @ first._c(k, y)
                 - (Variables.f * (params.A @ leading.c(y)[:, np.newaxis]))
                 + (
                     1.0j
                     * k
                     * first._psi(k, y)
-                    * (params.P @ leading.c(y, y_order=1)[:, np.newaxis])
+                    * (params.P @ leading.c(y, z_order=1)[:, np.newaxis])
                 )
                 for k in wavenumbers
             ]
