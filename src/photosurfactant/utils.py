@@ -7,7 +7,7 @@ import numpy as np
 Y = np.poly1d([1, 0])  # Polynomial for differentiation
 
 
-def hyperbolic(n):
+def hyperder(n):
     """Return the n-th derivative of cosh."""
     return np.sinh if n % 2 else np.cosh
 
@@ -42,54 +42,54 @@ def parameter_parser(parser: ArgumentParser):
         help="The aspect ratio of the domain.",
     )
     parser.add_argument(
-        "--Dam_tr",
+        "--Da_tr",
         type=float,
         default=1.0,
         help="The Damkohler number for the trans surfactant.",
     )
     parser.add_argument(
-        "--Dam_ci",
+        "--Da_ci",
         type=float,
         default=2.0,
         help="The Damkohler number for the cis surfactant.",
     )
     parser.add_argument(
-        "--Pen_tr",
+        "--Pe_tr",
         type=float,
         default=10.0,
         help="The Peclet number for the trans surfactant.",
     )
     parser.add_argument(
-        "--Pen_ci",
+        "--Pe_ci",
         type=float,
         default=10.0,
         help="The Peclet number for the cis surfactant.",
     )
     parser.add_argument(
-        "--Pen_tr_s",
+        "--Pe_tr_s",
         type=float,
         default=10.0,
         help="The Peclet number for the trans surfactant on the interface.",
     )
     parser.add_argument(
-        "--Pen_ci_s",
+        "--Pe_ci_s",
         type=float,
         default=10.0,
         help="The Peclet number for the cis surfactant on the interface.",
     )
     parser.add_argument(
-        "--Bit_tr",
+        "--Bi_tr",
         type=float,
         default=1 / 300,
         help="The Biot number for the trans surfactant.",
     )
     parser.add_argument(
-        "--Bit_ci",
+        "--Bi_ci",
         type=float,
         default=1.0,
         help="The Biot number for the cis surfactant.",
     )
-    parser.add_argument("--Man", type=float, default=2.0, help="The Marangoni number.")
+    parser.add_argument("--Ma", type=float, default=2.0, help="The Marangoni number.")
     parser.add_argument(
         "--k_tr",
         type=float,

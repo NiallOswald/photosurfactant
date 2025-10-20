@@ -12,16 +12,16 @@ class Parameters:
     """The Parameters for the model.
 
     :param L: The aspect ratio of the domain.
-    :param Dam_tr: The Damkohler number for the trans surfactant.
-    :param Dam_ci: The Damkohler number for the cis surfactant.
-    :param Pen_tr: The Peclet number for the trans surfactant.
-    :param Pen_ci: The Peclet number for the cis surfactant.
-    :param Pen_tr_s: The Peclet number for the trans surfactant on the
+    :param Da_tr: The Damkohler number for the trans surfactant.
+    :param Da_ci: The Damkohler number for the cis surfactant.
+    :param Pe_tr: The Peclet number for the trans surfactant.
+    :param Pe_ci: The Peclet number for the cis surfactant.
+    :param Pe_tr_s: The Peclet number for the trans surfactant on the
         interface.
-    :param Pen_ci_s: The Peclet number for the cis surfactant on the interface.
-    :param Bit_tr: The Biot number for the trans surfactant.
-    :param Bit_ci: The Biot number for the cis surfactant.
-    :param Man: The Marangoni number.
+    :param Pe_ci_s: The Peclet number for the cis surfactant on the interface.
+    :param Bi_tr: The Biot number for the trans surfactant.
+    :param Bi_ci: The Biot number for the cis surfactant.
+    :param Ma: The Marangoni number.
     :param k_tr: The adsorption rate for the trans surfactant.
     :param k_ci: The adsorption rate for the cis surfactant.
     :param chi_tr: The desorption rate for the trans surfactant.
@@ -31,24 +31,27 @@ class Parameters:
     # Aspect ratio
     L: float = 10.0
 
+    # Reynolds numbers
+    Re: float = 0.0
+
     # Damkohler numbers
-    Dam_tr: float = 1.0
-    Dam_ci: float = 2.0
+    Da_tr: float = 1.0
+    Da_ci: float = 2.0
 
     # Peclet numbers
-    Pen_tr: float = 10.0
-    Pen_ci: float = 10.0
+    Pe_tr: float = 10.0
+    Pe_ci: float = 10.0
 
     # Interfacial Peclet numbers
-    Pen_tr_s: float = 10.0
-    Pen_ci_s: float = 10.0
+    Pe_tr_s: float = 10.0
+    Pe_ci_s: float = 10.0
 
     # Biot numbers
-    Bit_tr: float = 1 / 300
-    Bit_ci: float = 1.0
+    Bi_tr: float = 1 / 300
+    Bi_ci: float = 1.0
 
     # Marangoni number
-    Man: float = 2.0
+    Ma: float = 2.0
 
     # Adsorption and desorption rates
     k_tr: float = 1.0
@@ -80,27 +83,27 @@ class Parameters:
 
     @property
     def alpha(self):
-        return self.Dam_ci / self.Dam_tr
+        return self.Da_ci / self.Da_tr
 
     @property
     def eta(self):
-        return self.Pen_tr / self.Pen_ci
+        return self.Pe_tr / self.Pe_ci
 
     @property
     def zeta(self):
-        return self.Pen_tr * self.Dam_tr + self.Pen_ci * self.Dam_ci
+        return self.Pe_tr * self.Da_tr + self.Pe_ci * self.Da_ci
 
     @property
     def P(self):
-        return np.array([[self.Pen_tr, 0.0], [0.0, self.Pen_ci]])
+        return np.array([[self.Pe_tr, 0.0], [0.0, self.Pe_ci]])
 
     @property
     def P_s(self):
-        return np.array([[self.Pen_tr_s, 0.0], [0.0, self.Pen_ci_s]])
+        return np.array([[self.Pe_tr_s, 0.0], [0.0, self.Pe_ci_s]])
 
     @property
     def B(self):
-        return np.array([[self.Bit_tr, 0.0], [0.0, self.Bit_ci]])
+        return np.array([[self.Bi_tr, 0.0], [0.0, self.Bi_ci]])
 
     @property
     def K(self):
@@ -124,7 +127,7 @@ class Parameters:
 
     @property
     def _D(self):
-        return np.array([[self.Dam_tr, -self.Dam_ci], [-self.Dam_tr, self.Dam_ci]])
+        return np.array([[self.Da_tr, -self.Da_ci], [-self.Da_tr, self.Da_ci]])
 
 
 @dataclass

@@ -16,7 +16,7 @@ wavenumbers, func_coeffs = fourier_series_coeff(
 first = FirstOrder(wavenumbers, params, leading)
 first.solve(
     lambda n: (
-        (first._psi(wavenumbers[n], 1, y_order=1), func_coeffs[n])
+        (first._psi(wavenumbers[n], 1, z_order=1), func_coeffs[n])
         if n > 0
         else (Variables.f, 0)
     )  # There is no flow at n = 0, so we fix the light intensity instead

@@ -130,7 +130,7 @@ class SmallDam:
     @property
     def tension(self):
         """Surface tension at small Damkohler number."""
-        return 1 + self.params.Man * np.log(1 - self.gamma_tr - self.gamma_ci)
+        return 1 + self.params.Ma * np.log(1 - self.gamma_tr - self.gamma_ci)
 
 
 class LargeDam:
@@ -162,11 +162,11 @@ class LargeDam:
         params = self.params
 
         # Define additional parameters
-        a = params.alpha * params.Bit_tr * params.k_tr + params.Bit_ci * params.k_ci
-        b = params.alpha * params.Bit_tr * (1 + params.k_tr + 1 / params.chi_tr)
-        c = params.Bit_ci * (1 + params.k_ci + 1 / params.chi_ci)
+        a = params.alpha * params.Bi_tr * params.k_tr + params.Bi_ci * params.k_ci
+        b = params.alpha * params.Bi_tr * (1 + params.k_tr + 1 / params.chi_tr)
+        c = params.Bi_ci * (1 + params.k_ci + 1 / params.chi_ci)
 
-        # Solve for gamma_ci
+        # Solve for Gamma_ci
         poly = np.poly1d(
             [
                 (1 + params.alpha) / (params.k_tr * params.chi_tr) * a,
@@ -221,7 +221,7 @@ class LargeDam:
     @property
     def J_tr(self):
         """Kinetic flux of the trans surfactant at large Damkohler number."""
-        return self.params.Bit_tr * (
+        return self.params.Bi_tr * (
             self.params.k_tr * self.c_tr * (1 - self.gamma_tr - self.gamma_ci)
             - self.gamma_tr
         )
@@ -229,7 +229,7 @@ class LargeDam:
     @property
     def J_ci(self):
         """Kinetic flux of the cis surfactant at large Damkohler number."""
-        return self.params.Bit_ci * (
+        return self.params.Bi_ci * (
             self.params.k_ci * self.c_ci * (1 - self.gamma_tr - self.gamma_ci)
             - self.gamma_ci
         )
@@ -237,4 +237,4 @@ class LargeDam:
     @property
     def tension(self):
         """Surface tension at large Damkohler number."""
-        return 1 + self.params.Man * np.log(1 - self.gamma_tr - self.gamma_ci)
+        return 1 + self.params.Ma * np.log(1 - self.gamma_tr - self.gamma_ci)

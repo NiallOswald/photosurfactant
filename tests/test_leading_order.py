@@ -14,14 +14,14 @@ def test_bulk_concentrations():
     yy = np.linspace(0, 1, 100)
 
     eq_tr = (
-        (1 / params.Pen_tr) * leading.c_tr(yy, y_order=2)
-        - params.Dam_tr * leading.c_tr(yy)
-        + params.Dam_ci * leading.c_ci(yy)
+        (1 / params.Pe_tr) * leading.c_tr(yy, z_order=2)
+        - params.Da_tr * leading.c_tr(yy)
+        + params.Da_ci * leading.c_ci(yy)
     )
     eq_ci = (
-        (1 / params.Pen_ci) * leading.c_ci(yy, y_order=2)
-        + params.Dam_tr * leading.c_tr(yy)
-        - params.Dam_ci * leading.c_ci(yy)
+        (1 / params.Pe_ci) * leading.c_ci(yy, z_order=2)
+        + params.Da_tr * leading.c_tr(yy)
+        - params.Da_ci * leading.c_ci(yy)
     )
 
     assert np.allclose(eq_tr, 0)
@@ -34,14 +34,10 @@ def test_surface_excess():
     leading = LeadingOrder(params)
 
     eq_tr = (
-        leading.J_tr
-        - params.Dam_tr * leading.gamma_tr
-        + params.Dam_ci * leading.gamma_ci
+        leading.J_tr - params.Da_tr * leading.Gamma_tr + params.Da_ci * leading.Gamma_ci
     )
     eq_ci = (
-        leading.J_ci
-        + params.Dam_tr * leading.gamma_tr
-        - params.Dam_ci * leading.gamma_ci
+        leading.J_ci + params.Da_tr * leading.Gamma_tr - params.Da_ci * leading.Gamma_ci
     )
 
     assert np.allclose(eq_tr, 0)
@@ -64,11 +60,11 @@ def test_mass_balance():
     leading = LeadingOrder(params)
 
     eq_tr = (
-        params.k_tr * params.chi_tr / params.Pen_tr * leading.c_tr(1, y_order=1)
+        params.k_tr * params.chi_tr / params.Pe_tr * leading.c_tr(1, z_order=1)
         + leading.J_tr
     )
     eq_ci = (
-        params.k_ci * params.chi_ci / params.Pen_ci * leading.c_ci(1, y_order=1)
+        params.k_ci * params.chi_ci / params.Pe_ci * leading.c_ci(1, z_order=1)
         + leading.J_ci
     )
 
@@ -83,7 +79,7 @@ def test_surf_cons():
 
     eq = (
         (leading.i_c_tr(1) + leading.i_c_ci(1))
-        + 1 / (params.k_tr * params.chi_tr) * (leading.gamma_tr + leading.gamma_ci)
+        + 1 / (params.k_tr * params.chi_tr) * (leading.Gamma_tr + leading.Gamma_ci)
         - 1
     )
 
@@ -95,4 +91,4 @@ def test_no_flux():
     params = Parameters()
     leading = LeadingOrder(params)
 
-    assert np.allclose(leading.c(0, y_order=1), 0)
+    assert np.allclose(leading.c(0, z_order=1), 0)
