@@ -75,7 +75,7 @@ class FirstOrder(object):
     def solve(self, constraint: Callable[[int], tuple]):
         """Initialize the first order solution.
 
-        :param condition: Prescription to close the system. Should be a linear
+        :param constraint: Prescription to close the system. Should be a linear
             function in the given variables.
         """
         zeros = np.zeros([len(Symbols) - 1], dtype=complex)

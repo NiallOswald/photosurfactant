@@ -10,7 +10,7 @@ class LeadingOrder(object):
     """Leading order solution to the photosurfactant model."""
 
     def __init__(self, params: Parameters, root_index: int = -1):
-        """Initalise solution to the leading order model.
+        """Initialize solution to the leading order model.
 
         :param params: :class:`~.parameters.Parameters` object containing the
             model parameters.
