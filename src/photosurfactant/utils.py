@@ -12,6 +12,14 @@ def hyperder(n):
     return np.sinh if n % 2 else np.cosh
 
 
+def cosh(x, x_order=0):
+    return hyperder(x_order)(x)
+
+
+def sinh(x, x_order=0):
+    return hyperder(x_order + 1)(x)
+
+
 def polyder(p: np.poly1d, n: int):
     """Wrap np.polyder and np.polyint."""
     return p.deriv(n) if n > 0 else p.integ(-n)

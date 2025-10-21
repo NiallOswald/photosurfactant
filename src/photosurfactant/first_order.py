@@ -8,7 +8,7 @@ import numpy as np
 
 from .leading_order import LeadingOrder
 from .parameters import Parameters
-from .utils import Y, hyperder, polyder, to_arr
+from .utils import Y, cosh, polyder, sinh, to_arr
 
 
 class Symbols(Enum):  # TODO: This is unnecessary
@@ -266,8 +266,8 @@ class FirstOrder(object):
                     + Variables.F * polyder(Y**0, z_order)(z),
                     np.sqrt(zeta) ** z_order
                     * (
-                        Variables.G * hyperder(z_order + 1)(z * np.sqrt(zeta))
-                        + Variables.H * hyperder(z_order)(z * np.sqrt(zeta))
+                        Variables.G * sinh(z * np.sqrt(zeta), z_order)
+                        + Variables.H * cosh(z * np.sqrt(zeta), z_order)
                     ),
                 ]
             )
@@ -276,13 +276,13 @@ class FirstOrder(object):
                 [
                     k**z_order
                     * (
-                        Variables.E * hyperder(z_order + 1)(k * z)
-                        + Variables.F * hyperder(z_order)(k * z)
+                        Variables.E * sinh(k * z, z_order)
+                        + Variables.F * cosh(k * z, z_order)
                     ),
                     np.sqrt(zeta + k**2) ** z_order
                     * (
-                        Variables.G * hyperder(z_order + 1)(z * np.sqrt(zeta + k**2))
-                        + Variables.H * hyperder(z_order)(z * np.sqrt(zeta + k**2))
+                        Variables.G * sinh(z * np.sqrt(zeta + k**2), z_order)
+                        + Variables.H * cosh(z * np.sqrt(zeta + k**2), z_order)
                     ),
                 ]
             )
@@ -296,8 +296,8 @@ class FirstOrder(object):
                 * np.sqrt(zeta) ** z_order
                 / 2
                 * (
-                    z_order * hyperder(z_order)(z * np.sqrt(zeta))
-                    + z * np.sqrt(zeta) * hyperder(z_order + 1)(z * np.sqrt(zeta))
+                    z_order * cosh(z * np.sqrt(zeta), z_order)
+                    + z * np.sqrt(zeta) * sinh(z * np.sqrt(zeta), z_order)
                 )
             )[np.newaxis, :] * np.array([0, 1])[:, np.newaxis]
         else:
@@ -307,7 +307,7 @@ class FirstOrder(object):
                 * -self.leading.B
                 * zeta
                 / k**2
-                * hyperder(z_order)(z * np.sqrt(zeta))
+                * cosh(z * np.sqrt(zeta), z_order)
             )[np.newaxis, :] * np.array([0, 1])[:, np.newaxis]
 
     def _q_2(self, k, z, z_order=0):

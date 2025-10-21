@@ -3,7 +3,7 @@
 import numpy as np
 
 from .parameters import Parameters
-from .utils import Y, hyperder, polyder
+from .utils import Y, cosh, polyder, sinh
 
 
 class LeadingOrder(object):
@@ -149,8 +149,8 @@ class LeadingOrder(object):
         params = self.params
         return params.alpha * self.A * polyder(Y**0, z_order)(
             z
-        ) + params.eta * self.B * np.sqrt(params.zeta) ** z_order * hyperder(z_order)(
-            z * np.sqrt(params.zeta)
+        ) + params.eta * self.B * np.sqrt(params.zeta) ** z_order * cosh(
+            z * np.sqrt(params.zeta), z_order
         )
 
     def c_ci(self, z, z_order=0):
@@ -158,7 +158,7 @@ class LeadingOrder(object):
         params = self.params
         return self.A * polyder(Y**0, z_order)(z) - self.B * np.sqrt(
             params.zeta
-        ) ** z_order * hyperder(z_order)(z * np.sqrt(params.zeta))
+        ) ** z_order * cosh(z * np.sqrt(params.zeta), z_order)
 
     def c(self, z, z_order=0):
         """Concentration of surfactant at leading order."""
