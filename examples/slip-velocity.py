@@ -1,8 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from photosurfactant import FirstOrder, LeadingOrder, Parameters, Variables
+from photosurfactant import Parameters
 from photosurfactant.fourier import fourier_series_coeff
+from photosurfactant.semi_analytic import (
+    FirstOrder,
+    LeadingOrder,
+    Variables,
+)
 
 params = Parameters()
 leading = LeadingOrder(params)

@@ -1,9 +1,11 @@
 """Leading order solution to the photosurfactant model."""
 
+from functools import cached_property
+
 import numpy as np
 
-from .parameters import Parameters
-from .utils import Y, cosh, polyder, sinh
+from photosurfactant.parameters import Parameters
+from photosurfactant.utils import Y, cosh, polyder
 
 
 class LeadingOrder(object):
@@ -176,7 +178,6 @@ class LeadingOrder(object):
         """Integral of the surfactant concentration at leading order."""
         return np.array([self.i_c_tr(z, z_s), self.i_c_ci(z, z_s)])
 
-    # The following properties should be cached post init
     @property
     def Gamma_ci(self):
         """Surface excess of cis surfactant at leading order."""
@@ -187,13 +188,13 @@ class LeadingOrder(object):
         """Surface excess of trans surfactant at leading order."""
         return self.Gamma[0]
 
-    @property
+    @cached_property
     def Gamma(self):
         """Surface excess of surfactant at leading order."""
         params = self.params
         return np.linalg.solve(self.M, params.P @ params.B @ params.K @ self.c(1))
 
-    @property
+    @cached_property
     def J_ci(self):
         """Kinetic flux of the cis surfactant at leading order."""
         return self.params.Bi_ci * (
@@ -201,7 +202,7 @@ class LeadingOrder(object):
             - self.Gamma_ci
         )
 
-    @property
+    @cached_property
     def J_tr(self):
         """Kinetic flux of the trans surfactant at leading order."""
         return self.params.Bi_tr * (
@@ -214,14 +215,13 @@ class LeadingOrder(object):
         """Kinetic flux of the surfactant at leading order."""
         return np.array([self.J_tr, self.J_ci])
 
-    @property
+    @cached_property
     def gamma(self):
         """Surface tension at leading order."""
         return 1 + self.params.Ma * np.log(1 - self.Gamma_tr - self.Gamma_ci)
 
-    @property
-    def M(self):  # noqa: N802
-        """Matrix M from (5.8)."""
+    @cached_property
+    def M(self):
         params = self.params
         return params.A + params.P @ params.B @ np.array(
             [
