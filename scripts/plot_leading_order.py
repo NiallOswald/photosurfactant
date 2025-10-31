@@ -4,9 +4,9 @@ from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 import numpy as np
 from matplotlib import colors
 
-from photosurfactant.leading_order import LeadingOrder
-from photosurfactant.limits import HighIntensity, LowIntensity
+from photosurfactant.semi_analytic.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters, PlottingParameters
+from photosurfactant.semi_analytic.limits import HighIntensity, LowIntensity
 from photosurfactant.utils import leading_order_parser, parameter_parser, plot_parser
 
 # TODO: Reduced figures at 3 magnitudes?

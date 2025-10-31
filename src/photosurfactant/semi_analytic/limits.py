@@ -2,14 +2,14 @@
 
 import numpy as np
 
-from .parameters import Parameters
+from photosurfactant.parameters import Parameters
 
 
 class LowIntensity:
     """Leading order solution for a uniform intensity at small Damkohler number."""
 
     def __init__(self, params: Parameters, root_index: int = -1):
-        """Initalise solution to the small Damkohler model.
+        """Initialise solution to the small Damkohler model.
 
         :param params: :class:`~.parameters.Parameters` object containing the
             model parameters.
@@ -137,7 +137,7 @@ class HighIntensity:
     """Leading order solution for a uniform intensity at large Damkohler number."""
 
     def __init__(self, params: Parameters, root_index: int = -1):
-        """Initalise solution to the large Damkohler model.
+        """Initialise solution to the large Damkohler model.
 
         :param params: :class:`~.parameters.Parameters` object containing the
             model parameters.

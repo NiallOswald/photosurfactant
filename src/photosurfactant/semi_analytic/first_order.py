@@ -6,9 +6,9 @@ from typing import Callable
 
 import numpy as np
 
-from .leading_order import LeadingOrder
-from .parameters import Parameters
-from .utils import Y, cosh, polyder, sinh, to_arr
+from photosurfactant.parameters import Parameters
+from photosurfactant.semi_analytic.leading_order import LeadingOrder
+from photosurfactant.utils import Y, cosh, polyder, sinh, to_arr
 
 
 class Symbols(Enum):  # TODO: This is unnecessary
@@ -410,7 +410,7 @@ class BoundaryConditions(object):
     """Boundary conditions for the photosurfactant model."""
 
     def __init__(self, first: FirstOrder):
-        """Initalise boundary conditions for the photosurfactant model.
+        """Initialise boundary conditions for the photosurfactant model.
 
         :param first: :class:`~.first_order.FirstOrder` object containing the
             first order solution.
