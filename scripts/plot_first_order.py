@@ -110,7 +110,7 @@ class Figures:
             aspect="auto",
             cmap="Reds",
         )
-        cbar = self.plt.colorbar(label="Velocity")
+        cbar = self.plt.colorbar(label=r"$\lVert \mathbf{u}_1 \rVert$")
         cbar.formatter.set_powerlimits((0, 0))
         cbar.formatter.set_useMathText(True)
         self.plt.xlabel(r"$x$")
@@ -136,7 +136,7 @@ class Figures:
             aspect="auto",
             cmap="Reds",
         )
-        cbar = self.plt.colorbar(label="Velocity")
+        cbar = self.plt.colorbar(label=r"$\lVert \mathbf{u}_1 \rVert$")
         cbar.formatter.set_powerlimits((0, 0))
         cbar.formatter.set_useMathText(True)
         self.plt.xlabel(r"$x$")
@@ -276,6 +276,7 @@ class Figures:
     def plot_surface_excess(self):
         """Plot the surface excess concentrations."""
         self.plt.figure(figsize=(6, 5))
+
         self.plt.plot(
             self.xx,
             self.ggamma_tr + self.ggamma_ci,
@@ -288,6 +289,7 @@ class Figures:
         self.plt.plot(
             self.xx, self.ggamma_ci, "b-.", label=r"$\Gamma_{\mathrm{ci}, 1}$"
         )
+
         self.plt.xlabel(r"$x$")
         self.plt.ylabel("Surface Excess")
         self.plt.legend(loc="lower right")
@@ -305,8 +307,10 @@ class Figures:
 
     def plot_intensity(self):
         """Plot the light intensity."""
-        self.plt.figure(figsize=(10, 4))
-        self.plt.plot(self.xx, self.ff, "k-")
+        self.plt.figure(figsize=(6, 5))
+
+        self.plt.plot(self.xx, self.ff, "k-", label="Approx")
+
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$f_1$")
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
@@ -373,8 +377,10 @@ class Figures:
 
     def plot_interface(self):
         """Plot the surface shape."""
-        self.plt.figure(figsize=(10, 4))
-        self.plt.plot(self.xx, self.SS, "k-")
+        self.plt.figure(figsize=(6, 5))
+
+        self.plt.plot(self.xx, self.SS, "k-", label="Approx")
+
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$S_1$")
         self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
@@ -491,10 +497,10 @@ def plot_first_order():  # noqa: D103
     figures.plot_concentration_tr()
     figures.plot_concentration_ci()
     figures.plot_concentration_tot()
-    figures.plot_intensity()
-    figures.plot_intensity_slip_tension()
-    figures.plot_interface()
     figures.plot_surface_excess()
     figures.plot_surface_tension()
     figures.plot_fluxes()
     figures.plot_interfacial_velocity()
+    figures.plot_intensity()
+    figures.plot_intensity_slip_tension()
+    figures.plot_interface()
