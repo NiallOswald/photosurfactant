@@ -2,12 +2,14 @@
 
 import inspect
 from copy import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 import numpy as np
 
+from typing import Any
 
-@dataclass
+
+@dataclass(frozen=True)
 class Parameters:
     """The Parameters for the model.
 
@@ -32,7 +34,7 @@ class Parameters:
     L: float = 10.0
 
     # Reynolds numbers
-    Re: float = 0.0
+    Re: float = 0.0  # TODO: Deprecate this parameter
 
     # Damkohler numbers
     Da_tr: float = 1.0
@@ -61,36 +63,41 @@ class Parameters:
     chi_ci: float = 100.0
 
     def __post_init__(self):  # noqa: D105
-        if self.k_tr * self.chi_tr != self.k_ci * self.chi_ci:
+        if not np.isclose(self.k_tr * self.chi_tr, self.k_ci * self.chi_ci):
             raise ValueError(
                 "Adsorption rates do not satisfy the condition k * chi = const."
             )
 
-    @classmethod
-    def from_dict(cls, kwargs):
+    def from_dict(kwargs: dict[str, float]) -> "Parameters":
         """Load parameters from a dictionary."""
-        return cls(
+        return Parameters(
             **{
                 k: v
                 for k, v in kwargs.items()
-                if k in inspect.signature(cls).parameters
+                if k in inspect.signature(Parameters).parameters
             }
         )
 
-    def copy(self):
-        """Return a copy of the class."""
+    def copy(self) -> "Parameters":
+        """Return a copy of the `Parameters` object."""
         return copy(self)
 
+    def update(self, **new_kwargs) -> "Parameters":
+        """Return a new `Parameter` object with missing values derived."""
+        derived_kwargs = asdict(self)
+        # new_kwargs overwrite derived_kwargs
+        return Parameters(**(derived_kwargs | new_kwargs))
+
     @property
-    def alpha(self):
+    def alpha(self) -> float:
         return self.Da_ci / self.Da_tr
 
     @property
-    def eta(self):
+    def eta(self) -> float:
         return self.Pe_tr / self.Pe_ci
 
     @property
-    def zeta(self):
+    def zeta(self) -> float:
         return self.Pe_tr * self.Da_tr + self.Pe_ci * self.Da_ci
 
     @property
@@ -160,19 +167,20 @@ class PlottingParameters:
         self.label = "_" + self.label if self.label else ""
         self.plot_setup()
 
-    @classmethod
-    def from_dict(cls, kwargs):
+    def from_dict(kwargs: dict[str, Any]) -> "PlottingParameters":
         """Load parameters from a dictionary."""
-        return cls(
+        return PlottingParameters(
             **{
                 k: v
                 for k, v in kwargs.items()
-                if k in inspect.signature(cls).parameters
+                if k in inspect.signature(PlottingParameters).parameters
             }
         )
 
     def copy(self):
         """Return a copy of the class."""
+        raise NotImplementedError
+        # TODO: Deprecate this method
         return copy(self)
 
     def plot_setup(self):
@@ -200,6 +208,7 @@ class PlottingParameters:
                     "font.family": "serif",
                     "font.serif": ["Computer Modern Roman"],
                     "axes.formatter.use_mathtext": True,
+                    "text.latex.preamble": r"\usepackage{amsmath}",
                 }
                 | rcparams
             )

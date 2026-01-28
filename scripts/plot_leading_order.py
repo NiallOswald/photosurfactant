@@ -40,9 +40,10 @@ def plot_bulk_concentration(
 
     # Plot concentrations for varying intensity
     for intensity in intensities:
-        params = default_params.copy()
-        params.Da_tr *= intensity / default_intensity
-        params.Da_ci *= intensity / default_intensity
+        params = default_params.update(
+            Da_tr=default_params.Da_tr * intensity / default_intensity,
+            Da_ci=default_params.Da_ci * intensity / default_intensity,
+        )
 
         # Solve leading order problem
         leading = LeadingOrder(params, root_index)
@@ -107,9 +108,10 @@ def plot_interfacial_concentration(
     default_intensity = np.sqrt(default_params.Da_tr**2 + default_params.Da_ci**2)
 
     for intensity in intensities:
-        params = default_params.copy()
-        params.Da_tr *= intensity / default_intensity
-        params.Da_ci *= intensity / default_intensity
+        params = default_params.update(
+            Da_tr=default_params.Da_tr * intensity / default_intensity,
+            Da_ci=default_params.Da_ci * intensity / default_intensity,
+        )
 
         # Solve leading order problem
         leading = LeadingOrder(params, root_index)
