@@ -26,5 +26,6 @@ plot_spectrum = "scripts.plot_spectrum:plot_spectrum"
 [dependency-groups]
 dev = [
     "pytest>=8.4.2",
+    "pytest-cases>=3.9.1",
     "scipy-stubs>=1.16.3.0",
 ]

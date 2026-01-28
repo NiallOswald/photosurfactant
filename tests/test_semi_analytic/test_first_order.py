@@ -1,39 +1,53 @@
 """Test the solutions to first order problem."""
 
 import numpy as np
-import pytest
+from pytest_cases import fixture, parametrize_with_cases
 
-from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff
 from photosurfactant.intensity_functions import (
     gaussian,
     smoothed_square,
     super_gaussian,
 )
-from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters
+from photosurfactant.semi_analytic import FirstOrder, LeadingOrder, Variables
 
 N_WAVE = 20
 
 
-@pytest.mark.parametrize(
+@fixture(scope="module")
+def params():
+    return Parameters()
+
+
+@fixture(scope="module")
+def leading(params: Parameters):
+    return LeadingOrder(params)
+
+
+@fixture(scope="module")
+@parametrize_with_cases(
     "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
+    cases=[
+        gaussian,
+        lambda x: super_gaussian(x, 4.0),
+        lambda x: smoothed_square(x, 0.1),
+    ],
+    scope="module",
 )
-def test_biharmonic(func):
-    """Test the biharmonic equations."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
+def first(func, params: Parameters, leading: LeadingOrder):
     wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
     first = FirstOrder(
         wavenumbers,
         params,
         leading,
     )
     first.solve(lambda n: (Variables.f, func_coeffs[n]))
+    return first
 
+
+def test_biharmonic(params: Parameters, leading: LeadingOrder, first: FirstOrder):
+    """Test the biharmonic equations."""
     xx = np.linspace(-params.L, params.L, 100)
     yy = np.linspace(0, 1, 100)
 
@@ -49,24 +63,8 @@ def test_biharmonic(func):
     assert np.allclose(eq, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_navier_stokes(func):
+def test_navier_stokes(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the Navier-Stokes equations."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
     yy = np.linspace(0, 1, 100)
 
@@ -91,24 +89,8 @@ def test_navier_stokes(func):
     assert np.allclose(eq_y, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_continuity(func):
+def test_continuity(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the continuity equation."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
     yy = np.linspace(0, 1, 100)
 
@@ -117,24 +99,10 @@ def test_continuity(func):
     assert np.allclose(eq, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_bulk_concentrations(func):
+def test_bulk_concentrations(
+    params: Parameters, leading: LeadingOrder, first: FirstOrder
+):
     """Test bulk surfactant concentration equations."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
     yy = np.linspace(0, 1, 100)
 
@@ -165,24 +133,8 @@ def test_bulk_concentrations(func):
     assert np.allclose(eq_ci, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_surface_excess(func):
+def test_surface_excess(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the surface excess concentration equations."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
 
     eq_tr = (
@@ -204,24 +156,8 @@ def test_surface_excess(func):
     assert np.allclose(eq_ci, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_kinetic_flux(func):
+def test_kinetic_flux(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the kinetic fluxes."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
 
     eq_tr = params.Bi_tr * (
@@ -243,24 +179,8 @@ def test_kinetic_flux(func):
     assert np.allclose(eq_ci, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_normal_stress(func):
+def test_normal_stress(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the normal stress balance."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
 
     eq = (
@@ -272,24 +192,10 @@ def test_normal_stress(func):
     assert np.allclose(eq, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_tangential_stress(func):
+def test_tangential_stress(
+    params: Parameters, leading: LeadingOrder, first: FirstOrder
+):
     """Test the tangential stress balance."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
 
     eq = (
@@ -301,24 +207,8 @@ def test_tangential_stress(func):
     assert np.allclose(eq, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_mass_balance(func):
+def test_mass_balance(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the mass balances."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
 
     eq_tr = params.k_tr * params.chi_tr / params.Pe_tr * (
@@ -332,72 +222,21 @@ def test_mass_balance(func):
     assert np.allclose(eq_ci, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_kinematic(func):
+def test_kinematic(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the kinematic condition."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
-
     assert np.allclose(first.w(xx, 1), 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_mass_cons(func):
+def test_mass_cons(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the mass conservation condition."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
-
     eq = np.trapezoid(first.S(xx), xx)
-
     assert np.allclose(eq, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_surf_cons(func):
+def test_surf_cons(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test the surfactant conservation condition."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
 
     integrand = (
@@ -411,49 +250,15 @@ def test_surf_cons(func):
     assert np.allclose(eq, 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_no_slip(func):
+def test_no_slip(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test no-slip condition on the lower wall."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
-
     assert np.allclose(first.u(xx, 0), 0)
     assert np.allclose(first.w(xx, 0), 0)
 
 
-@pytest.mark.parametrize(
-    "func",
-    [gaussian, lambda x: super_gaussian(x, 4.0), lambda x: smoothed_square(x, 0.1)],
-)
-def test_no_flux(func):
+def test_no_flux(params: Parameters, leading: LeadingOrder, first: FirstOrder):
     """Test no-flux condition on the lower wall."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
-    wavenumbers, func_coeffs = fourier_series_coeff(func, params.L, N_WAVE)
-
-    first = FirstOrder(
-        wavenumbers,
-        params,
-        leading,
-    )
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
-
     xx = np.linspace(-params.L, params.L, 100)
-
     assert np.allclose(first.c_tr(xx, 0, z_order=1), 0)
     assert np.allclose(first.c_ci(xx, 0, z_order=1), 0)
