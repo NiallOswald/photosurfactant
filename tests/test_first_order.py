@@ -5,7 +5,11 @@ import pytest
 
 from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff
-from photosurfactant.functions import gaussian, smoothed_square, super_gaussian
+from photosurfactant.intensity_functions import (
+    gaussian,
+    smoothed_square,
+    super_gaussian,
+)
 from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters
 

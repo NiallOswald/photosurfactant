@@ -7,7 +7,7 @@ from matplotlib import colors
 
 from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import convolution_coeff, fourier_series_coeff
-from photosurfactant.functions import *  # noqa: F401, F403
+from photosurfactant.intensity_functions import *  # noqa: F401, F403
 from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.utils import (

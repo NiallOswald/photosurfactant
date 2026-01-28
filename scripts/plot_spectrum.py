@@ -5,7 +5,7 @@ import numpy as np
 
 from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import convolution_coeff, fourier_series_coeff
-from photosurfactant.functions import mollifier, square_wave
+from photosurfactant.intensity_functions import mollifier, square_wave
 from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.utils import (
