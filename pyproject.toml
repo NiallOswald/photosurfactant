@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Models of chromocapillary flows for photo-actuated liquid mixing and sculpting."
 readme = "README.md"
 authors = [
-    { name = "Niall Oswald", email = "niall.oswald@hotmail.co.uk" }
+    { name = "Niall Oswald", email = "niall.oswald20@imperial.ac.uk" }
 ]
 requires-python = ">=3.12"
 dependencies = [
