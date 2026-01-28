@@ -266,8 +266,8 @@ class FirstOrder(object):
                     + Variables.F * polyder(Y**0, z_order)(z),
                     np.sqrt(zeta) ** z_order
                     * (
-                        Variables.G * sinh(z * np.sqrt(zeta), z_order)
-                        + Variables.H * cosh(z * np.sqrt(zeta), z_order)
+                        Variables.G * np.exp(z * np.sqrt(zeta))
+                        + Variables.H * (-1) ** z_order * np.exp(-z * np.sqrt(zeta))
                     ),
                 ]
             )
@@ -281,8 +281,10 @@ class FirstOrder(object):
                     ),
                     np.sqrt(zeta + k**2) ** z_order
                     * (
-                        Variables.G * sinh(z * np.sqrt(zeta + k**2), z_order)
-                        + Variables.H * cosh(z * np.sqrt(zeta + k**2), z_order)
+                        Variables.G * np.exp(z * np.sqrt(zeta + k**2))
+                        + Variables.H
+                        * (-1) ** z_order
+                        * np.exp(-z * np.sqrt(zeta + k**2))
                     ),
                 ]
             )
