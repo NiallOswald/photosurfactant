@@ -1,20 +1,27 @@
 """Test the eigenfunctions to first order problem."""
 
 import numpy as np
+import pytest
 
-from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff
-from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters
+from photosurfactant.semi_analytic import FirstOrder, LeadingOrder, Variables
 
 N_WAVE = 20
 
 
-def test_streamfunction():
-    """Test the streamfunction."""
-    params = Parameters()
-    leading = LeadingOrder(params)
+@pytest.fixture(scope="module")
+def params():
+    return Parameters()
 
+
+@pytest.fixture(scope="module")
+def leading(params: Parameters):
+    return LeadingOrder(params)
+
+
+def test_streamfunction(params: Parameters, leading: LeadingOrder):
+    """Test the streamfunction."""
     wavenumbers, _ = fourier_series_coeff(lambda x: 0.0, params.L, N_WAVE)
 
     first = FirstOrder(
@@ -40,11 +47,8 @@ def test_streamfunction():
     assert np.allclose(eq, 0)
 
 
-def test_p_0():
+def test_p_0(params: Parameters, leading: LeadingOrder):
     """Test the distinguished complementary eigenfunction p_0."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
     wavenumbers, _ = fourier_series_coeff(lambda x: 0.0, params.L, N_WAVE)
 
     first = FirstOrder(
@@ -69,11 +73,8 @@ def test_p_0():
     assert np.allclose(eq, 0)
 
 
-def test_p_1():
+def test_p_1(params: Parameters, leading: LeadingOrder):
     """Test the distinguished eigenfunction component p_1."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
     wavenumbers, _ = fourier_series_coeff(lambda x: 0.0, params.L, N_WAVE)
 
     first = FirstOrder(
@@ -107,11 +108,8 @@ def test_p_1():
     assert np.allclose(eq, 0)
 
 
-def test_p_2():
+def test_p_2(params: Parameters, leading: LeadingOrder):
     """Test the distinguished eigenfunction component p_2."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
     alpha, eta = params.alpha, params.eta
 
     wavenumbers, _ = fourier_series_coeff(lambda x: 0.0, params.L, N_WAVE)
@@ -149,11 +147,8 @@ def test_p_2():
     assert np.allclose(eq, 0)
 
 
-def test_p():
+def test_p(params: Parameters, leading: LeadingOrder):
     """Test the eigenfunction for the concentration in distinguished coordinates."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
     alpha, eta, zeta = params.alpha, params.eta, params.zeta
 
     wavenumbers, _ = fourier_series_coeff(lambda x: 0.0, params.L, N_WAVE)
@@ -198,11 +193,8 @@ def test_p():
     assert np.allclose(eq, 0)
 
 
-def test_bulk_concentration():
+def test_bulk_concentration(params: Parameters, leading: LeadingOrder):
     """Test bulk surfactant concentrations."""
-    params = Parameters()
-    leading = LeadingOrder(params)
-
     wavenumbers, _ = fourier_series_coeff(lambda x: 0.0, params.L, N_WAVE)
 
     first = FirstOrder(
