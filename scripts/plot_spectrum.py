@@ -32,11 +32,9 @@ def plot_spectrum():  # noqa: D103
     params = Parameters.from_dict(vars(args))
     plot_params = PlottingParameters.from_dict(vars(args))
 
-    wavenumbers, func_coeffs = fourier_series_coeff(
+    wavenumbers, _ = fourier_series_coeff(
         lambda x: 0.0, params.L, plot_params.wave_count
     )
-
-    func_coeffs = np.ones_like(func_coeffs, dtype=np.complex128)
 
     _, square_wave_coeffs = fourier_series_coeff(
         lambda x: square_wave(x), params.L, plot_params.wave_count
@@ -54,7 +52,7 @@ def plot_spectrum():  # noqa: D103
 
     # Solve first order problem
     first = FirstOrder(wavenumbers, params, leading)
-    first.solve(lambda n: (Variables.f, func_coeffs[n]))
+    first.solve(lambda n: (Variables.f, 1.0))
 
     S_n = abs(first.solution @ Variables.S)
 
@@ -70,9 +68,9 @@ def plot_spectrum():  # noqa: D103
     plt.plot(wavenumbers[1:], S_n[1:], "k-")
     plt.plot(
         wavenumbers,
-        np.exp(slope[0] * wavenumbers),
+        np.exp(slope[1] + slope[0] * wavenumbers),
         "k--",
-        label=r"$e^{" f"{slope[0]:.2f}" r"k_n}$",
+        label=r"$e^{" f"{slope[0] * np.pi / params.L:.2f}" r"n}$",
     )
     plt.yscale("log")
     plt.xlabel(r"$k_n$")
