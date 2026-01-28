@@ -87,7 +87,7 @@ class Figures:
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"Interfacial Velocity ($u_1$)")
         self.plt.grid()
-        self.plt.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
 
         if self.plot_params.save:
@@ -292,7 +292,7 @@ class Figures:
         self.plt.ylabel("Surface Excess")
         self.plt.legend(loc="lower right")
         self.plt.grid()
-        self.plt.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
 
         if self.plot_params.save:
@@ -309,7 +309,7 @@ class Figures:
         self.plt.plot(self.xx, self.ff, "k-")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$f_1$")
-        self.plt.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
 
         if self.plot_params.save:
@@ -327,13 +327,13 @@ class Figures:
         slip_plt = ax1.plot(self.xx, self.uu[-1, :], "k-", label=r"$u_1$")
         ax1.set_xlabel(r"$x$")
         ax1.set_ylabel(r"$u_1$")
-        ax1.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+        ax1.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
         ax2 = ax1.twinx()
 
         tension_plt = ax2.plot(self.xx, self.ttension, "k--", label=r"$\gamma_1$")
         ax2.set_ylabel(r"$\gamma_1$")
-        ax2.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+        ax2.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
         # Align and stretch axes (must occur before intensity plot)
         offset, scale = 2, 0.5  # Relative location/scale of intensity
@@ -353,7 +353,7 @@ class Figures:
             -(0.75 + arrow_ff),  # arrow length (scaled by max_height)
             scale=1 / max_height,
             width=0.005,
-            scale_units="z",
+            scale_units="y",
             color="b",
         )
 
@@ -377,7 +377,7 @@ class Figures:
         self.plt.plot(self.xx, self.SS, "k-")
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"$S_1$")
-        self.plt.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
 
         if self.plot_params.save:
@@ -395,7 +395,7 @@ class Figures:
         self.plt.xlabel(r"$x$")
         self.plt.ylabel(r"Surface Tension ($\gamma_1$)")
         self.plt.grid()
-        self.plt.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
 
         if self.plot_params.save:
@@ -421,7 +421,7 @@ class Figures:
         self.plt.ylabel("Kinetic Flux")
         self.plt.legend(loc="lower right")
         self.plt.grid()
-        self.plt.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+        self.plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
         self.plt.tight_layout()
 
         if self.plot_params.save:
