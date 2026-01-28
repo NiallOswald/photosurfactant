@@ -12,6 +12,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "alive-progress>=3.3.0",
     "matplotlib>=3.10.7",
     "numpy>=2.3.4",
     "scipy>=1.16.2",
@@ -22,6 +23,7 @@ plot_error = "scripts.plot_error:plot_error"
 plot_first_order = "scripts.plot_first_order:plot_first_order"
 plot_leading_order = "scripts.plot_leading_order:plot_leading_order"
 plot_spectrum = "scripts.plot_spectrum:plot_spectrum"
+plot_sweep = "scripts.plot_sweep:plot_sweep"
 
 [dependency-groups]
 dev = [
