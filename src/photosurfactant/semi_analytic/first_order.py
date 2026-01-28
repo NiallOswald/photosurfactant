@@ -97,6 +97,9 @@ class FirstOrder(object):
 
         @wraps(func)
         def wrapper(x, *args, x_order=0, **kwargs):
+            if x_order < 0:
+                raise ValueError("Cannot integrate arbitrary functions in x.")
+
             vals = np.array([func(k, *args, **kwargs) for k in self.wavenumbers])
             coeffs = np.einsum("ij,ij->i", self.solution, vals)
 
