@@ -61,11 +61,11 @@ def plot_bulk_concentration(
     # Tidy up figure
     axs[0].set_xticklabels([])
     axs[0].set_ylabel(r"$c_{\mathrm{tr}, 0}$")
-    axs[0].ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+    axs[0].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
     axs[1].set_xlabel(r"$z$")
     axs[1].set_ylabel(r"$c_{\mathrm{ci}, 0}$")
-    axs[1].ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+    axs[1].ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     cbar = fig.colorbar(
@@ -174,7 +174,7 @@ def plot_interfacial_concentration(
     ax1.set_ylabel(
         r"Surface Excess ($\Gamma_{\mathrm{tr}, 0}, \Gamma_{\mathrm{ci}, 0}$)"
     )
-    ax1.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+    ax1.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
     ax1.grid()
 
     ax2 = ax1.twinx()
@@ -187,7 +187,7 @@ def plot_interfacial_concentration(
         label=r"$\gamma_0$",
     )
     ax2.set_ylabel(r"$\gamma_0$")
-    ax2.ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
+    ax2.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
     # Annotate points at unit intensity
     leading = LeadingOrder(default_params, root_index)
