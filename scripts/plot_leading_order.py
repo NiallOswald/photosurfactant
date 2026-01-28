@@ -21,7 +21,7 @@ def plot_bulk_concentration(
 ):
     """Plot the bulk concentrations for varying intensity."""
 
-    default_intensity = np.sqrt(default_params.Da_tr**2 + default_params.Da_ci**2)
+    default_intensity = default_params.Da_tr
 
     # Figure setup
     plt = plot_params.plt
@@ -68,7 +68,9 @@ def plot_bulk_concentration(
     axs[1].ticklabel_format(style="sci", axis="z", scilimits=(0, 0))
 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    cbar = fig.colorbar(sm, ax=axs.ravel().tolist(), label=r"Intensity ($Da$)")
+    cbar = fig.colorbar(
+        sm, ax=axs.ravel().tolist(), label=r"Intensity ($Da_\mathrm{tr}$)"
+    )
 
     # Annotate colorbar
     cbar.ax.scatter(
@@ -105,7 +107,7 @@ def plot_interfacial_concentration(
     # Collect interfacial values for varying intensity
     gamma_tr, gamma_ci = [], []
     tension = []
-    default_intensity = np.sqrt(default_params.Da_tr**2 + default_params.Da_ci**2)
+    default_intensity = default_params.Da_tr
 
     for intensity in intensities:
         params = default_params.update(
@@ -168,7 +170,7 @@ def plot_interfacial_concentration(
     if log:
         ax1.set_xscale("log")
 
-    ax1.set_xlabel(r"Intensity ($Da$)")
+    ax1.set_xlabel(r"Intensity ($Da_\mathrm{tr}$)")
     ax1.set_ylabel(
         r"Surface Excess ($\Gamma_{\mathrm{tr}, 0}, \Gamma_{\mathrm{ci}, 0}$)"
     )
