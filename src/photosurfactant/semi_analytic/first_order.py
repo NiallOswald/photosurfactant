@@ -8,7 +8,7 @@ import numpy as np
 
 from photosurfactant.parameters import Parameters
 from photosurfactant.semi_analytic.leading_order import LeadingOrder
-from photosurfactant.utils import Y, cosh, polyder, sinh, to_arr
+from photosurfactant.semi_analytic.utils import Y, cosh, polyder, sinh, to_arr
 
 
 class Symbols(Enum):  # TODO: This is unnecessary

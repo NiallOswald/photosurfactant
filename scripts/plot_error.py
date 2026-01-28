@@ -8,7 +8,7 @@ from photosurfactant.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff
 from photosurfactant.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters
-from photosurfactant.utils import parameter_parser
+from photosurfactant.utils.arg_parser import parameter_parser
 
 WAVE_N = 5
 GRID_N = 100
