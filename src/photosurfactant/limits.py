@@ -5,7 +5,7 @@ import numpy as np
 from .parameters import Parameters
 
 
-class SmallDam:
+class LowIntensity:
     """Leading order solution for a uniform intensity at small Damkohler number."""
 
     def __init__(self, params: Parameters, root_index: int = -1):
@@ -133,7 +133,7 @@ class SmallDam:
         return 1 + self.params.Ma * np.log(1 - self.gamma_tr - self.gamma_ci)
 
 
-class LargeDam:
+class HighIntensity:
     """Leading order solution for a uniform intensity at large Damkohler number."""
 
     def __init__(self, params: Parameters, root_index: int = -1):

@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import colors
 
 from photosurfactant.leading_order import LeadingOrder
-from photosurfactant.limits import LargeDam, SmallDam
+from photosurfactant.limits import HighIntensity, LowIntensity
 from photosurfactant.parameters import Parameters, PlottingParameters
 from photosurfactant.utils import leading_order_parser, parameter_parser, plot_parser
 
@@ -134,7 +134,7 @@ def plot_interfacial_concentration(
     if limits:
         tan_length = int((3 / 8) * len(intensities))
 
-        small_dam = SmallDam(params)
+        small_dam = LowIntensity(params)
         ax1.plot(
             intensities[:tan_length],
             small_dam.gamma_tr * np.ones_like(intensities[:tan_length]),
@@ -146,7 +146,7 @@ def plot_interfacial_concentration(
             "b:",
         )
 
-        large_dam = LargeDam(params)
+        large_dam = HighIntensity(params)
         ax1.plot(
             intensities[-tan_length:],
             large_dam.gamma_tr * np.ones_like(intensities[-tan_length:]),
