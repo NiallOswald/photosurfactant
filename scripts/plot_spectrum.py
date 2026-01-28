@@ -8,7 +8,7 @@ from photosurfactant.fourier import convolution_coeff, fourier_series_coeff
 from photosurfactant.intensity_functions import mollifier, square_wave
 from photosurfactant.semi_analytic.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters, PlottingParameters
-from photosurfactant.utils import (
+from photosurfactant.utils.arg_parser import (
     first_order_parser,
     leading_order_parser,
     parameter_parser,

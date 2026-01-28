@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
-from math import *  # noqa: F401, F403
 
 import numpy as np
 from matplotlib import colors
@@ -10,12 +9,14 @@ from photosurfactant.fourier import convolution_coeff, fourier_series_coeff
 from photosurfactant.intensity_functions import *  # noqa: F401, F403
 from photosurfactant.semi_analytic.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters, PlottingParameters
-from photosurfactant.utils import (
+from photosurfactant.utils.arg_parser import (
     first_order_parser,
     leading_order_parser,
     parameter_parser,
     plot_parser,
 )
+from photosurfactant.utils.func_parser import parse_func
+from photosurfactant.intensity_functions import mollifier
 
 
 class Figures:
@@ -447,7 +448,7 @@ def plot_first_order():  # noqa: D103
     plot_params = PlottingParameters.from_dict(vars(args))
 
     root_index = args.root_index
-    func = eval("lambda x, params: " + args.func)
+    func = parse_func(args.func)
     problem = args.problem
 
     # Calculate Fourier series coefficients

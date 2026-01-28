@@ -5,7 +5,7 @@ from functools import cached_property
 import numpy as np
 
 from photosurfactant.parameters import Parameters
-from photosurfactant.utils import Y, cosh, polyder
+from photosurfactant.semi_analytic.utils import Y, cosh, polyder
 
 
 class LeadingOrder(object):
