@@ -1,13 +1,11 @@
 """Test the solutions to first order problem."""
 
 import numpy as np
-from pytest_cases import fixture, parametrize_with_cases
+from pytest_cases import fixture
 
 from photosurfactant.fourier import fourier_series_coeff
 from photosurfactant.intensity_functions import (
     gaussian,
-    smoothed_square,
-    super_gaussian,
 )
 from photosurfactant.parameters import Parameters
 from photosurfactant.semi_analytic import FirstOrder, LeadingOrder, Variables
@@ -231,7 +229,7 @@ def test_surf_cons(params: Parameters, leading: LeadingOrder, first: FirstOrder)
     """Test the surfactant conservation condition."""
     xx = np.linspace(-params.L, params.L, 100)
 
-    integrand = (
+    integrand = (  # noqa: E731
         lambda x: first.S(x) * (leading.c_tr(1) + leading.c_ci(1))
         + 1 / (params.chi_tr * params.k_tr) * (first.Gamma_tr(x) + first.Gamma_ci(x))
         + first.i_c_tr(x, 1)
