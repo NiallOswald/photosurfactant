@@ -30,3 +30,6 @@ dev = [
     "pytest-cases>=3.9.1",
     "scipy-stubs>=1.16.3.0",
 ]
+
+[tool.ruff.lint.isort]
+known-first-party = ["photosurfactant"]
