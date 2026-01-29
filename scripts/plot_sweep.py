@@ -1,24 +1,22 @@
 #! /usr/bin/env python
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from typing import Callable
 
 import numpy as np
+from alive_progress import alive_it
+from matplotlib import colors
+from scipy.optimize import minimize_scalar
 
-from photosurfactant.semi_analytic.first_order import FirstOrder, Variables
 from photosurfactant.fourier import fourier_series_coeff
-from photosurfactant.semi_analytic.leading_order import LeadingOrder
 from photosurfactant.parameters import Parameters, PlottingParameters
+from photosurfactant.semi_analytic.first_order import FirstOrder, Variables
+from photosurfactant.semi_analytic.leading_order import LeadingOrder
 from photosurfactant.utils.arg_parser import (
     first_order_parser,
     parameter_parser,
     plot_parser,
 )
 from photosurfactant.utils.func_parser import parse_func
-
-from alive_progress import alive_it
-from scipy.optimize import minimize_scalar
-
-from typing import Callable
-from matplotlib import colors
 
 
 def find_max(func: Callable[[float], float], bounds: list[float]) -> float:
