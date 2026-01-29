@@ -1,1 +1,1 @@
-from .parameters import Parameters
+from .parameters import Parameters as Parameters

@@ -1,6 +1,6 @@
 from typing import Callable
 
-import numpy as np  # noqa: F403
+import numpy as np  # noqa: F401
 
 from photosurfactant.intensity_functions import *  # noqa: F403
 from photosurfactant.parameters import Parameters
