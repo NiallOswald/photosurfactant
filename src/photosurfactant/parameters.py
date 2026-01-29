@@ -2,11 +2,10 @@
 
 import inspect
 from copy import copy
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
+from typing import Any
 
 import numpy as np
-
-from typing import Any
 
 
 @dataclass(frozen=True)

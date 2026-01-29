@@ -1,8 +1,9 @@
 from typing import Callable
-from photosurfactant.parameters import Parameters
+
+import numpy as np  # noqa: F403
 
 from photosurfactant.intensity_functions import *  # noqa: F403
-import numpy as np  # noqa: F403
+from photosurfactant.parameters import Parameters
 
 
 def parse_func(func_str: str) -> Callable[[float, Parameters], float]:
