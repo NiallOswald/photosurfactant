@@ -1,31 +1,34 @@
 """Utility functions for the photosurfactant model."""
 
 from argparse import ArgumentParser
+from enum import Enum
+from typing import Callable
 
 import numpy as np
+import numpy.typing as npt
 
 Y = np.poly1d([1, 0])  # Polynomial for differentiation
 
 
-def hyperder(n):
+def hyperder(n: int) -> Callable[[float], float]:
     """Return the n-th derivative of cosh."""
     return np.sinh if n % 2 else np.cosh
 
 
-def cosh(x, x_order=0):
+def cosh(x: float, x_order: int = 0) -> float:
     return hyperder(x_order)(x)
 
 
-def sinh(x, x_order=0):
+def sinh(x: float, x_order: int = 0) -> float:
     return hyperder(x_order + 1)(x)
 
 
-def polyder(p: np.poly1d, n: int):
+def polyder(p: np.poly1d, n: int) -> np.poly1d:
     """Wrap np.polyder and np.polyint."""
     return p.deriv(n) if n > 0 else p.integ(-n)
 
 
-def to_arr(vals, unknowns):
+def to_arr(vals: dict, unknowns: Enum) -> npt.NDArray:
     """Convert a dictionary of values to an array."""
     arr = np.zeros(len(unknowns), dtype=complex)
     for key in vals.keys():

@@ -1,9 +1,10 @@
 """Module for Fourier series calculations."""
 
 import numpy as np
+import numpy.typing as npt
 
 
-def fourier_series_coeff(func, L, N):
+def fourier_series_coeff(func, L: float, N: int) -> npt.NDArray[np.complex128]:
     """Calculate the first N+1 Fourier series coeff. of a periodic function.
 
     Given a periodic function f(x) with period 2L, this function returns the
@@ -24,7 +25,7 @@ def fourier_series_coeff(func, L, N):
     return np.arange(0, N + 1) * np.pi / L, f_coeffs
 
 
-def convolution_coeff(f, g, L, N):
+def convolution_coeff(f, g, L: float, N: int):
     """Calculate the first N+1 Fourier series coeff. of a convolution.
 
     Given periodic functions f(x), g(x) with period 2L, this function returns the
