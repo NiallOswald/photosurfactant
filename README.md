@@ -1,2 +1,13 @@
-# Photo-actuated control of two-dimensional viscous liquid layers
-Code used for the production of figures and results for the problems considered in the thesis. Copies of figures used are also included in the `figures` folder along with a couple of extra examples not provided in the report.
+# Photosurfactant
+
+[![DOI](https://zenodo.org/badge/734330906.svg)](https://zenodo.org/badge/latestdoi/734330906)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/NiallOswald/photosurfactant/pytest.yml?label=tests)
+![PyPI - Version](https://img.shields.io/pypi/v/photosurfactant)
+
+Numerical solvers for liquid mixing and sculpting using light-actuated photosurfactants.
+
+# Publications
+
+This package has been used in the following publications:
+
+- (Submitted) M. D. Mayer, N. J. Oswald, D. T. Papageorgiou, 2026. Liquid mixing and sculpting using light-actuated photosurfactants.
