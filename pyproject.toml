@@ -19,11 +19,11 @@ dependencies = [
 ]
 
 [project.scripts]
-plot_error = "scripts.plot_error:plot_error"
-plot_first_order = "scripts.plot_first_order:plot_first_order"
-plot_leading_order = "scripts.plot_leading_order:plot_leading_order"
-plot_spectrum = "scripts.plot_spectrum:plot_spectrum"
-plot_sweep = "scripts.plot_sweep:plot_sweep"
+plot_error = "photosurfactant.scripts.plot_error:plot_error"
+plot_first_order = "photosurfactant.scripts.plot_first_order:plot_first_order"
+plot_leading_order = "photosurfactant.scripts.plot_leading_order:plot_leading_order"
+plot_spectrum = "photosurfactant.scripts.plot_spectrum:plot_spectrum"
+plot_sweep = "photosurfactant.scripts.plot_sweep:main"
 
 [dependency-groups]
 dev = [
