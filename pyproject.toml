@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "photosurfactant"
-version = "0.1.0"
+version = "1.0.0"
 description = "Models of chromocapillary flows for photo-actuated liquid mixing and sculpting."
 readme = "README.md"
 authors = [
