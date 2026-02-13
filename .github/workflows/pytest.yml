@@ -34,7 +34,7 @@ jobs:
         run: uv python install
 
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run: uv sync --all-extras --dev
 
       - name: Check isort
         run: uvx ruff check --select I .
