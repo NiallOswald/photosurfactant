@@ -3,13 +3,36 @@
 import inspect
 from copy import copy
 from dataclasses import asdict, dataclass
-from typing import Any
 
 import numpy as np
 
 
-@dataclass(frozen=True)
-class Parameters:
+@dataclass(frozen=True, kw_only=True)
+class ParametersBase:
+    @classmethod
+    def from_dict(cls, kwargs: dict[str, float]) -> "ParametersBase":
+        """Load parameters from a dictionary."""
+        return cls(
+            **{
+                k: v
+                for k, v in kwargs.items()
+                if k in inspect.signature(cls).parameters
+            }
+        )
+
+    def copy(self) -> "ParametersBase":
+        """Return a copy of the `Parameters` object."""
+        return copy(self)
+
+    def update(self, **new_kwargs) -> "ParametersBase":
+        """Return a new `Parameter` object with missing values derived."""
+        derived_kwargs = asdict(self)
+        # new_kwargs overwrite derived_kwargs
+        return type(self)(**(derived_kwargs | new_kwargs))
+
+
+@dataclass(frozen=True, kw_only=True)
+class Parameters(ParametersBase):
     """The Parameters for the model.
 
     :param L: The aspect ratio of the domain.
@@ -31,9 +54,6 @@ class Parameters:
 
     # Aspect ratio
     L: float = 10.0
-
-    # Reynolds numbers
-    Re: float = 0.0  # TODO: Deprecate this parameter
 
     # Damkohler numbers
     Da_tr: float = 1.0
@@ -66,26 +86,6 @@ class Parameters:
             raise ValueError(
                 "Adsorption rates do not satisfy the condition k * chi = const."
             )
-
-    def from_dict(kwargs: dict[str, float]) -> "Parameters":
-        """Load parameters from a dictionary."""
-        return Parameters(
-            **{
-                k: v
-                for k, v in kwargs.items()
-                if k in inspect.signature(Parameters).parameters
-            }
-        )
-
-    def copy(self) -> "Parameters":
-        """Return a copy of the `Parameters` object."""
-        return copy(self)
-
-    def update(self, **new_kwargs) -> "Parameters":
-        """Return a new `Parameter` object with missing values derived."""
-        derived_kwargs = asdict(self)
-        # new_kwargs overwrite derived_kwargs
-        return Parameters(**(derived_kwargs | new_kwargs))
 
     @property
     def alpha(self) -> float:
@@ -165,22 +165,6 @@ class PlottingParameters:
     def __post_init__(self):  # noqa: D105
         self.label = "_" + self.label if self.label else ""
         self.plot_setup()
-
-    def from_dict(kwargs: dict[str, Any]) -> "PlottingParameters":
-        """Load parameters from a dictionary."""
-        return PlottingParameters(
-            **{
-                k: v
-                for k, v in kwargs.items()
-                if k in inspect.signature(PlottingParameters).parameters
-            }
-        )
-
-    def copy(self):
-        """Return a copy of the class."""
-        raise NotImplementedError
-        # TODO: Deprecate this method
-        return copy(self)
 
     def plot_setup(self):
         """Set up the matplotlib rcParams."""
