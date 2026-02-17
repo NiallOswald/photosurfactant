@@ -3,17 +3,14 @@
 from dataclasses import dataclass
 from enum import IntEnum, auto
 
+import matplotlib.pyplot as plt
 import numpy as np
-
-from photosurfactant.parameters import Parameters
-
-from photosurfactant.semi_analytic import LeadingOrder
 from numpy.typing import NDArray
-
-from photosurfactant.utils.chebyshev import chebyshev
 from scipy.linalg import eigvals
 
-import matplotlib.pyplot as plt
+from photosurfactant.parameters import Parameters
+from photosurfactant.semi_analytic import LeadingOrder
+from photosurfactant.utils.chebyshev import chebyshev
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -304,6 +301,7 @@ class FallingFilm:
         self, k: float
     ) -> tuple[list[NDArray[np.complex128]], list[NDArray[np.complex128]]]:
         D_2, I = self.D @ self.D, np.eye(self.n)
+
         A = [
             (D_2 + k**2 * I)[self.n - 1] @ self.v
             - 1.0j * k * self.u_bar.deriv(2)(1.0) * self.S

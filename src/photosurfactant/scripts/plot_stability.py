@@ -1,7 +1,8 @@
-from photosurfactant.stability.falling_film import FallingFilm, FallingFilmParameters
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from alive_progress import alive_it
+
+from photosurfactant.stability.falling_film import FallingFilm, FallingFilmParameters
 
 
 def main():
