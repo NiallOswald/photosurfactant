@@ -6,7 +6,9 @@ from photosurfactant.stability.falling_film import FallingFilm, FallingFilmParam
 
 
 def main():
-    params = FallingFilmParameters(Re=0.1, Ca=-1.0, theta=np.pi / 1.5, Ma=0.0)
+    params = FallingFilmParameters(
+        Re=1.0, Ca=-1.0, Ct=1 / np.tan(np.pi / 4), Ma=0.0
+    )  # Ma = Ma * Ca
     film = FallingFilm(params, 100)
 
     print(film.leading.gamma)

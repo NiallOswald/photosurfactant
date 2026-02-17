@@ -17,7 +17,7 @@ from photosurfactant.utils.chebyshev import chebyshev
 class FallingFilmParameters(Parameters):
     Re: float
     Ca: float
-    theta: float
+    Ct: float
 
 
 class BulkVariable(IntEnum):
@@ -34,12 +34,11 @@ class InterfaceVariable(IntEnum):
 
 Variable = BulkVariable | InterfaceVariable
 
-Y = np.poly1d([1, 0])
+Y = np.polynomial.Polynomial([0, 1], symbol="y")
 
 
 class FallingFilm:
     u_bar = Y * (2 - Y)
-    p_bar = 1 - Y
 
     def __init__(self, params: FallingFilmParameters, n: int):
         self.params = params
@@ -47,6 +46,9 @@ class FallingFilm:
 
         self.leading = LeadingOrder(params)
         self.D, self.y = chebyshev(self.n)
+
+        # Reshape to match matrices
+        self.y = self.y[:, np.newaxis]
 
     def stability(self, k: float) -> float:
         return np.max(self.eigenvalues(k))
@@ -145,6 +147,10 @@ class FallingFilm:
                 raise TypeError
 
     @property
+    def p_bar(self) -> np.polynomial.Polynomial:
+        return 2 * self.params.Ct * (1 - Y)
+
+    @property
     def v(self) -> NDArray[np.complex128]:
         return self._to_arr(BulkVariable.v)
 
@@ -207,15 +213,10 @@ class FallingFilm:
         D_2 = D @ D
 
         A = [
-            (
-                D_2
-                - k**2 * I
-                - 1.0j * k * self.params.Re * self.u_bar(self.y)[:, np.newaxis] * I
-            )
+            (D_2 - k**2 * I - 1.0j * k * self.params.Re * self.u_bar(self.y) * I)
             @ (D_2 - k**2 * I)
             @ self.v
-            + (1.0j * k * self.params.Re * self.u_bar.deriv(2)(self.y)[:, np.newaxis])
-            * self.v
+            + (1.0j * k * self.params.Re * self.u_bar.deriv(2)(self.y)) * self.v
         ]
         B = [self.params.Re * (D_2 - k**2 * I) @ self.v]
 
@@ -231,13 +232,13 @@ class FallingFilm:
             1 / params.Pe_tr * (D_2 - k**2 * I) @ self.c_tr
             - params.Da_tr * self.c_tr
             + params.Da_ci * self.c_ci
-            - 1.0j * k * self.u_bar(self.y)[:, np.newaxis] * self.c_tr
-            - self.leading.c_tr(self.y, z_order=1)[:, np.newaxis] * self.v,
+            - 1.0j * k * self.u_bar(self.y) * self.c_tr
+            - self.leading.c_tr(self.y, z_order=1) * self.v,
             1 / params.Pe_ci * (D_2 - k**2 * I) @ self.c_ci
             + params.Da_tr * self.c_tr
             - params.Da_ci * self.c_ci
-            - 1.0j * k * self.u_bar(self.y)[:, np.newaxis] * self.c_ci
-            - self.leading.c_ci(self.y, z_order=1)[:, np.newaxis] * self.v,
+            - 1.0j * k * self.u_bar(self.y) * self.c_ci
+            - self.leading.c_ci(self.y, z_order=1) * self.v,
         ]
         B = [self.c_tr, self.c_ci]
 
@@ -289,7 +290,7 @@ class FallingFilm:
             + 1.0j * k * params.Re * self.u_bar.deriv(1)(1.0) * self.v[self.n - 1]
             + k**2
             * (
-                2 / np.tan(params.theta) * self.p_bar.deriv(1)(1.0)
+                self.p_bar.deriv(1)(1.0)
                 + 2.0j * k * self.u_bar.deriv(1)(1.0)
                 - k**2 / params.Ca * self.leading.gamma
             )
