@@ -320,11 +320,17 @@ class FallingFilm:
         A = [
             params.Pe_tr
             / (params.k_tr * params.chi_tr)
-            * (self.D[self.n - 1] @ self.c_tr + self.u_bar.deriv(2)(1.0) * self.S)
+            * (
+                self.D[self.n - 1] @ self.c_tr
+                + self.leading.c_tr(1.0, z_order=2) * self.S
+            )
             + self.J_tr,
             params.Pe_ci
             / (params.k_ci * params.chi_ci)
-            * (self.D[self.n - 1] @ self.c_ci + self.u_bar.deriv(2)(1.0) * self.S)
+            * (
+                self.D[self.n - 1] @ self.c_ci
+                + self.leading.c_ci(1.0, z_order=2) * self.S
+            )
             + self.J_ci,
         ]
         B = [0.0 * self.S, 0.0 * self.S]  # placeholder for zero
