@@ -51,15 +51,15 @@ class FallingFilm:
     def stability(self, k: float) -> float:
         return np.max(self.eigenvalues(k))
 
-    def eigenvalues(self, k: float, tol: float = 1e2):
+    def eigenvalues(self, k: float, tol: float = 1e2) -> NDArray[np.float64]:
         A, B = self._assemble(k)
-        vals = eigvals(A, B).real
+        vals = eigvals(A, B).real  # consider only real part
         vals = vals[np.isfinite(vals)]  # discard infinite eigenvalues
         vals = vals[vals < tol]  # discard excessively large values
 
         return vals
 
-    def inspect(self, k: float):
+    def inspect(self, k: float) -> None:
         fig, axs = plt.subplots(1, 2)
 
         A, B = self._assemble(k)
@@ -130,15 +130,17 @@ class FallingFilm:
 
         return A, B
 
-    def _to_arr(self, var: Variable):
-        """Convert a variable symbol to an array."""
+    def _to_arr(self, var: Variable) -> NDArray[np.complex128]:
+        """Convert a symbol to an array."""
         arr_len = self.n * len(BulkVariable) + len(InterfaceVariable)
         match var:
             case BulkVariable():
                 # auto() starts indexing at 1
-                return np.eye(self.n, arr_len, k=var * self.n)
+                return np.eye(self.n, arr_len, k=var * self.n, dtype=np.complex128)
             case InterfaceVariable():
-                return np.eye(1, arr_len, k=var + self.n * len(BulkVariable))[0]
+                return np.eye(
+                    1, arr_len, k=var + self.n * len(BulkVariable), dtype=np.complex128
+                )[0]
             case _:
                 raise TypeError
 
@@ -155,19 +157,19 @@ class FallingFilm:
         return self._to_arr(BulkVariable.c_ci)
 
     @property
-    def Gamma_tr(self):
+    def Gamma_tr(self) -> NDArray[np.complex128]:
         return self._to_arr(InterfaceVariable.Gamma_tr)
 
     @property
-    def Gamma_ci(self):
+    def Gamma_ci(self) -> NDArray[np.complex128]:
         return self._to_arr(InterfaceVariable.Gamma_ci)
 
     @property
-    def S(self):
+    def S(self) -> NDArray[np.complex128]:
         return self._to_arr(InterfaceVariable.S)
 
     @property
-    def J_tr(self):
+    def J_tr(self) -> NDArray[np.complex128]:
         return self.params.Bi_tr * (
             self.params.k_tr
             * (self.c_tr[self.n - 1] + self.leading.c_tr(1.0, z_order=1) * self.S)
@@ -179,7 +181,7 @@ class FallingFilm:
         )
 
     @property
-    def J_ci(self):
+    def J_ci(self) -> NDArray[np.complex128]:
         return self.params.Bi_ci * (
             self.params.k_ci
             * (self.c_ci[self.n - 1] + self.leading.c_ci(1.0, z_order=1) * self.S)
@@ -191,7 +193,7 @@ class FallingFilm:
         )
 
     @property
-    def gamma(self):
+    def gamma(self) -> NDArray[np.complex128]:
         return (
             -self.params.Ma
             * (self.Gamma_tr + self.Gamma_ci)
@@ -329,7 +331,9 @@ class FallingFilm:
 
         return A, B
 
-    def _kinematic_eq(self, k: float):
+    def _kinematic_eq(
+        self, k: float
+    ) -> tuple[list[NDArray[np.complex128]], list[NDArray[np.complex128]]]:
         A = [self.v[self.n - 1] - 1.0j * k * self.u_bar(1.0) * self.S]
         B = [self.S]
 
