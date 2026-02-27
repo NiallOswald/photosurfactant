@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from enum import IntEnum, auto
+from functools import cached_property
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,7 +18,11 @@ from photosurfactant.utils.chebyshev import chebyshev
 class FallingFilmParameters(Parameters):
     Re: float
     Ca: float
-    Ct: float
+    theta: float
+
+    @cached_property
+    def Ct(self) -> float:
+        return 1 / np.tan(self.theta)
 
 
 class BulkVariable(IntEnum):
