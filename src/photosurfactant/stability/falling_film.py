@@ -45,7 +45,10 @@ class FallingFilm:
         self.n = n
 
         self.leading = LeadingOrder(params)
-        self.D, self.y = chebyshev(self.n)
+
+        # Get chebyshev grid and differentiation matrix
+        D, x = chebyshev(self.n)  # x = [1, ..., -1]
+        self.D, self.y = -2 * D, (1 - x) / 2  # y = [0, ..., 1]
 
         # Reshape to match matrices
         self.y = self.y[:, np.newaxis]
