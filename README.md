@@ -10,4 +10,4 @@ Numerical solvers for liquid mixing and sculpting using light-actuated photosurf
 
 This package has been used in the following publications:
 
-- (Submitted) M. D. Mayer, N. J. Oswald, D. T. Papageorgiou, 2026. Liquid mixing and sculpting using light-actuated photosurfactants.
+- [M. D. Mayer, N. J. Oswald, D. T. Papageorgiou, 2026. Liquid mixing and sculpting using light-actuated photosurfactants.](https://doi.org/10.1017/jfm.2026.11264)
